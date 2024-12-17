@@ -17,8 +17,8 @@ class BitrixController extends Controller
 
     public function getUserList(): JsonResponse
     {
-        $response = $this->serviceBuilder->getUserScope();
+        $response = $this->serviceBuilder->getCRMScope();
 
-        dump($response);
+        return response()->json($response->company());
     }
 }
