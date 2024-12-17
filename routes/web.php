@@ -1,11 +1,9 @@
 <?php
 
-use App\Services\Bitrix;
+use App\Http\Controllers\BitrixController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/test', function (Bitrix $bitrix) {
-    dump($bitrix->bitrix->getMainScope()->main()->getApplicationInfo()->applicationInfo());
-});
+Route::get('/test', [BitrixController::class, 'getUserList']);
 
 Route::get('/', function () {
     return view('welcome');

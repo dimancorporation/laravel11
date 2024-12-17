@@ -2,10 +2,11 @@
 
 namespace App\Providers;
 
-use App\Services\Bitrix;
 use Bitrix24\SDK\Core\Core;
+use Bitrix24\SDK\Services\ServiceBuilder;
 use Bitrix24\SDK\Services\ServiceBuilderFactory;
 use Illuminate\Support\ServiceProvider;
+use InvalidArgumentException;
 
 class BitrixServiceProvider extends ServiceProvider
 {
@@ -14,25 +15,21 @@ class BitrixServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(Core::class, function ($app) {
-            $webhookUrl = config('bitrix24.webhook_url');
+        $this->app->singleton(ServiceBuilder::class, function ($app) {
+            $webhookUrl = config('bitrix.webhook_url');
 
             if (empty($webhookUrl)) {
-                throw new \InvalidArgumentException('Bitrix24 Webhook URL is not configured.');
+                throw new InvalidArgumentException('Bitrix24 Webhook URL is not configured.');
             }
 
-            // Create and return the ServiceBuilder instance
             return ServiceBuilderFactory::createServiceBuilderFromWebhook($webhookUrl);
         });
     }
 
-    /**
-     *
-     */
-    public function boot(Bitrix $bitrix): void
+    public function boot(): void
     {
         $this->publishes([
-            __DIR__.'/../config/bitrix.php' => config_path('bitrix.php'),
+            __DIR__.'/../Config/bitrix.php' => config_path('bitrix.php'),
         ]);
     }
 }
