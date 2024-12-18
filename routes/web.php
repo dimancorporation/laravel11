@@ -10,9 +10,24 @@ Route::get('/', function () {
 
 Route::get('/test', [BitrixController::class, 'getUserList'])->name('bitrix');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])
+    ->group(function () {
+        Route::get('/dashboard', function () {
+            return view('dashboard');
+        })->name('dashboard');
+
+        Route::get('/status-descriptions', function () {
+            return view('status-descriptions');
+        })->name('status-descriptions');
+
+        Route::get('/list-documents', function () {
+            return view('list-documents');
+        })->name('list-documents');
+
+        Route::get('/payment', function () {
+            return view('payment');
+        })->name('payment');
+    });
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -20,4 +35,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
