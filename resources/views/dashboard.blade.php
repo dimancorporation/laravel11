@@ -8,85 +8,59 @@
     <div class="py-4">
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 flex md:flex-row justify-between min-[320px]:flex-col gap-2">
-                    <div class="block rounded-lg bg-white text-center text-surface shadow-secondary-1 dark:bg-surface-dark dark:text-white">
+                <div class="p-6 text-gray-900 flex justify-between min-[950px]:flex-row min-[320px]:flex-col gap-20">
+                    <div class="min-[320px]:w-full min-[950px]:w-2/4 block rounded-lg bg-white text-center text-surface shadow-secondary-1 dark:bg-surface-dark dark:text-white">
                         <div class="border-b-2 border-neutral-100 px-6 py-3 dark:border-white/10 text-3xl">
                             Моё дело
                         </div>
-                        <div>
-                            <table class="w-full text-left rtl:text-right text-gray-500 dark:text-gray-400 text-lg">
-                                <colgroup>
-                                    <col width="280">
-                                    <col width="230">
-                                </colgroup>
-                                <tbody>
-                                <tr>
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-right">
-                                        Мое дело находится в стадии:
-                                    </th>
-                                    <td class="p-4">
-                                        <div class="p-2 flex justify-center items-center border-2 border-solid border-blue-500 rounded-lg">
-                                            Запросы БКИ
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-right">
-                                        Посмотреть в Арбитражном суде:
-                                    </th>
-                                    <td class="p-4">
-                                        <div class="p-2 flex justify-center items-center border-2 border-solid border-blue-500 rounded-lg">
-                                            Арбитражный суд
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
+                        <div class="flex flex-col items-center w-full text-left rtl:text-right text-gray-500 dark:text-gray-400 text-lg mt-3 font-semibold">
+                            <div class="flex min-[280px]:flex-col min-[430px]:flex-row min-[280px]:items-end min-[430px]:items-center mb-3 w-full">
+                                <div class="min-[280px]:w-full min-[430px]:w-2/4 mr-3 text-right">
+                                    Мое дело находится в стадии:
+                                </div>
+                                <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-blue-500 rounded-lg">
+                                    Запросы БКИ
+                                </div>
+                            </div>
+                            <div class="flex min-[280px]:flex-col min-[430px]:flex-row min-[280px]:items-end min-[430px]:items-center mb-3 w-full">
+                                <div class="min-[280px]:w-full min-[430px]:w-2/4 mr-3 text-right">
+                                    Посмотреть в Арбитражном суде:
+                                </div>
+                                <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-blue-500 rounded-lg">
+                                    Арбитражный суд
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="block rounded-lg bg-white text-center text-surface shadow-secondary-1 dark:bg-surface-dark dark:text-white">
+                    <div class="min-[320px]:w-full min-[950px]:w-2/4 block rounded-lg bg-white text-center text-surface shadow-secondary-1 dark:bg-surface-dark dark:text-white">
                         <div class="border-b-2 border-neutral-100 px-6 py-3 dark:border-white/10 text-3xl">
                             Мои оплаты
                         </div>
-                        <div>
-                            <table class="w-full text-left rtl:text-right text-gray-500 dark:text-gray-400 text-lg">
-                                <colgroup>
-                                    <col width="280">
-                                    <col width="230">
-                                </colgroup>
-                                <tbody>
-                                <tr>
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-right">
-                                        Договор на сумму:
-                                    </th>
-                                    <td class="p-4">
-                                        <div class="p-2 flex justify-center items-center border-2 border-solid border-blue-500 rounded-lg">
-                                            180 000 руб
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-right">
-                                        Оплачено на текущий момент:
-                                    </th>
-                                    <td class="p-4">
-                                        <div class="p-2 flex justify-center items-center border-2 border-solid border-blue-500 rounded-lg">
-                                            10 000 руб
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-right">
-                                        Остаток по договору:
-                                    </th>
-                                    <td class="p-4">
-                                        <div class="p-2 flex justify-center items-center border-2 border-solid border-blue-500 rounded-lg">
-                                            170 000 руб
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
+                        <div class="flex flex-col items-center w-full text-left rtl:text-right text-gray-500 dark:text-gray-400 text-lg mt-3 font-semibold">
+                            <div class="flex min-[280px]:flex-col min-[430px]:flex-row min-[280px]:items-end min-[430px]:items-center mb-3 w-full">
+                                <div class="min-[280px]:w-full min-[430px]:w-2/4 mr-3 text-right">
+                                    Договор на сумму:
+                                </div>
+                                <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-blue-500 rounded-lg">
+                                    180 000 руб
+                                </div>
+                            </div>
+                            <div class="flex min-[280px]:flex-col min-[430px]:flex-row min-[280px]:items-end min-[430px]:items-center mb-3 w-full">
+                                <div class="min-[280px]:w-full min-[430px]:w-2/4 mr-3 text-right">
+                                    Оплачено на текущий момент:
+                                </div>
+                                <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-green-500 rounded-lg">
+                                    10 000 руб
+                                </div>
+                            </div>
+                            <div class="flex min-[280px]:flex-col min-[430px]:flex-row min-[280px]:items-end min-[430px]:items-center mb-3 w-full">
+                                <div class="min-[280px]:w-full min-[430px]:w-2/4 mr-3 text-right">
+                                    Остаток по договору:
+                                </div>
+                                <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-red-500 rounded-lg">
+                                    170 000 руб
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
