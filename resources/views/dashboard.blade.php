@@ -84,7 +84,12 @@
                 </div>
                 <div class="min-[300px]:mx-6">
                     <div class="max-w-3xl mx-auto my-4 h-12 bg-gray-200 rounded-full dark:bg-gray-700">
-                        <div class="flex justify-center items-center h-12 bg-blue-600 font-medium text-blue-100 text-center p-0.5 leading-none rounded-full text-lg" style="width: 75%; animation: progressAnimationStrike75_1 6s;"> 75%</div>
+                        <div class="flex justify-center items-center h-12 bg-blue-600 font-medium text-blue-100 text-center p-0.5 leading-none rounded-full text-lg"
+                             style="width: {{ $progressBarData->width }};
+                             animation: {{ $progressBarData->animation }};
+                             ">
+                            {{ $progressBarData->width }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -113,6 +118,87 @@
 
             to {
                 width: 75%;
+            }
+        }
+        @keyframes progressAnimationStrike0 {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 0;
+            }
+        }
+        @keyframes progressAnimationStrike10 {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 10%;
+            }
+        }
+        @keyframes progressAnimationStrike23 {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 23%;
+            }
+        }
+        @keyframes progressAnimationStrike38 {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 38%;
+            }
+        }
+        @keyframes progressAnimationStrike58 {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 58%;
+            }
+        }
+        @keyframes progressAnimationStrike73 {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 73%;
+            }
+        }
+        @keyframes progressAnimationStrike85 {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 85%;
+            }
+        }
+        @keyframes progressAnimationStrike95 {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 95%;
+            }
+        }
+        @keyframes progressAnimationStrike100 {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 100%;
             }
         }
     </style>
