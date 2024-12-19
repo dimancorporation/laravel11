@@ -27,7 +27,7 @@
                                     Посмотреть в Арбитражном суде:
                                 </div>
                                 <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-blue-500 rounded-lg">
-                                    <a href="{{ Auth::user()->link_to_court }}" class="" target="_blank">
+                                    <a href="{{ Auth::user()->link_to_court }}" class="hover:text-blue-800 hover:underline" target="_blank">
                                         Арбитражный суд
                                     </a>
                                 </div>
@@ -60,7 +60,13 @@
                                     Остаток по договору:
                                 </div>
                                 <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-red-500 rounded-lg">
-                                    {{ number_format(Auth::user()->sum_contract - Auth::user()->already_paid, 0, ',', ' ') }} руб
+                                    @if (Auth::user()->sum_contract > Auth::user()->already_paid)
+                                        <a href="{{ route('payment') }}" class="hover:text-blue-800 hover:underline">
+                                            {{ number_format(Auth::user()->sum_contract - Auth::user()->already_paid, 0, ',', ' ') }} руб
+                                        </a>
+                                    @else
+                                        Оплачено полностью!
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -89,78 +95,11 @@
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="max-w-6xl mx-auto grid justify-items-center min-[300px]:grid-cols-2 min-[460px]:grid-cols-3 min-[500px]:grid-cols-3 min-[660px]:grid-cols-4 min-[850px]:grid-cols-4 min-[900px]:grid-cols-5 min-[1200px]:grid-cols-6">
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
-                    <div class="my-5 mx-3 w-[145px] h-auto">
-                        <img class="w-[145px] h-auto" src="{{asset('images/img1.png')}}" alt="">
-                    </div>
+                    @foreach ($progressImages as $image)
+                        <div class="my-5 mx-3 w-[145px] h-auto">
+                            <img class="w-[145px] h-auto" src="{{ asset($image) }}" alt="">
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </div>
