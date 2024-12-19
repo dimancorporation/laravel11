@@ -34,8 +34,6 @@ jobs:
         image: 'redis'
         ports:
           - 6379/tcp'
-        networks:
-          - sail
         healthcheck: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
