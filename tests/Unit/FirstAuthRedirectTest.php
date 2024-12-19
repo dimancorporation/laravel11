@@ -5,7 +5,9 @@ namespace Tests\Unit;
 use App\Http\Middleware\FirstAuthMiddleware;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Mockery;
 use Tests\TestCase;
@@ -37,7 +39,9 @@ class FirstAuthRedirectTest extends TestCase
 
         $response = $this->middleware->handle($request, $next);
 
+        $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(302, $response->getStatusCode());
+        $this->assertStringContainsString('/profile/password', $response->headers->get('Location'));
     }
 
     public function testHandleUserIsNotFirstAuth()
@@ -47,12 +51,14 @@ class FirstAuthRedirectTest extends TestCase
 
         $request = Request::create('/test-route', 'GET');
 
-        $next = function ($request) {
-            return $request;
+        $next = function () {
+            return \response('This is a test response');
         };
 
         $response = $this->middleware->handle($request, $next);
 
-        $this->assertSame($request, $response);
+        $this->assertInstanceOf(Response::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringContainsString('This is a test response', $response->getContent());
     }
 }

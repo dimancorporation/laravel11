@@ -80,7 +80,7 @@ jobs:
       - name: Clear Config
         run: php artisan config:clear
 
-      - name: Directory Permissions
+      - name: Run migrations
         run: php artisan migrate -v
         env:
           DB_PORT: ${{ job.services.postgres.ports[5432] }}
