@@ -21,7 +21,7 @@ class ProgressBarService
     {
 
         $progressBarAnimation = $this->getProgressBarAnimation($key);
-        $progressBarText = $this->getProgressBarText($key);
+        $progressBarText = $this->getProgressBarWidth($key);
 
         return (object)[
             'animation' => $progressBarAnimation,
@@ -34,8 +34,8 @@ class ProgressBarService
         return $this->progressStyles[$key]['animation'];
     }
 
-    private function getProgressBarText(int $key): string
+    private function getProgressBarWidth(int $key): string
     {
-        return $this->progressStyles[$key]['text'];
+        return $this->progressStyles[$key]['width'];
     }
 }
