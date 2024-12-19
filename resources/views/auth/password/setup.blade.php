@@ -3,13 +3,16 @@
         {{ __('После первой авторизации вы должны сменить пароль. Укажите свой email и на него будет отправлена информация о новом пароле.') }}
     </div>
 
-    <form method="POST" action="{{ route('setup-password') }}">
+    <form method="POST" action="{{ route('password.setup.update') }}">
         @csrf
+        @method('PUT')
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="email" />
+            @error('email')
+                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            @enderror
         </div>
 
         <!-- Old Password -->
@@ -20,7 +23,9 @@
                           type="password"
                           name="old_password" required autocomplete="old-password" />
 
-            <x-input-error :messages="$errors->get('old_password')" class="mt-2" />
+            @error('email')
+                <x-input-error :messages="$errors->get('old_password')" class="mt-2" />
+            @enderror
         </div>
 
         <!-- Password -->
@@ -32,7 +37,9 @@
                           name="password"
                           required autocomplete="new-password" />
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            @error('email')
+                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            @enderror
         </div>
 
         <!-- Confirm Password -->
@@ -43,7 +50,9 @@
                           type="password"
                           name="password_confirmation" required autocomplete="new-password" />
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+            @error('email')
+                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+            @enderror
         </div>
 
         <div class="flex items-center justify-end mt-4">

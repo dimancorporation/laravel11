@@ -12,7 +12,7 @@ Route::get('/', function () {
 
 Route::get('/test', [BitrixController::class, 'getUserList'])->name('bitrix');
 
-Route::middleware(['auth', 'verified'])
+Route::middleware(['auth', 'verified', 'first.auth'])
     ->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -37,9 +37,6 @@ Route::middleware(['auth', FirstAuthMiddleware::class])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    // todo: write controller
-    Route::get('/profile/password')->name('password.setup');
 });
 
 require __DIR__ . '/auth.php';

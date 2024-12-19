@@ -53,4 +53,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(B24Status::class, 'b24_status', 'id');
     }
+
+    public function getIsBitrixRegisteredAttribute(): bool
+    {
+        return !$this->attributes['is_registered_myself'];
+    }
 }

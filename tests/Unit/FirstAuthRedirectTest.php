@@ -41,7 +41,7 @@ class FirstAuthRedirectTest extends TestCase
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(302, $response->getStatusCode());
-        $this->assertStringContainsString('/profile/password', $response->headers->get('Location'));
+        $this->assertStringContainsString('/password/setup', $response->headers->get('Location'));
     }
 
     public function testHandleUserIsNotFirstAuth()
