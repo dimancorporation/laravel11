@@ -16,10 +16,7 @@
         <div class="mt-4">
             <x-input-label for="password" :value="__('Пароль')" />
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
@@ -42,6 +39,12 @@
             <x-primary-button-green class="ms-3">
                 {{ __('Войти') }}
             </x-primary-button-green>
+        </div>
+
+        <div class="flex items-center justify-center mt-4">
+            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('register') }}">
+                {{ __('Зарегистрироваться') }}
+            </a>
         </div>
     </form>
 </x-guest-layout>

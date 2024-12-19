@@ -27,7 +27,9 @@
                                     Посмотреть в Арбитражном суде:
                                 </div>
                                 <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-blue-500 rounded-lg">
-                                    Арбитражный суд
+                                    <a href="{{ Auth::user()->link_to_court }}" class="" target="_blank">
+                                        Арбитражный суд
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -42,7 +44,7 @@
                                     Договор на сумму:
                                 </div>
                                 <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-blue-500 rounded-lg">
-                                    180 000 руб
+                                    {{ number_format(Auth::user()->sum_contract, 0, ',', ' ') }} руб
                                 </div>
                             </div>
                             <div class="flex min-[280px]:flex-col min-[430px]:flex-row min-[280px]:items-end min-[430px]:items-center mb-3 w-full">
@@ -50,7 +52,7 @@
                                     Оплачено на текущий момент:
                                 </div>
                                 <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-green-500 rounded-lg">
-                                    10 000 руб
+                                    {{ number_format(Auth::user()->already_paid, 0, ',', ' ') }} руб
                                 </div>
                             </div>
                             <div class="flex min-[280px]:flex-col min-[430px]:flex-row min-[280px]:items-end min-[430px]:items-center mb-3 w-full">
@@ -58,7 +60,7 @@
                                     Остаток по договору:
                                 </div>
                                 <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-red-500 rounded-lg">
-                                    170 000 руб
+                                    {{ number_format(Auth::user()->sum_contract - Auth::user()->already_paid, 0, ',', ' ') }} руб
                                 </div>
                             </div>
                         </div>
