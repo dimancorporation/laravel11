@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'is_first_auth',
         'is_registered_myself',
+        'b24_status',
     ];
 
     /**
@@ -46,5 +47,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function b24Status()
+    {
+        return $this->belongsTo(B24Status::class, 'b24_status', 'id');
     }
 }

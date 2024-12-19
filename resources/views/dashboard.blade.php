@@ -19,7 +19,7 @@
                                     Мое дело находится в стадии:
                                 </div>
                                 <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-blue-500 rounded-lg">
-                                    Запросы БКИ
+                                    {{ $b24Status->name }}
                                 </div>
                             </div>
                             <div class="flex min-[280px]:flex-col min-[430px]:flex-row min-[280px]:items-end min-[430px]:items-center mb-3 w-full">

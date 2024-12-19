@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BitrixController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\FirstAuthMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -13,9 +14,7 @@ Route::get('/test', [BitrixController::class, 'getUserList'])->name('bitrix');
 
 Route::middleware(['auth', 'verified'])
     ->group(function () {
-        Route::get('/dashboard', function () {
-            return view('dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/status-descriptions', function () {
             return view('status-descriptions');
