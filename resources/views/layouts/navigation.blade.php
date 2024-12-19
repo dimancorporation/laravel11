@@ -24,6 +24,9 @@
                     <x-nav-link :href="route('payment')" :active="request()->routeIs('payment')">
                         Оплата
                     </x-nav-link>
+                    <x-nav-link :href="route('settings')" :active="request()->routeIs('settings')">
+                        Настройки
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -87,6 +90,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('payment')" :active="request()->routeIs('payment')">
                 Оплата
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('settings')" :active="request()->routeIs('settings')">
+                Настройки
             </x-responsive-nav-link>
         </div>
 

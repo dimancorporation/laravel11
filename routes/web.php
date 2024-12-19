@@ -27,6 +27,10 @@ Route::middleware(['auth', 'verified'])
         Route::get('/payment', function () {
             return view('payment');
         })->name('payment');
+
+        Route::get('/settings', function () {
+            return view('settings');
+        })->name('settings');
     });
 
 Route::middleware('auth')->group(function () {
