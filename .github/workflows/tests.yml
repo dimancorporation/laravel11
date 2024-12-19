@@ -21,13 +21,13 @@ jobs:
       CACHE_DRIVER: redis
       QUEUE_CONNECTION: redis
       SESSION_DRIVER: redis
-      DB_CONNECTION: pgsql
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
       DB_HOST: localhost
+      DB_CONNECTION: pgsql
       DB_PASSWORD: postgres
       DB_USERNAME: postgres
       DB_DATABASE: postgres
-      REDIS_HOST: localhost
-      REDIS_PORT: 6379
 
     services:
       redis:
@@ -84,8 +84,10 @@ jobs:
         run: php artisan migrate -v
         env:
           DB_PORT: ${{ job.services.postgres.ports[5432] }}
+          REDIS_PORT: ${{ job.services.redis.ports[5432] }}
 
       - name: Test with phpunit
         run: vendor/bin/phpunit --coverage-text
         env:
           DB_PORT: ${{ job.services.postgres.ports[5432] }}
+          REDIS_PORT: ${{ job.services.redis.ports[5432] }}
