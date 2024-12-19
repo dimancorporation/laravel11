@@ -15,8 +15,8 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->enum('role', ['admin', 'user', 'blocked'])->default('user');
             $table->unsignedBigInteger('id_b24')->nullable();
-            $table->boolean('is_first_auth')->default(true);
-            $table->boolean('is_registered_myself')->default(false);
+            $table->boolean('is_first_auth')->default(true); // Первая авторизация пользователя в личный кабинет
+            $table->boolean('is_registered_myself')->default(false); // Самостоятельная регистрация пользователя через форму регистрации
         });
     }
 

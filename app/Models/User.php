@@ -21,7 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'is_first_auth'
+        'is_first_auth',
+        'is_registered_myself',
     ];
 
     /**
