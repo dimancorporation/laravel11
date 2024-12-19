@@ -34,7 +34,7 @@ jobs:
         image: 'redis'
         ports:
           - 6379/tcp'
-        healthcheck: >-
+        options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
           --health-timeout 5s
