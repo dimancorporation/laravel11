@@ -10,7 +10,12 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="min-[300px]:px-0 min-[500px]:p-6 text-gray-900">
                     Форма с настройками полей битрикс24 и сайта
-                    <form method="post" action="" class="mt-6 space-y-6">
+{{--                    @if(session('success'))--}}
+{{--                        <div class="alert alert-success">--}}
+{{--                            {{ session('success') }}--}}
+{{--                        </div>--}}
+{{--                    @endif--}}
+                    <form method="post" action="{{ route('save.user.fields') }}" class="mt-6 space-y-6">
                         @csrf
 
                         @foreach($b24UserFields as $field)
@@ -23,7 +28,6 @@
                                            value="{{ $field->uf_crm_code }}"
                                            class="w-1/2 mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block rounded-md sm:text-sm focus:ring-1"
                                            placeholder="UF_CRM_1234567890123"/>
-                                    <input type="text" class="hidden" value="{{ $field->site_field }}">
                                 </label>
                             </div>
                         @endforeach
@@ -43,7 +47,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="min-[300px]:px-0 min-[500px]:p-6 text-gray-900">
                     Форма с настройками полей битрикс24 и сайта
-                    <form method="post" action="" class="mt-6 space-y-6">
+                    <form method="post" action="{{ route('save.doc.fields') }}" class="mt-6 space-y-6">
                         @csrf
 
                         @foreach($b24DocFields as $field)
@@ -56,7 +60,6 @@
                                            value="{{ $field->uf_crm_code }}"
                                            class="w-1/2 mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block rounded-md sm:text-sm focus:ring-1"
                                            placeholder="UF_CRM_1234567890123"/>
-                                    <input type="text" class="hidden" value="{{ $field->site_field }}">
                                 </label>
                             </div>
                         @endforeach

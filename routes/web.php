@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\B24DocFieldController;
+use App\Http\Controllers\B24UserFieldController;
 use App\Http\Controllers\BitrixController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentsController;
@@ -33,6 +35,8 @@ Route::middleware(['auth', 'verified', 'first.auth'])
         })->name('offer-agreement');
 
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+        Route::post('/save-user-fields', [B24UserFieldController::class, 'store'])->name('save.user.fields');
+        Route::post('/save-doc-fields', [B24DocFieldController::class, 'store'])->name('save.doc.fields');
     });
 
 Route::middleware(['auth', FirstAuthMiddleware::class])->group(function () {
