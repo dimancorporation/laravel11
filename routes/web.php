@@ -28,6 +28,10 @@ Route::middleware(['auth', 'verified', 'first.auth'])
             return view('payment');
         })->name('payment');
 
+        Route::get('/offer-agreement', function () {
+            return view('offer-agreement');
+        })->name('offer-agreement');
+
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     });
 

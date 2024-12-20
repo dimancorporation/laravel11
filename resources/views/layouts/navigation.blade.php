@@ -22,6 +22,9 @@
                         <x-nav-link :href="route('documents')" :active="request()->routeIs('documents')">
                             Список документов
                         </x-nav-link>
+                        <x-nav-link :href="route('offer-agreement')" :active="request()->routeIs('offer-agreement')">
+                            Договор оферты
+                        </x-nav-link>
                         <x-nav-link :href="route('payment')" :active="request()->routeIs('payment')">
                             Оплата
                         </x-nav-link>
@@ -90,6 +93,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('documents')" :active="request()->routeIs('documents')">
                     Список документов
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('offer-agreement')" :active="request()->routeIs('offer-agreement')">
+                    Договор оферты
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('payment')" :active="request()->routeIs('payment')">
                     Оплата

@@ -10,7 +10,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <video class="w-full h-auto max-w-full" controls>
-                        <source src="{{asset('video/status_desc_video.mp4')}}" type="video/mp4">
+                        <source src="{{ asset('video/status_desc_video.mp4' )}}" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                 </div>
