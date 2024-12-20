@@ -24,19 +24,11 @@ Route::middleware(['auth', 'verified', 'first.auth'])
 
         Route::get('/documents', [DocumentsController::class, 'index'])->name('documents');
 
-//        Route::get('/documents', function () {
-//            return view('documents');
-//        })->name('documents');
-
         Route::get('/payment', function () {
             return view('payment');
         })->name('payment');
 
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
-
-//        Route::get('/settings', function () {
-//            return view('settings');
-//        })->name('settings');
     });
 
 Route::middleware(['auth', FirstAuthMiddleware::class])->group(function () {
