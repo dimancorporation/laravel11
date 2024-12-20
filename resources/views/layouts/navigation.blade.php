@@ -18,7 +18,7 @@
                     <x-nav-link :href="route('status-descriptions')" :active="request()->routeIs('status-descriptions')">
                         Описание статусов
                     </x-nav-link>
-                    <x-nav-link :href="route('list-documents')" :active="request()->routeIs('list-documents')">
+                    <x-nav-link :href="route('documents')" :active="request()->routeIs('documents')">
                         Список документов
                     </x-nav-link>
                     <x-nav-link :href="route('payment')" :active="request()->routeIs('payment')">
@@ -83,7 +83,7 @@
             <x-responsive-nav-link :href="route('status-descriptions')" :active="request()->routeIs('status-descriptions')">
                 Описание статусов
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('list-documents')" :active="request()->routeIs('list-documents')">
+            <x-responsive-nav-link :href="route('documents')" :active="request()->routeIs('documents')">
                 Список документов
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('payment')" :active="request()->routeIs('payment')">

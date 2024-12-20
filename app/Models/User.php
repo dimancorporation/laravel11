@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -24,6 +24,7 @@ class User extends Authenticatable
         'is_first_auth',
         'is_registered_myself',
         'b24_status',
+        'documents_id',
     ];
 
     /**
@@ -49,7 +50,12 @@ class User extends Authenticatable
         ];
     }
 
-    public function b24Status()
+    public function b24Documents(): BelongsTo
+    {
+        return $this->belongsTo(B24Status::class, 'b24_documents', 'id');
+    }
+
+    public function b24Status(): BelongsTo
     {
         return $this->belongsTo(B24Status::class, 'b24_status', 'id');
     }

@@ -22,42 +22,42 @@ return new class extends Migration
 
         DB::table('constants')->insert([
             [
-                'site_field' => 'USER_CREATE_ACCOUNT',
+                'site_field' => 'user_create_account',
                 'b24_field' => 'СОЗДАТЬ ЛК КЛИЕНТУ',
                 'uf_crm_code' => 'UF_CRM_1708511654449',
             ],
             [
-                'site_field' => 'USER_LOGIN',
+                'site_field' => 'user_login',
                 'b24_field' => 'ЛОГИН ЛК КЛИЕНТА',
                 'uf_crm_code' => 'UF_CRM_1708511589360',
             ],
             [
-                'site_field' => 'USER_PASSWORD',
+                'site_field' => 'user_password',
                 'b24_field' => 'ПАРОЛЬ ЛК КЛИЕНТА',
                 'uf_crm_code' => 'UF_CRM_1708511607581',
             ],
             [
-                'site_field' => 'USER_STATUS',
+                'site_field' => 'user_status',
                 'b24_field' => 'СТАТУС ДЛЯ ЛК КЛИЕНТА',
                 'uf_crm_code' => 'UF_CRM_1709533755311',
             ],
             [
-                'site_field' => 'USER_CONTRACT_AMOUNT',
+                'site_field' => 'user_contract_amount',
                 'b24_field' => 'СУММА ДОГОВОРА',
                 'uf_crm_code' => 'UF_CRM_1725026451112',
             ],
             [
-                'site_field' => 'USER_MESSAGE_FROM_B24',
+                'site_field' => 'user_message_from_b24',
                 'b24_field' => 'СООБЩЕНИЕ КЛИЕНТУ ОТ КОМПАНИИ',
                 'uf_crm_code' => 'UF_CRM_1708511318200',
             ],
             [
-                'site_field' => 'USER_LINK_TO_COURT',
+                'site_field' => 'user_link_to_court',
                 'b24_field' => 'ССЫЛКА НА ДЕЛО В КАДР. АРБИТР',
                 'uf_crm_code' => 'UF_CRM_1708511472339',
             ],
             [
-                'site_field' => 'USER_LAST_AUTH_DATE',
+                'site_field' => 'user_last_auth_date',
                 'b24_field' => 'ДАТА ПОСЛЕДНЕЙ АВТОРИЗАЦИИ (МСК)',
                 'uf_crm_code' => 'UF_CRM_1715524078722',
             ],

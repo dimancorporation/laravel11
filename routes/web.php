@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\BitrixController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Middleware\FirstAuthMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -20,17 +22,21 @@ Route::middleware(['auth', 'verified', 'first.auth'])
             return view('status-descriptions');
         })->name('status-descriptions');
 
-        Route::get('/list-documents', function () {
-            return view('list-documents');
-        })->name('list-documents');
+        Route::get('/documents', [DocumentsController::class, 'index'])->name('documents');
+
+//        Route::get('/documents', function () {
+//            return view('documents');
+//        })->name('documents');
 
         Route::get('/payment', function () {
             return view('payment');
         })->name('payment');
 
-        Route::get('/settings', function () {
-            return view('settings');
-        })->name('settings');
+        Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+
+//        Route::get('/settings', function () {
+//            return view('settings');
+//        })->name('settings');
     });
 
 Route::middleware(['auth', FirstAuthMiddleware::class])->group(function () {
