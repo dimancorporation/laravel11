@@ -35,6 +35,11 @@ Route::middleware(['auth', 'verified', 'first.auth'])
         })->name('offer-agreement');
 
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+
+        Route::get('/debtor', function () {
+            return view('debtor');
+        })->name('debtor');
+
         Route::post('/save-user-fields', [B24UserFieldController::class, 'store'])->name('save.user.fields');
         Route::post('/save-doc-fields', [B24DocFieldController::class, 'store'])->name('save.doc.fields');
     });
