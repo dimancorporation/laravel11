@@ -5,7 +5,7 @@ namespace App\Services;
 class ProgressBarService
 {
     protected array $progressStyles = [
-        500 => ['width' => '0', 'animation' => 'progressAnimationStrike0 6s'],
+        1 => ['width' => '0%', 'animation' => 'progressAnimationStrike0 6s'],
         2 => ['width' => '16%', 'animation' => 'progressAnimationStrike10 6s'],
         3 => ['width' => '32%', 'animation' => 'progressAnimationStrike23 6s'],
         4 => ['width' => '48%', 'animation' => 'progressAnimationStrike23 6s'],

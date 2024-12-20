@@ -83,10 +83,13 @@
                     Процесс выполнения
                 </div>
                 <div class="min-[300px]:mx-6">
-                    <div class="max-w-3xl mx-auto my-4 h-12 bg-gray-200 rounded-full dark:bg-gray-700">
-                        <div class="flex justify-center items-center h-12 bg-blue-600 font-medium text-blue-100 text-center p-0.5 leading-none rounded-full text-lg"
-                             style="width: {{ $progressBarData->width }};
-                             animation: {{ $progressBarData->animation }};
+                    <div class="max-w-3xl mx-auto my-4 h-12 bg-gray-200 rounded-full dark:bg-gray-700 relative">
+                        <div class="flex justify-center items-center h-12 font-medium  text-center p-0.5 leading-none rounded-full text-lg
+                        @if($progressBarData->width !== '0%') bg-blue-600 text-blue-100 @else w-full text-black @endif"
+                             @if($progressBarData->width !== '0%')
+                                 style="width: {{ $progressBarData->width }};
+                                 animation: {{ $progressBarData->animation }};
+                             @endif
                              ">
                             {{ $progressBarData->width }}
                         </div>
