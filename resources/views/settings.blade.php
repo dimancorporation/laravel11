@@ -10,6 +10,43 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="min-[300px]:px-0 min-[500px]:p-6 text-gray-900">
                     Форма с настройками полей битрикс24 и сайта
+                    @if(session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="alert alert-success">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    <form method="post" action="{{ route('upload.offer.agreement') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
+                        @csrf
+
+                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Договор оферты</label>
+                        <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                               id="file_input"
+                               name="file"
+                               value="offer-agreement.pdf"
+                               type="file"
+                               accept="application/pdf">
+                        <div class="flex justify-end">
+                            <x-primary-button-green class="mr-3">
+                                {{ __('Сохранить') }}
+                            </x-primary-button-green>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="min-[300px]:px-0 min-[500px]:p-6 text-gray-900">
+                    Форма с настройками полей битрикс24 и сайта
 {{--                    @if(session('success'))--}}
 {{--                        <div class="alert alert-success">--}}
 {{--                            {{ session('success') }}--}}

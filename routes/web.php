@@ -5,10 +5,12 @@ use App\Http\Controllers\B24UserFieldController;
 use App\Http\Controllers\BitrixController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentsController;
+use App\Http\Controllers\OfferAgreement;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Middleware\FirstAuthMiddleware;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
     return view('welcome');
@@ -42,6 +44,7 @@ Route::middleware(['auth', 'verified', 'first.auth'])
 
         Route::post('/save-user-fields', [B24UserFieldController::class, 'store'])->name('save.user.fields');
         Route::post('/save-doc-fields', [B24DocFieldController::class, 'store'])->name('save.doc.fields');
+        Route::post('/upload-offer-agreement', [OfferAgreement::class, 'store'])->name('upload.offer.agreement');
     });
 
 Route::middleware(['auth', FirstAuthMiddleware::class])->group(function () {
