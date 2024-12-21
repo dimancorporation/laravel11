@@ -7,14 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class FirstAuthMiddleware
+class NotFirstAuthMiddleware
 {
     /**
      * Handle an incoming request.
      *
-     * @param Request $request
-     * @param Closure(Request): (Response) $next
-     * @return Response
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -24,7 +22,7 @@ class FirstAuthMiddleware
             return redirect()->route('login');
         }
 
-        if ($user->is_first_auth) {
+        if (!$user->is_first_auth) {
             return redirect()->route('password.setup');
         }
 

@@ -14,7 +14,7 @@ class PasswordSetupRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->isBitrixRegistered;
+        return auth()->user()->is_first_auth;
     }
 
     /**

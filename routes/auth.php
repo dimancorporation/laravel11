@@ -37,9 +37,9 @@ Route::middleware('guest')->group(function () {
         ->name('password.store');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'not.first.auth'])->group(function () {
     Route::get('password/setup', [PasswordSetupController::class, 'show'])->name('password.setup');
-    Route::put('password/setup', [PasswordSetupController::class, 'update'])->name('password.setup.update');
+    Route::post('password/setup', [PasswordSetupController::class, 'update'])->name('password.setup.update');
 });
 
 Route::middleware('auth')->group(function () {

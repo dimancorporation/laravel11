@@ -18,7 +18,7 @@ Route::get('/', function () {
 
 Route::get('/test', [BitrixController::class, 'getUserList'])->name('bitrix');
 
-Route::middleware(['auth', 'verified', 'first.auth'])
+Route::middleware(['auth', 'verified', 'first.auth', 'web'])
     ->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -47,7 +47,7 @@ Route::middleware(['auth', 'verified', 'first.auth'])
         Route::post('/upload-offer-agreement', [OfferAgreement::class, 'store'])->name('upload.offer.agreement');
     });
 
-Route::middleware(['auth', FirstAuthMiddleware::class])->group(function () {
+Route::middleware(['auth', 'first.auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

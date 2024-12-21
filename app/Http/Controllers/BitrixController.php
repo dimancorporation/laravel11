@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Bitrix24\SDK\Core\Exceptions\BaseException;
+use Bitrix24\SDK\Core\Exceptions\TransportException;
 use Bitrix24\SDK\Services\ServiceBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -65,8 +67,14 @@ class BitrixController extends Controller
         //"isManualOpportunity" => "Y"
         dump($response);
 
-        $response = $this->serviceBuilder->getCRMScope();
+        $response = $this->serviceBuilder->getCRMScope()
+            ->deal()
+            ->get(3);
 
-        return response()->json($response->company());
+        $deal = $response->deal();
+
+        dump($deal->ID);
+
+        return response()->json($deal->getIterator());
     }
 }

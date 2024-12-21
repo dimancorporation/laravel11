@@ -60,8 +60,23 @@ class User extends Authenticatable
         return $this->belongsTo(B24Status::class, 'b24_status', 'id');
     }
 
-    public function getIsBitrixRegisteredAttribute(): bool
+    public function getRoleAttribute($value): string
     {
-        return !$this->attributes['is_registered_myself'];
+        return ucfirst($value);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'Admin';
+    }
+
+    public function isUser(): bool
+    {
+        return $this->role === 'User';
+    }
+
+    public function isBlocked(): bool
+    {
+        return $this->role === 'Blocked';
     }
 }

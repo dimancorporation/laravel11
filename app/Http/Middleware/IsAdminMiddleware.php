@@ -7,14 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class FirstAuthMiddleware
+class IsAdminMiddleware
 {
     /**
      * Handle an incoming request.
      *
-     * @param Request $request
-     * @param Closure(Request): (Response) $next
-     * @return Response
+     * @param  \Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -24,8 +22,16 @@ class FirstAuthMiddleware
             return redirect()->route('login');
         }
 
-        if ($user->is_first_auth) {
-            return redirect()->route('password.setup');
+        if ($user->isAdmin()) {
+            return redirect()->route('settings');
+        }
+
+        if ($user->isUser()) {
+            return redirect()->route('dashboard');
+        }
+
+        if ($user->isBlocked()) {
+            return abort(403, 'Your account is blocked.');
         }
 
         return $next($request);

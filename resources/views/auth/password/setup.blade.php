@@ -3,9 +3,18 @@
         {{ __('После первой авторизации вы должны сменить пароль. Укажите свой email и на него будет отправлена информация о новом пароле.') }}
     </div>
 
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('password.setup.update') }}">
         @csrf
-        @method('PUT')
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
@@ -17,14 +26,14 @@
 
         <!-- Old Password -->
         <div class="mt-4">
-            <x-input-label for="old_password" :value="__('Старый пароль')" />
+            <x-input-label for="current_password" :value="__('Старый пароль')" />
 
-            <x-text-input id="old_password" class="block mt-1 w-full"
+            <x-text-input id="current_password" class="block mt-1 w-full"
                           type="password"
-                          name="old_password" required autocomplete="old-password" />
+                          name="current_password" required autocomplete="old-password" />
 
             @error('email')
-                <x-input-error :messages="$errors->get('old_password')" class="mt-2" />
+                <x-input-error :messages="$errors->get('current_password')" class="mt-2" />
             @enderror
         </div>
 
