@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-
+// контроллер для обработки исходящего вебхука по счетам
 class WebhookController2 extends Controller
 {
     protected ServiceBuilder $serviceBuilder;

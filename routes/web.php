@@ -34,7 +34,6 @@ Route::middleware(['auth', 'roles'])->group(function () {
 Route::middleware(['auth', 'verified', 'first.auth', 'web', 'roles'])
     ->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('check.role.redirect');
-//        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('check.role.redirect');
 
         Route::get('/status-descriptions', function () {
             return view('status-descriptions');

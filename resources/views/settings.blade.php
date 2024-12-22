@@ -9,17 +9,6 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="min-[300px]:px-0 min-[500px]:p-6 text-gray-900">
-                    Форма с настройками полей битрикс24 и сайта
-                    @if(session('success'))
-                        <div class="alert alert-success">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-                    @if(session('error'))
-                        <div class="alert alert-success">
-                            {{ session('error') }}
-                        </div>
-                    @endif
                     <form method="post" action="{{ route('upload.offer.agreement') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
                         @csrf
 
@@ -46,12 +35,6 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="min-[300px]:px-0 min-[500px]:p-6 text-gray-900">
-                    Форма с настройками полей битрикс24 и сайта
-{{--                    @if(session('success'))--}}
-{{--                        <div class="alert alert-success">--}}
-{{--                            {{ session('success') }}--}}
-{{--                        </div>--}}
-{{--                    @endif--}}
                     <form method="post" action="{{ route('save.user.fields') }}" class="mt-6 space-y-6">
                         @csrf
 

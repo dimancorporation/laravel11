@@ -90,7 +90,7 @@
                         @if($progressBarData->width !== '0%') bg-blue-600 text-blue-100 @else w-full text-black @endif"
                              @if($progressBarData->width !== '0%')
                                  style="width: {{ $progressBarData->width }};
-                                 animation: {{ $progressBarData->animation }}; animation-duration: 6s;"
+                                 animation: {{ $progressBarData->animation }};"
                              @endif
                              >
                             {{ $progressBarData->width }}

@@ -12,8 +12,6 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-{{--                    {{Auth::user()->b24Status->name}}--}}
-{{--                    {{Auth::user()->role}}--}}
                     @if(Auth::user()->role === 'User' && Auth::user()->b24Status->name !== 'Должник')
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             Моё дело
