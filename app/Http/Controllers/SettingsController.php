@@ -12,6 +12,7 @@ class SettingsController extends Controller
     {
         $b24UserFields = B24UserField::all()->sortBy('id');
         $b24DocFields = B24DocField::all()->sortBy('id');
+
         return view('settings', compact('b24UserFields', 'b24DocFields'));
     }
 }

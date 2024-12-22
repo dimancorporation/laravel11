@@ -24,7 +24,7 @@ class FirstAuthMiddleware
             return redirect()->route('login');
         }
 
-        if ($user->is_first_auth) {
+        if ($user->is_first_auth && !$request->routeIs('password.setup')) {
             return redirect()->route('password.setup');
         }
 

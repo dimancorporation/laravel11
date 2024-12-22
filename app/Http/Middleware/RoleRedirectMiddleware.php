@@ -7,12 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class IsAdminMiddleware
+class RoleRedirectMiddleware
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(Request): (Response)  $next
+     * @param Closure(Request): (Response) $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -22,16 +22,16 @@ class IsAdminMiddleware
             return redirect()->route('login');
         }
 
-        if ($user->isAdmin()) {
+        if ($user->isAdmin() && !$request->routeIs('settings')) {
             return redirect()->route('settings');
         }
 
-        if ($user->isUser()) {
-            return redirect()->route('dashboard');
+        if ($user->isDebtor() && !$request->routeIs('debtor')) {
+            return redirect()->route('debtor');
         }
 
-        if ($user->isBlocked()) {
-            return abort(403, 'Your account is blocked.');
+        if ($user->isUser() && !$request->routeIs('dashboard')) {
+            return redirect()->route('dashboard');
         }
 
         return $next($request);

@@ -12,7 +12,7 @@ class NotFirstAuthMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param Closure(Request): (Response) $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -22,8 +22,8 @@ class NotFirstAuthMiddleware
             return redirect()->route('login');
         }
 
-        if (!$user->is_first_auth) {
-            return redirect()->route('password.setup');
+        if (!$user->is_first_auth && !$request->routeIs('dashboard')) {
+            return redirect()->route('dashboard');
         }
 
         return $next($request);
