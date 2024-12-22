@@ -43,7 +43,7 @@ class ProgressStatusService
             $alt = array_shift($task);
             $filename = array_shift($task);
             $thresholds = $task;
-            if ($key < $thresholds[0] || $key == 500) {
+            if ($key < $thresholds[0] || $key == 0) {
                 $imagePaths[] = "images/progress-statuses/not_completed/$filename.png";
             } elseif (($thresholds[1] ?? $thresholds[0]) >= $key) {
                 $imagePaths[] = "images/progress-statuses/in_progress/$filename.png";

@@ -12,4 +12,13 @@ class B24UserField extends Model
         'b24_field',
         'uf_crm_code',
     ];
+    /**
+     * Получение значения uf_crm_code
+     *
+     * @return string|null
+     */
+    public static function getUfCrmCode($field)
+    {
+        return self::where('site_field', $field)->value('uf_crm_code');
+    }
 }

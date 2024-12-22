@@ -20,7 +20,8 @@ Route::get('/test', [BitrixController::class, 'getUserList'])->name('bitrix');
 
 Route::middleware(['auth', 'verified', 'first.auth', 'web'])
     ->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('check.role.redirect');
+//        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('check.role.redirect');
 
         Route::get('/status-descriptions', function () {
             return view('status-descriptions');

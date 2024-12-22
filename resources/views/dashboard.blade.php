@@ -60,13 +60,15 @@
                                     Остаток по договору:
                                 </div>
                                 <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-red-500 rounded-lg">
-                                    @if (Auth::user()->sum_contract > Auth::user()->already_paid)
+
+                                    @if(Auth::user()->sum_contract !== 0 && Auth::user()->sum_contract === Auth::user()->already_paid)
+                                        Оплачено полностью!
+                                    @else
                                         <a href="{{ route('payment') }}" class="hover:text-blue-800 hover:underline">
                                             {{ number_format(Auth::user()->sum_contract - Auth::user()->already_paid, 0, ',', ' ') }} руб
                                         </a>
-                                    @else
-                                        Оплачено полностью!
                                     @endif
+
                                 </div>
                             </div>
                         </div>
@@ -88,9 +90,9 @@
                         @if($progressBarData->width !== '0%') bg-blue-600 text-blue-100 @else w-full text-black @endif"
                              @if($progressBarData->width !== '0%')
                                  style="width: {{ $progressBarData->width }};
-                                 animation: {{ $progressBarData->animation }};
+                                 animation: {{ $progressBarData->animation }}; animation-duration: 6s;"
                              @endif
-                             ">
+                             >
                             {{ $progressBarData->width }}
                         </div>
                     </div>

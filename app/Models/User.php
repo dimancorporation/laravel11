@@ -18,9 +18,12 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'id',
+        'id_b24',
         'name',
         'email',
         'password',
+        'role',
         'is_first_auth',
         'is_registered_myself',
         'b24_status',
@@ -67,16 +70,20 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 'Admin';
+        return $this->role === 'admin';
     }
 
     public function isUser(): bool
     {
-        return $this->role === 'User';
+        return $this->role === 'user';
     }
 
     public function isBlocked(): bool
     {
-        return $this->role === 'Blocked';
+        return $this->role === 'blocked';
+    }
+    public function getIdB24(): bool
+    {
+        return $this->id_b24;
     }
 }

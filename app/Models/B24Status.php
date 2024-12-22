@@ -9,7 +9,7 @@ class B24Status extends Model
 {
     protected $table = 'b24_statuses';
 
-    protected $fillable = ['name'];
+    protected $fillable = ['id', 'name', 'b24_status_id'];
 
     public function user(): HasMany
     {
