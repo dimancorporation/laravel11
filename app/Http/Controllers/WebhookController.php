@@ -33,7 +33,15 @@ class WebhookController extends Controller
          */
 //        return response()->json(['status' => 'success'], 200);
 
-
+        $event = $data['event'];                                // "event":"ONCRMDEALUPDATE"
+        $domain = $data['auth']['domain'];                      // "domain":"b24-aiahsd.bitrix24.ru"
+        $applicationToken = $data['auth']['application_token']; // "application_token":"wquq6wp27009fcunwc0392fue9czyfii"
+        if ($event !== 'ONCRMDEALUPDATE' || $domain !== 'b24-aiahsd.bitrix24.ru' || $applicationToken !== 'wquq6wp27009fcunwc0392fue9czyfii') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Bad Request'
+            ], 400);
+        }
 
 
 //        $json = json_encode($data);
@@ -41,9 +49,7 @@ class WebhookController extends Controller
 //        $data = json_decode($json, true);
 
 
-        $event = $data['event'];                                // "event":"ONCRMDEALUPDATE"
-        $domain = $data['auth']['domain'];                      // "domain":"b24-aiahsd.bitrix24.ru"
-        $applicationToken = $data['auth']['application_token']; // "application_token":"wquq6wp27009fcunwc0392fue9czyfii"
+
 
         $dealId = $data['data']['FIELDS']['ID']; // 11
         $dealData = iterator_to_array($this->serviceBuilder->getCRMScope()->deal()->get($dealId)->deal()->getIterator());
