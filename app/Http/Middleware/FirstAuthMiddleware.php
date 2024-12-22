@@ -28,10 +28,6 @@ class FirstAuthMiddleware
             return redirect()->route('password.setup');
         }
 
-//        if ($user->isAdmin()) {
-//            return redirect()->route('settings');
-//        }
-
         return $next($request);
     }
 }
