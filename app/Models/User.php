@@ -60,6 +60,12 @@ class User extends Authenticatable
         return $this->belongsTo(B24Status::class, 'b24_status', 'id');
     }
 
+    public function isDebtor(): bool
+    {
+        $b24Status = $this->b24Status;
+        return $b24Status && $b24Status->name === 'Должник';
+    }
+
     public function getRoleAttribute($value): string
     {
         return ucfirst($value);

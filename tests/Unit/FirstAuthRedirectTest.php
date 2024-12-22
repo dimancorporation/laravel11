@@ -32,6 +32,7 @@ class FirstAuthRedirectTest extends TestCase
         Auth::shouldReceive('user')->andReturn($user);
 
         $request = Mockery::mock(Request::class);
+        $request->shouldReceive('routeIs')->with('password.setup')->andReturn(false);
 
         $next = function () {
             return response('OK');

@@ -17,6 +17,7 @@ class DashboardController extends Controller
         $this->progressStatusService = $progressStatusService;
         $this->progressBarService = $progressBarService;
     }
+
     public function index(Request $request): View
     {
         $user = $request->user();

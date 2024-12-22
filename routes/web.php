@@ -18,7 +18,20 @@ Route::get('/', function () {
 
 Route::get('/test', [BitrixController::class, 'getUserList'])->name('bitrix');
 
-Route::middleware(['auth', 'verified', 'first.auth', 'web'])
+// Секция для admin
+Route::middleware(['auth', 'roles', 'web'])->group(function () {
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+});
+
+// Секция должников
+Route::middleware(['auth', 'roles'])->group(function () {
+    Route::get('/debtor', function () {
+        return view('debtor');
+    })->name('debtor');
+});
+
+// Секция для user
+Route::middleware(['auth', 'verified', 'first.auth', 'web', 'roles'])
     ->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -35,12 +48,6 @@ Route::middleware(['auth', 'verified', 'first.auth', 'web'])
         Route::get('/offer-agreement', function () {
             return view('offer-agreement');
         })->name('offer-agreement');
-
-        Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
-
-        Route::get('/debtor', function () {
-            return view('debtor');
-        })->name('debtor');
 
         Route::post('/save-user-fields', [B24UserFieldController::class, 'store'])->name('save.user.fields');
         Route::post('/save-doc-fields', [B24DocFieldController::class, 'store'])->name('save.doc.fields');

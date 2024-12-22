@@ -22,7 +22,7 @@ class NotFirstAuthMiddleware
             return redirect()->route('login');
         }
 
-        if (!$user->is_first_auth) {
+        if (!$user->is_first_auth && !$request->routeIs('dashboard')) {
             return redirect()->route('dashboard');
         }
 
