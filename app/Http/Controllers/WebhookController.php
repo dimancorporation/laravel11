@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\B24Documents;
 use App\Models\User;
 use App\Models\B24Status;
+use App\Services\IncomingWebhookDealService;
 use Bitrix24\SDK\Services\ServiceBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,9 +16,11 @@ use Illuminate\Support\Facades\Storage;
 class WebhookController extends Controller
 {
     protected ServiceBuilder $serviceBuilder;
-    public function __construct(ServiceBuilder $serviceBuilder)
+    protected IncomingWebhookDealService $incomingWebhookDealService;
+    public function __construct(ServiceBuilder $serviceBuilder, IncomingWebhookDealService $incomingWebhookDealService)
     {
         $this->serviceBuilder = $serviceBuilder;
+        $this->incomingWebhookDealService = $incomingWebhookDealService;
     }
     public function handle(Request $request): JsonResponse
     {
@@ -43,28 +46,7 @@ class WebhookController extends Controller
         $applicationToken = $data['auth']['application_token']; // "application_token":"wquq6wp27009fcunwc0392fue9czyfii"
 
         $dealId = $data['data']['FIELDS']['ID']; // 11
-        $dealData = $this->serviceBuilder->getCRMScope()->deal()->get($dealId)->deal()->getIterator();
-
-        /*
-         * получаем инфу по документам
-         */
-        $doc_passport_all_pages = isset($dealData['UF_CRM_1708509490009']);
-        $doc_scan_inn = isset($dealData['UF_CRM_1708509740365']);
-        $doc_snils = isset($dealData['UF_CRM_1708510606993']);
-        $doc_marriage_certificate = isset($dealData['UF_CRM_1708510636060']);
-        $doc_passport_spouse = isset($dealData['UF_CRM_1708510675413']);
-        $doc_snils_spouse = isset($dealData['UF_CRM_1708510724402']);
-        $doc_divorce_certificate = isset($dealData['UF_CRM_1708510771069']);
-        $doc_ndfl = isset($dealData['UF_CRM_1708510936813']);
-        $doc_childrens_birth_certificate = isset($dealData['UF_CRM_1708510989101']);
-        $doc_extract_egrn = isset($dealData['UF_CRM_1708511092399']);
-        $doc_scan_pts = isset($dealData['UF_CRM_1708511164599']);
-        $doc_sts = isset($dealData['UF_CRM_1708511175692']);
-        $doc_pts_spouse = isset($dealData['UF_CRM_1708511204032']);
-        $doc_sts_spouse = isset($dealData['UF_CRM_1708511215650']);
-        $doc_dkp = isset($dealData['UF_CRM_1708511237220']);
-        $doc_dkp_spouse = isset($dealData['UF_CRM_1708511248493']);
-        $doc_other = isset($dealData['UF_CRM_1708511269272']);
+        $dealData = iterator_to_array($this->serviceBuilder->getCRMScope()->deal()->get($dealId)->deal()->getIterator());
 
         /*
          * получаем данные по сделке
@@ -79,32 +61,10 @@ class WebhookController extends Controller
         $USER_LINK_TO_COURT = $dealData['UF_CRM_1708511472339']; //ССЫЛКА НА ДЕЛО В КАДР. АРБИТР
         $USER_LAST_AUTH_DATE = $dealData['UF_CRM_1715524078722']; //Дата последней авторизации (МСК)
 
-        $contactData = $this->serviceBuilder->getCRMScope()->contact()->get($CONTACT_ID)->contact()->getIterator();
-        $contactName = $contactData['NAME'];
-        $contactSecondName = $contactData['SECOND_NAME'];
-        $contactLastName = $contactData['LAST_NAME'];
-
-        $contactFullName = trim(
-            ($contactName ?? ' ') .
-            ($contactSecondName ?? ' ') .
-            ($contactLastName ?? '')
-        );
-//"NAME" => "новый"
-//"SECOND_NAME" => null
-//"LAST_NAME" => "иван иванович"
-
-        /*
-        "NAME" => "тестовый" - имя
-        "SECOND_NAME" => null - отчество
-        "LAST_NAME" => "тест тестович" - фамилия
-        ["PHONE"][0]["VALUE"]
-         */
-
-        $email = '';
-        if (isset($contactData["EMAIL"]) && is_array($contactData["EMAIL"]) && isset($contactData["EMAIL"][0]) && is_array($contactData["EMAIL"][0]) && isset($contactData["EMAIL"][0]["VALUE"])) {
-            $email = $contactData["EMAIL"][0]["VALUE"];
-        }
-
+        $contactData = $this->incomingWebhookDealService->getContactData($CONTACT_ID);
+        $contactFullName = $this->incomingWebhookDealService->getContactFullName($contactData);
+        $email = $this->incomingWebhookDealService->getEmail($contactData);
+        $phone = $this->incomingWebhookDealService->getPhone($contactData);
         $b24Status = B24Status::where('b24_status_id', $USER_STATUS)->first();
         Storage::put($path, ' - '.$b24Status);
 
@@ -126,26 +86,8 @@ class WebhookController extends Controller
             ]);
         } else {
             $b24documentsId = B24Documents::where('id', $user->first()->documents_id);
-            $b24documentsId->update([
-                'passport_all_pages' => $doc_passport_all_pages,
-                'scan_inn' => $doc_scan_inn,
-                'snils' => $doc_snils,
-                'marriage_certificate' => $doc_marriage_certificate,
-                'passport_spouse' => $doc_passport_spouse,
-                'snils_spouse' => $doc_snils_spouse,
-                'divorce_certificate' => $doc_divorce_certificate,
-                'ndfl' => $doc_ndfl,
-                'childrens_birth_certificate' => $doc_childrens_birth_certificate,
-                'extract_egrn' => $doc_extract_egrn,
-                'scan_pts' => $doc_scan_pts,
-                'sts' => $doc_sts,
-                'pts_spouse' => $doc_pts_spouse,
-                'sts_spouse' => $doc_sts_spouse,
-                'dkp' => $doc_dkp,
-                'dkp_spouse' => $doc_dkp_spouse,
-                'other' => $doc_other,
-            ]);
-
+            $documents = $this->incomingWebhookDealService->getDocuments($dealData);
+            $b24documentsId->update($documents);
             $user->update([
                 'name' => $contactFullName,
                 'email' => $email,

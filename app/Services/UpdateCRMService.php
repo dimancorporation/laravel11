@@ -22,17 +22,11 @@ class UpdateCRMService
 
         if ($crmFieldCode) {
             $dateTimeInMSK = Carbon::now('Europe/Moscow')->format('d.m.Y H:i:s');
-//            $userId = Auth::id();
-//            $userId = Auth::id();
             $user = Auth::user();
             $b24Id = $user->b24_id;
-//            dump($b24Id);
             $this->serviceBuilder->getCRMScope()->deal()->update($b24Id, [
                 $crmFieldCode => $dateTimeInMSK,
             ]);
         }
-//        else {
-//            throw new Exception("CRM field code not found for {$fieldName}");
-//        }
     }
 }
