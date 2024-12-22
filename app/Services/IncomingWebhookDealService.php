@@ -13,11 +13,12 @@ class IncomingWebhookDealService
         $this->serviceBuilder = $serviceBuilder;
     }
 
-    public function getDealData(array $dealData): array
+    public function getDealData(int $dealId): array
     {
+        $dealData = iterator_to_array($this->serviceBuilder->getCRMScope()->deal()->get($dealId)->deal()->getIterator());
         return [
             'contactId' => $dealData['CONTACT_ID'], //Айди контакта
-            'userCreateAccount' => $dealData['UF_CRM_1708511654449'], //Создать лк клиенту
+            'isUserCreateAccount' => isset($dealData['UF_CRM_1708511654449']), //Создать лк клиенту
             'userLogin' => $dealData['UF_CRM_1708511589360'], //Логин лк клиента
             'userPassword' => $dealData['UF_CRM_1708511607581'], //Пароль лк клиента
             'userStatus' => $dealData['UF_CRM_1709533755311'] == null ? 0 : $dealData['UF_CRM_1709533755311'], //Статус для лк клиента

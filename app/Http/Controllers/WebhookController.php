@@ -33,62 +33,41 @@ class WebhookController extends Controller
          */
 //        return response()->json(['status' => 'success'], 200);
 
+        $dealId = $data['data']['FIELDS']['ID']; // 11
+        $dealData = $this->incomingWebhookDealService->getDealData($dealId);
         $event = $data['event'];                                // "event":"ONCRMDEALUPDATE"
         $domain = $data['auth']['domain'];                      // "domain":"b24-aiahsd.bitrix24.ru"
         $applicationToken = $data['auth']['application_token']; // "application_token":"wquq6wp27009fcunwc0392fue9czyfii"
-        if ($event !== 'ONCRMDEALUPDATE' || $domain !== 'b24-aiahsd.bitrix24.ru' || $applicationToken !== 'wquq6wp27009fcunwc0392fue9czyfii') {
+        if ($event !== 'ONCRMDEALUPDATE' || $domain !== 'b24-aiahsd.bitrix24.ru' || $applicationToken !== 'wquq6wp27009fcunwc0392fue9czyfii' || !isset($dealData['isUserCreateAccount'])) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Bad Request'
             ], 400);
         }
 
-
-//        $json = json_encode($data);
-//// Декодируем JSON в ассоциативный массив
-//        $data = json_decode($json, true);
-
-
-
-
-        $dealId = $data['data']['FIELDS']['ID']; // 11
-        $dealData = iterator_to_array($this->serviceBuilder->getCRMScope()->deal()->get($dealId)->deal()->getIterator());
-
-        /*
-         * получаем данные по сделке
-         */
-        $CONTACT_ID = $dealData['CONTACT_ID']; //айди контакта
-        $USER_CREATE_ACCOUNT = $dealData['UF_CRM_1708511654449']; //СОЗДАТЬ ЛК КЛИЕНТУ
-        $USER_LOGIN = $dealData['UF_CRM_1708511589360']; //ЛОГИН ЛК КЛИЕНТА
-        $USER_PASSWORD = $dealData['UF_CRM_1708511607581']; //ПАРОЛЬ ЛК КЛИЕНТА
-        $USER_STATUS = $dealData['UF_CRM_1709533755311'] == null ? 0 : $dealData['UF_CRM_1709533755311']; //СТАТУС ДЛЯ ЛК КЛИЕНТА
-        $USER_CONTRACT_AMOUNT = $dealData['UF_CRM_1725026451112'] == '' ? 0 : $dealData['UF_CRM_1725026451112']; //СУММА ДОГОВОРА
-        $USER_MESSAGE_FROM_B24 = $dealData['UF_CRM_1708511318200']; //СООБЩЕНИЕ КЛИЕНТУ ОТ КОМПАНИИ
-        $USER_LINK_TO_COURT = $dealData['UF_CRM_1708511472339']; //ССЫЛКА НА ДЕЛО В КАДР. АРБИТР
-        $USER_LAST_AUTH_DATE = $dealData['UF_CRM_1715524078722']; //Дата последней авторизации (МСК)
-
-        $contactData = $this->incomingWebhookDealService->getContactData($CONTACT_ID);
+        $contactData = $this->incomingWebhookDealService->getContactData($dealData['contactId']);
         $contactFullName = $this->incomingWebhookDealService->getContactFullName($contactData);
         $email = $this->incomingWebhookDealService->getEmail($contactData);
         $phone = $this->incomingWebhookDealService->getPhone($contactData);
-        $b24Status = B24Status::where('b24_status_id', $USER_STATUS)->first();
+        $b24Status = B24Status::where('b24_status_id', $dealData['userStatus'])->first();
         Storage::put($path, ' - '.$b24Status);
 
+        // userMessageFromB24 - сохранить в БД "Сообщение клиенту от компании"
         $user = User::where('id_b24', $dealId);
         if (!$user->exists()) {
             $b24Documents = B24Documents::create();
             $user = User::create([
                 'name' => $contactFullName,
                 'email' => $email,
-                'phone' => $USER_LOGIN,
-                'password' => Hash::make($USER_PASSWORD),
+                'phone' => $dealData['userLogin'],
+                'password' => Hash::make($dealData['userPassword']),
                 'id_b24' => $dealId,
                 'b24_status' => $b24Status->id,
-                'sum_contract' => $USER_CONTRACT_AMOUNT,
+                'sum_contract' => $dealData['userContractAmount'],
                 'is_first_auth' => true,
                 'is_registered_myself' => false,
                 'documents_id' => $b24Documents->id,
-                'link_to_court' => $USER_LINK_TO_COURT,
+                'link_to_court' => $dealData['userLinkToCourt'],
             ]);
         } else {
             $b24documentsId = B24Documents::where('id', $user->first()->documents_id);
@@ -97,15 +76,15 @@ class WebhookController extends Controller
             $user->update([
                 'name' => $contactFullName,
                 'email' => $email,
-                'phone' => $USER_LOGIN,
-                'password' => Hash::make($USER_PASSWORD),
+                'phone' => $dealData['userLogin'],
+                'password' => Hash::make($dealData['userPassword']),
                 'b24_status' => $b24Status->id,
-                'sum_contract' => $USER_CONTRACT_AMOUNT,
-                'link_to_court' => $USER_LINK_TO_COURT,
+                'sum_contract' => $dealData['userContractAmount'],
+                'link_to_court' => $dealData['userLinkToCourt'],
             ]);
         }
 
-        Storage::put($path, ' - '.$USER_CONTRACT_AMOUNT);
+        Storage::put($path, ' - '.$dealData['userContractAmount']);
         return response()->json(['status' => 'success'], 200);
     }
 }
