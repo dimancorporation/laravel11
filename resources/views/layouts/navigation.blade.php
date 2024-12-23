@@ -12,7 +12,7 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    @if(Auth::user()->role === 'User' && Auth::user()->b24Status->name !== 'Должник')
+                    @if(Auth::user()->isUser() && Auth::user()->b24Status->name !== 'Должник')
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             Моё дело
                         </x-nav-link>
@@ -29,7 +29,7 @@
                             Оплата
                         </x-nav-link>
                     @endif
-                    @if(Auth::user()->role === 'Admin')
+                    @if(Auth::user()->isAdmin())
                         <x-nav-link :href="route('settings')" :active="request()->routeIs('settings')">
                             Настройки
                         </x-nav-link>
@@ -84,7 +84,7 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            @if(Auth::user()->role === 'User' && Auth::user()->b24Status->name !== 'Должник')
+            @if(Auth::user()->isUser() && Auth::user()->b24Status->name !== 'Должник')
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     Моё дело
                 </x-responsive-nav-link>
@@ -101,7 +101,7 @@
                     Оплата
                 </x-responsive-nav-link>
             @endif
-            @if(Auth::user()->role === 'Admin')
+            @if(Auth::user()->isAdmin())
                 <x-responsive-nav-link :href="route('settings')" :active="request()->routeIs('settings')">
                     Настройки
                 </x-responsive-nav-link>

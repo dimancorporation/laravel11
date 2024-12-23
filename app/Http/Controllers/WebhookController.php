@@ -58,6 +58,7 @@ class WebhookController extends Controller
                 'password' => Hash::make($password),
                 'id_b24' => $dealId,
                 'b24_status' => $b24Status->id,
+                'role' => $b24Status->name === 'Должник' ? 'blocked' : 'user',
                 'sum_contract' => $dealData['userContractAmount'],
                 'is_first_auth' => true,
                 'is_registered_myself' => false,
@@ -74,6 +75,7 @@ class WebhookController extends Controller
                 'phone' => $phone,
 //                'password' => Hash::make($dealData['userPassword']),
                 'b24_status' => $b24Status->id,
+                'role' => $b24Status->name === 'Должник' ? 'blocked' : 'user',
                 'sum_contract' => $dealData['userContractAmount'],
                 'link_to_court' => $dealData['userLinkToCourt'],
             ]);

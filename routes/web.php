@@ -21,6 +21,10 @@ Route::get('/test', [BitrixController::class, 'getUserList'])->name('bitrix');
 // Секция для admin
 Route::middleware(['auth', 'roles', 'web'])->group(function () {
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+
+    Route::post('/save-user-fields', [B24UserFieldController::class, 'store'])->name('save.user.fields');
+    Route::post('/save-doc-fields', [B24DocFieldController::class, 'store'])->name('save.doc.fields');
+    Route::post('/upload-offer-agreement', [OfferAgreement::class, 'store'])->name('upload.offer.agreement');
 });
 
 // Секция должников
@@ -48,10 +52,6 @@ Route::middleware(['auth', 'verified', 'first.auth', 'web', 'roles'])
         Route::get('/offer-agreement', function () {
             return view('offer-agreement');
         })->name('offer-agreement');
-
-        Route::post('/save-user-fields', [B24UserFieldController::class, 'store'])->name('save.user.fields');
-        Route::post('/save-doc-fields', [B24DocFieldController::class, 'store'])->name('save.doc.fields');
-        Route::post('/upload-offer-agreement', [OfferAgreement::class, 'store'])->name('upload.offer.agreement');
     });
 
 Route::middleware(['auth', 'first.auth'])->group(function () {

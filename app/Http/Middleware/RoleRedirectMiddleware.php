@@ -30,8 +30,12 @@ class RoleRedirectMiddleware
             return redirect()->route('debtor');
         }
 
-        if ($user->isUser() && !$request->routeIs('dashboard')) {
-            return redirect()->route('dashboard');
+        if ($user->isUser()) {
+            $allowedRoutes = ['dashboard', 'payment', 'documents', 'status-descriptions', 'offer-agreement'];
+
+            if (!in_array($request->route()->getName(), $allowedRoutes)) {
+                return redirect()->route('dashboard');
+            }
         }
 
         return $next($request);

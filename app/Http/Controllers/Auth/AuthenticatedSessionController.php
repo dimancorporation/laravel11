@@ -43,6 +43,7 @@ class AuthenticatedSessionController extends Controller
         $dateTimeInMSK = (new DateTime("now", new DateTimeZone('Europe/Moscow')))->format('d.m.Y H:i:s');
         $user = Auth::user();
         if ($user->role !== 'Admin') {
+//        if ($user->isAdmin()) {
             $b24Id = $user->id_b24;
             $lastAuthDate = DB::table('b24_user_fields')
                 ->where('site_field', 'USER_LAST_AUTH_DATE')
