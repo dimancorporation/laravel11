@@ -73,7 +73,7 @@ class WebhookController extends Controller
                 'name' => $contactFullName,
                 'email' => $email,
                 'phone' => $phone,
-//                'password' => Hash::make($dealData['userPassword']),
+                'password' => Hash::make($dealData['userPassword']),
                 'b24_status' => $b24Status->id,
                 'role' => $b24Status->name === 'Должник' ? 'blocked' : 'user',
                 'sum_contract' => $dealData['userContractAmount'],

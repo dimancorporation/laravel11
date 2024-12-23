@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\FirstAuthMiddleware;
+use App\Http\Middleware\NotFirstAuthMiddleware;
 use App\Http\Middleware\RoleRedirectMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->alias([
             'first.auth' => FirstAuthMiddleware::class,
+            'not.first.auth' => NotFirstAuthMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
