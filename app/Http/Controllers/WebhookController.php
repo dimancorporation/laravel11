@@ -31,7 +31,7 @@ class WebhookController extends Controller
 
         $dealId = $data['data']['FIELDS']['ID'];
         $dealData = $this->incomingWebhookDealService->getDealData($dealId);
-        $isRequestFromWebhook = $this->incomingWebhookDealService->isRequestFromWebhook($data);
+        $isRequestFromWebhook = $this->incomingWebhookDealService->isRequestFromWebhook($data, $dealData);
         if (!$isRequestFromWebhook) {
             return response()->json([
                 'status' => 'error',

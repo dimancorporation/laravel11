@@ -13,7 +13,7 @@ class IncomingWebhookDealService
         $this->serviceBuilder = $serviceBuilder;
     }
 
-    public function isRequestFromWebhook(array $data): bool
+    public function isRequestFromWebhook(array $data, array $dealData): bool
     {
         $event = $data['event'];
         $domain = $data['auth']['domain'];
