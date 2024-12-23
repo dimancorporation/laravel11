@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Middleware\CheckRoleRedirect;
 use App\Http\Middleware\FirstAuthMiddleware;
 use App\Http\Middleware\RoleRedirectMiddleware;
 use Illuminate\Foundation\Application;
@@ -20,7 +19,6 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->alias([
             'first.auth' => FirstAuthMiddleware::class,
-            'check.role.redirect' => CheckRoleRedirect::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

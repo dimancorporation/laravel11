@@ -76,17 +76,17 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === 'Admin';
     }
 
     public function isUser(): bool
     {
-        return $this->role === 'user';
+        return $this->role === 'User';
     }
 
     public function isBlocked(): bool
     {
-        return $this->role === 'blocked';
+        return $this->role === 'Blocked';
     }
     public function getIdB24(): bool
     {
