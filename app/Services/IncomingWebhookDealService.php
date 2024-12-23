@@ -13,6 +13,38 @@ class IncomingWebhookDealService
         $this->serviceBuilder = $serviceBuilder;
     }
 
+    public function isRequestFromWebhook(array $data): bool
+    {
+        $event = $data['event'];
+        $domain = $data['auth']['domain'];
+        $applicationToken = $data['auth']['application_token'];
+        if ($event !== 'ONCRMDEALUPDATE' || $domain !== 'b24-aiahsd.bitrix24.ru' || $applicationToken !== 'wquq6wp27009fcunwc0392fue9czyfii' || !isset($dealData['isUserCreateAccount'])) {
+            return false;
+        }
+        return true;
+    }
+
+    public function generatePassword(int $length = 8): string
+    {
+        $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $password = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $index = random_int(0, strlen($alphabet) - 1);
+            $password .= $alphabet[$index];
+        }
+
+        return $password;
+    }
+
+    public function updateAuthData(int $dealId, string $phone, string $password): void
+    {
+        $this->serviceBuilder->getCRMScope()->deal()->update($dealId, [
+            'UF_CRM_1708511589360' => $phone,
+            'UF_CRM_1708511607581' => $password,
+        ]);
+    }
+
     public function getDealData(int $dealId): array
     {
         $dealData = iterator_to_array($this->serviceBuilder->getCRMScope()->deal()->get($dealId)->deal()->getIterator());

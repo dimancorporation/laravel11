@@ -28,17 +28,11 @@ class WebhookController extends Controller
         $data = $request->all();
         Log::info('Bitrix24 deal webhook received:', $data);
         Storage::put($path, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        /* добавить проверку, что пришли данные от вебхука по "event":"ONCRMDEALUPDATE" и "application_token":"wquq6wp27009fcunwc0392fue9czyfii"
-         * {"event":"ONCRMDEALUPDATE","event_handler_id":"17","data":{"FIELDS":{"ID":"11"}},"ts":"1734841673","auth":{"domain":"b24-aiahsd.bitrix24.ru","client_endpoint":"https://b24-aiahsd.bitrix24.ru/rest/","server_endpoint":"https://oauth.bitrix.info/rest/","member_id":"ad9655a553314544102513ee3bec2b19","application_token":"wquq6wp27009fcunwc0392fue9czyfii"}}
-         */
-//        return response()->json(['status' => 'success'], 200);
 
-        $dealId = $data['data']['FIELDS']['ID']; // 11
+        $dealId = $data['data']['FIELDS']['ID'];
         $dealData = $this->incomingWebhookDealService->getDealData($dealId);
-        $event = $data['event'];                                // "event":"ONCRMDEALUPDATE"
-        $domain = $data['auth']['domain'];                      // "domain":"b24-aiahsd.bitrix24.ru"
-        $applicationToken = $data['auth']['application_token']; // "application_token":"wquq6wp27009fcunwc0392fue9czyfii"
-        if ($event !== 'ONCRMDEALUPDATE' || $domain !== 'b24-aiahsd.bitrix24.ru' || $applicationToken !== 'wquq6wp27009fcunwc0392fue9czyfii' || !isset($dealData['isUserCreateAccount'])) {
+        $isRequestFromWebhook = $this->incomingWebhookDealService->isRequestFromWebhook($data);
+        if (!$isRequestFromWebhook) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Bad Request'
@@ -50,17 +44,18 @@ class WebhookController extends Controller
         $email = $this->incomingWebhookDealService->getEmail($contactData);
         $phone = $this->incomingWebhookDealService->getPhone($contactData);
         $b24Status = B24Status::where('b24_status_id', $dealData['userStatus'])->first();
-        Storage::put($path, ' - '.$b24Status);
 
         // userMessageFromB24 - сохранить в БД "Сообщение клиенту от компании"
         $user = User::where('id_b24', $dealId);
         if (!$user->exists()) {
+            $password = $this->incomingWebhookDealService->generatePassword();
+            $this->incomingWebhookDealService->updateAuthData($dealId, $phone, $password);
             $b24Documents = B24Documents::create();
             $user = User::create([
                 'name' => $contactFullName,
                 'email' => $email,
-                'phone' => $dealData['userLogin'],
-                'password' => Hash::make($dealData['userPassword']),
+                'phone' => $phone,
+                'password' => Hash::make($password),
                 'id_b24' => $dealId,
                 'b24_status' => $b24Status->id,
                 'sum_contract' => $dealData['userContractAmount'],
@@ -76,15 +71,15 @@ class WebhookController extends Controller
             $user->update([
                 'name' => $contactFullName,
                 'email' => $email,
-                'phone' => $dealData['userLogin'],
-                'password' => Hash::make($dealData['userPassword']),
+                'phone' => $phone,
+//                'password' => Hash::make($dealData['userPassword']),
                 'b24_status' => $b24Status->id,
                 'sum_contract' => $dealData['userContractAmount'],
                 'link_to_court' => $dealData['userLinkToCourt'],
             ]);
         }
 
-        Storage::put($path, ' - '.$dealData['userContractAmount']);
+        Storage::put($path, json_encode($dealData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return response()->json(['status' => 'success'], 200);
     }
 }

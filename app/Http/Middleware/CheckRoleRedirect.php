@@ -18,6 +18,7 @@ class CheckRoleRedirect
     public function handle(Request $request, Closure $next)
     {
         if ($request->user()->role === 'Admin') {
+//        if ($request->user()->isAdmin()) {
             return redirect()->route('settings');
         }
 
