@@ -19,14 +19,20 @@
                                 {{ date_format(date_create($invoice->moved_time), 'd.m.Y') }}
                             </div>
                             <div class="px-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12">
+                                <div id="tooltip-top{{$invoice->id}}" role="tooltip"
+                                     class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                    {{ $invoice->b24_payment_type_name }}
+                                    <div class="tooltip-arrow" data-popper-arrow></div>
+                                </div>
+
                                 @if($invoice->b24_payment_type_name === 'Оплата на карту')
-                                    <img class="w-[36px] h-auto" src="{{ asset('images/icons/card.png' )}}" alt="{{ $invoice->b24_payment_type_name }}" title="{{ $invoice->b24_payment_type_name }}">
+                                    <img class="w-[36px] h-auto" src="{{ asset('images/icons/card.png' )}}" alt="{{ $invoice->b24_payment_type_name }}" title="{{ $invoice->b24_payment_type_name }}" data-tooltip-target="tooltip-top{{$invoice->id}}" data-tooltip-placement="top">
                                 @endif
                                 @if($invoice->b24_payment_type_name === 'Наличные')
-                                        <img class="w-[36px] h-auto" src="{{ asset('images/icons/cash.png' )}}" alt="{{ $invoice->b24_payment_type_name }}" title="{{ $invoice->b24_payment_type_name }}">
+                                        <img class="w-[36px] h-auto" src="{{ asset('images/icons/cash.png' )}}" alt="{{ $invoice->b24_payment_type_name }}" title="{{ $invoice->b24_payment_type_name }}" data-tooltip-target="tooltip-top{{$invoice->id}}" data-tooltip-placement="top">
                                 @endif
                                 @if($invoice->b24_payment_type_name === 'На расчетный счет компании')
-                                        <img class="w-[36px] h-auto" src="{{ asset('images/icons/bank.png' )}}" alt="{{ $invoice->b24_payment_type_name }}" title="{{ $invoice->b24_payment_type_name }}">
+                                        <img class="w-[36px] h-auto" src="{{ asset('images/icons/bank.png' )}}" alt="{{ $invoice->b24_payment_type_name }}" title="{{ $invoice->b24_payment_type_name }}" data-tooltip-target="tooltip-top{{$invoice->id}}" data-tooltip-placement="top">
                                 @endif
                             </div>
                             <div class="pl-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12">
