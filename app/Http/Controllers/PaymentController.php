@@ -12,7 +12,9 @@ class PaymentController extends Controller
     public function index(Request $request): View
     {
         $user = $request->user();
-        $invoices = Invoice::where('contact_id', $user->contact_id)->get();
+        $invoices = Invoice::where('contact_id', $user->contact_id)
+                           ->where('stage_id', 'DT31_3:P')
+                           ->get();
         return view('payment', compact('invoices'));
     }
 }
