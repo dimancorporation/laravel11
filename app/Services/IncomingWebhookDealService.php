@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\B24DocField;
 use Bitrix24\SDK\Services\ServiceBuilder;
 
 class IncomingWebhookDealService
@@ -60,28 +61,15 @@ class IncomingWebhookDealService
             'userLastAuthDate' => $dealData['UF_CRM_1715524078722'], //Дата последней авторизации (МСК)
         ];
     }
-
     public function getDocuments(array $dealData): array
     {
-        return [
-            'passport_all_pages' => isset($dealData['UF_CRM_1708509490009']),
-            'scan_inn' => isset($dealData['UF_CRM_1708509740365']),
-            'snils' => isset($dealData['UF_CRM_1708510606993']),
-            'marriage_certificate' => isset($dealData['UF_CRM_1708510636060']),
-            'passport_spouse' => isset($dealData['UF_CRM_1708510675413']),
-            'snils_spouse' => isset($dealData['UF_CRM_1708510724402']),
-            'divorce_certificate' => isset($dealData['UF_CRM_1708510771069']),
-            'ndfl' => isset($dealData['UF_CRM_1708510936813']),
-            'childrens_birth_certificate' => isset($dealData['UF_CRM_1708510989101']),
-            'extract_egrn' => isset($dealData['UF_CRM_1708511092399']),
-            'scan_pts' => isset($dealData['UF_CRM_1708511164599']),
-            'sts' => isset($dealData['UF_CRM_1708511175692']),
-            'pts_spouse' => isset($dealData['UF_CRM_1708511204032']),
-            'sts_spouse' => isset($dealData['UF_CRM_1708511215650']),
-            'dkp' => isset($dealData['UF_CRM_1708511237220']),
-            'dkp_spouse' => isset($dealData['UF_CRM_1708511248493']),
-            'other' => isset($dealData['UF_CRM_1708511269272']),
-        ];
+        $docFields = B24DocField::all();
+        $documents = [];
+        foreach ($docFields as $field) {
+            $documents[$field->site_field] = isset($dealData[$field->uf_crm_code]);
+        }
+
+        return $documents;
     }
 
     public function getContactData(int $contactId): array
