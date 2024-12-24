@@ -25,12 +25,14 @@ class IncomingWebhookInvoiceService
         $event = $data['event'];
         $domain = $data['auth']['domain'];
         $applicationToken = $data['auth']['application_token'];
+        /* действия со счетами, которые перехватываем */
         $allowedEvents = ['ONCRMDYNAMICITEMADD', 'ONCRMDYNAMICITEMUPDATE', 'ONCRMDYNAMICITEMDELETE'];
-
+        /* обрабатываем только ENTITY_TYPE_ID = 31, тк это сущность "Счета" */
+        $entityTypeId = $data['data']['FIELDS']['ENTITY_TYPE_ID'];
         $path = 'logs/log.txt';
         Log::info('Bitrix24 webhook received isRequestFromWebhook:', $data);
 
-        if (!in_array($event, $allowedEvents) || $domain !== 'b24-aiahsd.bitrix24.ru' || $applicationToken !== '1m97q300edf7peg2jdtyc0uhaj7jfv4e') {
+        if (!in_array($event, $allowedEvents) || $domain !== 'b24-aiahsd.bitrix24.ru' || $applicationToken !== '1m97q300edf7peg2jdtyc0uhaj7jfv4e' || $entityTypeId !== 31) {
             Storage::put($path, 'false');
             return false;
         }
