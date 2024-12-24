@@ -17,6 +17,21 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            // Статус сделки в битрикс24
+            $table->smallInteger('b24_status')->nullable()->default(1);
+            // Ссылка на дело в арбитражном суде
+            $table->string('link_to_court')->nullable();
+            // Сумма договора
+            $table->decimal('sum_contract', 9, 0)->nullable();
+            // Поле "Оплачено на текущий момент"
+            $table->unsignedBigInteger('already_paid')->default(0);
+            $table->string('phone')->nullable();
+            $table->enum('role', ['admin', 'user', 'blocked'])->default('user');
+            $table->unsignedBigInteger('id_b24')->nullable();
+            // Первая авторизация пользователя в личный кабинет
+            $table->boolean('is_first_auth')->default(true);
+            // Самостоятельная регистрация пользователя через форму регистрации
+            $table->boolean('is_registered_myself')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });

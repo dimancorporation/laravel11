@@ -49,6 +49,8 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
+        // todo send b24 to update last auth datetime
+
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));

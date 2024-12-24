@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('documents', function (Blueprint $table) {
+        Schema::create('b24_documents', function (Blueprint $table) {
             $table->id();
             $table->boolean('passport_all_pages')->default(false);
             $table->boolean('pts')->default(false);
@@ -29,6 +29,8 @@ return new class extends Migration
             $table->boolean('sts_spouse')->default(false);
             $table->boolean('dkp')->default(false);
             $table->boolean('dkp_spouse')->default(false);
+            $table->boolean('other')->default(false);
+            $table->boolean('passport_spouse')->default(false);
             $table->timestamps();
         });
     }

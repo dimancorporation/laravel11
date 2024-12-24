@@ -12,10 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('b24_statuses', function (Blueprint $table) {
+        Schema::create('b24_user_fields', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->unsignedBigInteger('b24_status_id')->nullable()->after('name');
+            $table->string('site_field')->unique();
+            $table->string('b24_field')->unique();
+            $table->string('uf_crm_code')->unique();
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('b24_statuses');
+        Schema::dropIfExists('b24_user_fields');
     }
 };

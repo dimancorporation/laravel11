@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('b24_statuses', function (Blueprint $table) {
-            $table->unsignedBigInteger('b24StatusId')->nullable()->after('name');
+        Schema::table('users', function (Blueprint $table) {
+            $table->unsignedBigInteger('documents_id')->nullable();
+            $table->foreign('documents_id')->references('id')->on('b24_documents');
         });
     }
 
@@ -21,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('b24_statuses', function (Blueprint $table) {
-            $table->dropColumn('b24StatusId');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('document_id');
         });
     }
 };

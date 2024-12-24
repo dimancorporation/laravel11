@@ -39,7 +39,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-
         $dateTimeInMSK = (new DateTime("now", new DateTimeZone('Europe/Moscow')))->format('d.m.Y H:i:s');
         $user = Auth::user();
         if ($user->role !== 'Admin') {
