@@ -46,7 +46,7 @@ class AuthenticatedSessionController extends Controller
 //        if ($user->isAdmin()) {
             $b24Id = $user->id_b24;
             $lastAuthDate = DB::table('b24_user_fields')
-                ->where('site_field', 'USER_LAST_AUTH_DATE')
+                ->where('site_field', 'userLastAuthDate')
                 ->value('uf_crm_code');
             $this->serviceBuilder->getCRMScope()->deal()->update($b24Id, [
                 $lastAuthDate => $dateTimeInMSK,
