@@ -6,6 +6,7 @@ use App\Http\Controllers\BitrixController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\OfferAgreement;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Middleware\FirstAuthMiddleware;
@@ -45,9 +46,7 @@ Route::middleware(['auth', 'verified', 'first.auth', 'web', 'roles'])
 
         Route::get('/documents', [DocumentsController::class, 'index'])->name('documents');
 
-        Route::get('/payment', function () {
-            return view('payment');
-        })->name('payment');
+        Route::get('/payment', [PaymentController::class, 'index'])->name('payment');
 
         Route::get('/offer-agreement', function () {
             return view('offer-agreement');

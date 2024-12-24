@@ -28,6 +28,7 @@ class User extends Authenticatable
         'is_registered_myself',
         'b24_status',
         'documents_id',
+        'contact_id',
     ];
 
     /**

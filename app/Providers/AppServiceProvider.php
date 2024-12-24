@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Services\IncomingWebhookDealService;
+use App\Services\IncomingWebhookInvoiceService;
 use App\Services\ProgressBarService;
 use App\Services\ProgressStatusService;
 use App\Services\UpdateCRMService;
@@ -17,6 +18,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(IncomingWebhookDealService::class);
+        $this->app->singleton(IncomingWebhookInvoiceService::class);
         $this->app->singleton(ProgressStatusService::class);
         $this->app->singleton(ProgressBarService::class);
         $this->app->singleton(ServiceBuilder::class);

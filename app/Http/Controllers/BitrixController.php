@@ -107,6 +107,47 @@ class BitrixController extends Controller
          * )->getItems();
          */
 
+        /** получение списка счетов по айди контакта, вместо списка полей можно использовать ['*']
+         * https://dev.1c-bitrix.ru/api_d7/bitrix/crm/crm_owner_type/identifiers.php
+         * для счетов entityTypeId = 31
+         */
+
+        /** создание счета по айди контакта
+         * $response = $this->serviceBuilder->getCRMScope()->item()->add(31, [
+         * 'title' => 'New Payment 3',
+         * 'contactId' => 23,
+         * 'currencyId' => 'RUB',
+         * 'opportunity' => 30303,
+         * "opened" => "N",
+         * "stageId" => "DT31_3:N",
+         * 'ufCrm_SMART_INVOICE_1712111561782' => 271,
+         * "parentId2" => 23,
+         * ]);
+         * dump($response);
+         */
+
+//        $response = $this->serviceBuilder->getCRMScope()->item()->add(31, [
+//            'title' => 'New Payment 33',
+//            'contactId' => 23,
+//            'currencyId' => 'RUB',
+//            'opportunity' => 40404,
+//            "opened" => "N",
+//            "stageId" => "DT31_3:N",
+//            'ufCrm_SMART_INVOICE_1712111561782' => 271,
+//            "parentId2" => 23,
+//        ]);
+//        dump($response);
+
+//        https://dev.1c-bitrix.ru/api_d7/bitrix/crm/crm_owner_type/identifiers.php
+//        для счетов entityTypeId = 31
+         $response = $this->serviceBuilder->getCRMScope()->item()->list(
+             31,
+             [],
+             ['contactId' => 23],
+             ['*']
+         )->getItems();
+        dump($response);
+
         $response = $this->serviceBuilder->getCRMScope()
             ->deal()
             ->get(3);

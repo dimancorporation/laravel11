@@ -64,6 +64,7 @@ class WebhookController extends Controller
                 'is_registered_myself' => false,
                 'documents_id' => $b24Documents->id,
                 'link_to_court' => $dealData['userLinkToCourt'],
+                'contact_id' => $dealData['contactId'],
             ]);
         } else {
             $b24documentsId = B24Documents::where('id', $user->first()->documents_id);
