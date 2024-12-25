@@ -16,6 +16,10 @@ class B24StatusesSeeder extends Seeder
     {
         $data = [
             [
+                'name' => 'Не активно',
+                "created_at" => Carbon::now(),
+            ],
+            [
                 'name' => 'Знакомство',
                 "created_at" => Carbon::now(),
             ],
