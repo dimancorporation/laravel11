@@ -129,6 +129,7 @@
                         </div>
                     @endforeach
 
+                    @if (!$invoices)
                     <div
                         class="flex flex-row justify-between items-center odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 font-semibold">
                         <div class="px-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12"></div>
@@ -139,9 +140,10 @@
                             {{ number_format($totalSum, 0, ',', ' ') }} руб
                         </div>
                     </div>
+                    @endif
 
                     <div
-                        class="flex flex-row justify-between items-center odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 font-semibold">
+                        class="flex flex-row justify-between items-center odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 dark:border-gray-700 font-semibold">
                         <div
                             class="px-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-full flex justify-center">
                             <!-- Modal toggle -->
