@@ -18,6 +18,7 @@ class ProgressBarService
         10 => ['width' => '100%', 'animation' => 'progressAnimationStrike100 6s'],
         11 => ['width' => '100%', 'animation' => 'progressAnimationStrike100 6s'],
         12 => ['width' => '100%', 'animation' => 'progressAnimationStrike100 6s'],
+        13 => ['width' => '100%', 'animation' => 'progressAnimationStrike100 6s'],
     ];
 
     public function getProgressBar(int $key): object
