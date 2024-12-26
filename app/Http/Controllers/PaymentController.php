@@ -15,6 +15,6 @@ class PaymentController extends Controller
         $invoices = Invoice::where('contact_id', $user->contact_id)
                            ->where('stage_id', 'DT31_3:P')
                            ->get();
-        return view('payment', compact('invoices'));
+        return view('payment', compact('invoices', 'user'));
     }
 }

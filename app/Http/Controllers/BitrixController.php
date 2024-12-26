@@ -143,7 +143,7 @@ class BitrixController extends Controller
          $response = $this->serviceBuilder->getCRMScope()->item()->list(
              31,
              [],
-             ['contactId' => 23],
+             ['contactId' => 23, 'id' => 87],
              ['*']
          )->getItems();
         dump($response);

@@ -43,6 +43,8 @@
                         <div class="flex flex-col space-y-1">
                             <label for="description">Описание заказа</label>
                             <input id="description"
+                                   value="Оплата по договору"
+                                   disabled
                                    class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    type="text" placeholder="Описание заказа" name="description">
                         </div>
@@ -56,20 +58,32 @@
                         <div class="flex flex-col space-y-1">
                             <label for="name">ФИО плательщика</label>
                             <input id="name"
+                                   value="{{ $user->name }}"
+                                   disabled
                                    class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    type="text" placeholder="ФИО плательщика" name="name">
                         </div>
                         <div class="flex flex-col space-y-1">
                             <label for="email">E-mail</label>
                             <input id="email"
+                                   value="{{ $user->email }}"
+                                   disabled
                                    class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    type="email" placeholder="E-mail" name="email">
                         </div>
                         <div class="flex flex-col space-y-1">
                             <label for="phone">Контактный телефон</label>
                             <input id="phone"
+                                   value="{{ $user->phone }}"
+                                   disabled
                                    class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    type="tel" placeholder="Контактный телефон" name="phone">
+                        </div>
+                        <div class="flex flex-col space-y-1">
+                            <label for="offer_agreement" class="inline-flex items-center">
+                                <input id="offer_agreement" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="offer_agreement" checked>
+                                <span class="ms-2 text-sm text-gray-600">Согласен с договором <a class="text-blue-600 border-b border-dashed border-b-blue-500" href="{{ asset('storage/docs/offer_agreement.pdf') }}" target="_blank">публичной офферты</a></span>
+                            </label>
                         </div>
                         <div class="flex flex-col space-y-1">
                             <button
