@@ -28,32 +28,33 @@
                 </div>
                 <!-- Modal body -->
                 <div class="p-4 md:p-5 space-y-4">
-                    <form class="space-y-2 p-5" name="payform-tbank" id="payform-tbank">
+                    <form class="space-y-2 px-5 pb-5" name="payform-tbank" id="payform-tbank">
                         <!-- Скрытые поля -->
                         <input type="hidden" name="terminalkey" value="1734786275434DEMO">
                         <input type="hidden" name="frame" value="false">
                         <input type="hidden" name="language" value="ru">
                         <input type="hidden" name="receipt" value="">
-                        <div class="flex flex-col space-y-1">
-                            <label for="order">Номер заказа</label>
-                            <input id="order"
-                                   class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                   type="text" placeholder="Номер заказа" name="order">
-                        </div>
-                        <div class="flex flex-col space-y-1">
-                            <label for="description">Описание заказа</label>
-                            <input id="description"
-                                   value="Оплата по договору"
-                                   disabled
-                                   class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                   type="text" placeholder="Описание заказа" name="description">
-                        </div>
                         <!-- Видимые поля -->
                         <div class="flex flex-col space-y-1">
                             <label for="amount">Сумма заказа</label>
                             <input id="amount"
                                    class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    type="text" placeholder="Сумма заказа" name="amount" required>
+                        </div>
+                        <div class="flex flex-col space-y-1 hidden">
+                            <label for="order">Номер заказа</label>
+                            <input id="order"
+                                   disabled
+                                   class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   type="text" placeholder="Номер заказа" name="order">
+                        </div>
+                        <div class="flex flex-col space-y-1 hidden">
+                            <label for="description">Описание заказа</label>
+                            <input id="description"
+                                   value="Оплата по договору"
+                                   disabled
+                                   class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   type="text" placeholder="Описание заказа" name="description">
                         </div>
                         <div class="flex flex-col space-y-1">
                             <label for="name">ФИО плательщика</label>
@@ -81,8 +82,12 @@
                         </div>
                         <div class="flex flex-col space-y-1">
                             <label for="offer_agreement" class="inline-flex items-center">
-                                <input id="offer_agreement" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="offer_agreement" checked>
-                                <span class="ms-2 text-sm text-gray-600">Согласен с договором <a class="text-blue-600 border-b border-dashed border-b-blue-500" href="{{ asset('storage/docs/offer_agreement.pdf') }}" target="_blank">публичной офферты</a></span>
+                                <input id="offer_agreement" type="checkbox"
+                                       class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+                                       name="offer_agreement" checked>
+                                <span class="ms-2 text-sm text-gray-600">Согласен с договором <a
+                                        class="text-blue-600 border-b border-dashed border-b-blue-500"
+                                        href="{{ asset('storage/docs/offer_agreement.pdf') }}" target="_blank">публичной офферты</a></span>
                             </label>
                         </div>
                         <div class="flex flex-col space-y-1">
@@ -144,16 +149,16 @@
                     @endforeach
 
                     @if (!$invoices)
-                    <div
-                        class="flex flex-row justify-between items-center odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 font-semibold">
-                        <div class="px-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12"></div>
-                        <div class="px-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12">
-                            ИТОГО:
+                        <div
+                            class="flex flex-row justify-between items-center odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 font-semibold">
+                            <div class="px-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12"></div>
+                            <div class="px-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12">
+                                ИТОГО:
+                            </div>
+                            <div class="pl-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12">
+                                {{ number_format($totalSum, 0, ',', ' ') }} руб
+                            </div>
                         </div>
-                        <div class="pl-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12">
-                            {{ number_format($totalSum, 0, ',', ' ') }} руб
-                        </div>
-                    </div>
                     @endif
 
                     <div
@@ -187,7 +192,7 @@
 
             if (receipt) {
                 if (!email.value && !phone.value) {
-                    return alert('Поле E-mail или Phone не должно быть пустым');
+                    return alert('Поле E-mail или Телефон не должно быть пустым');
                 }
 
                 TPF.receipt.value = JSON.stringify({

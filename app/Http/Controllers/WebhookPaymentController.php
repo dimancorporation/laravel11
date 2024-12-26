@@ -12,7 +12,8 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Response;
 
-class WebhookController3 extends Controller
+// обрабатываем данные от онлайн кассы
+class WebhookPaymentController extends Controller
 {
     protected ServiceBuilder $serviceBuilder;
     protected IncomingWebhookDealService $incomingWebhookDealService;
@@ -67,7 +68,7 @@ class WebhookController3 extends Controller
 //            }
 //        }
 
-        // ПОЛЯ, КОТОРЫЕ СОХРАНЯТЬ В ТАБЛИЦУ БД
+//        ПОЛЯ, КОТОРЫЕ СОХРАНЯТЬ В ТАБЛИЦУ БД
 //        $data['OrderId'],
 //        $data['Success'],
 //        $data['Status'],
@@ -78,7 +79,6 @@ class WebhookController3 extends Controller
 //        $data['Data']['Name'],
 //        $data['Data']['Phone'],
 //        $data['Data']['order_id_unique_processed'],
-//        $data['Data']['INFO_EMAIL'],
 //        $data['Data']['user_agent'],
 
         // статусы по платежам https://www.tbank.ru/kassa/dev/payments/#tag/Scenarii-oplaty-po-karte/Poluchenie-dannyh-o-platezhe
@@ -86,15 +86,27 @@ class WebhookController3 extends Controller
             ->where('phone', '=', $data['Data']['Phone'])
             ->first();
 
+//        $paymentStatuses = [
+//            'REVERSING' => 'Мерчант запросил отмену авторизованного, но еще неподтвержденного платежа. Возврат обрабатывается MAPI и платежной системой.',
+//            'PARTIAL_REVERSED' => 'Частичный возврат по авторизованному платежу завершился успешно.',
+//            'REVERSED' => 'Полный возврат по авторизованному платежу завершился успешно.',
+//            'REFUNDING' => 'Мерчант запросил отмену подтвержденного платежа. Возврат обрабатывается MAPI и платежной системой.',
+//            'PARTIAL_REFUNDED' => 'Частичный возврат по подтвержденному платежу завершился успешно.',
+//            'REFUNDED' => 'Полный возврат по подтвержденному платежу завершился успешно.',
+//            'CANCELED' => 'Мерчант отменил платеж.',
+//            'DEADLINE_EXPIRED' => '1. Клиент не завершил платеж в срок жизни ссылки на платежную форму PaymentURL. Этот срок мерчант передает в методе Init в параметре RedirectDueDate. 2. Платеж не прошел проверку 3D-Secure в срок.',
+//            'REJECTED' => 'Банк отклонил платеж.',
+//            'AUTH_FAIL' => 'Платеж завершился ошибкой или не прошел проверку 3D-Secure.',
+//        ];
         $paymentStatuses = [
-            'REVERSING' => 'Мерчант запросил отмену авторизованного, но еще неподтвержденного платежа. Возврат обрабатывается MAPI и платежной системой.',
+            'REVERSING' => 'Мерчант запросил отмену авторизованного, но еще неподтвержденного платежа.',
             'PARTIAL_REVERSED' => 'Частичный возврат по авторизованному платежу завершился успешно.',
             'REVERSED' => 'Полный возврат по авторизованному платежу завершился успешно.',
-            'REFUNDING' => 'Мерчант запросил отмену подтвержденного платежа. Возврат обрабатывается MAPI и платежной системой.',
+            'REFUNDING' => 'Мерчант запросил отмену подтвержденного платежа.',
             'PARTIAL_REFUNDED' => 'Частичный возврат по подтвержденному платежу завершился успешно.',
             'REFUNDED' => 'Полный возврат по подтвержденному платежу завершился успешно.',
             'CANCELED' => 'Мерчант отменил платеж.',
-            'DEADLINE_EXPIRED' => '1. Клиент не завершил платеж в срок жизни ссылки на платежную форму PaymentURL. Этот срок мерчант передает в методе Init в параметре RedirectDueDate. 2. Платеж не прошел проверку 3D-Secure в срок.',
+            'DEADLINE_EXPIRED' => 'Клиент не завершил платеж в срок жизни ссылки на платежную форму PaymentURL или платеж не прошел проверку 3D-Secure в срок.',
             'REJECTED' => 'Банк отклонил платеж.',
             'AUTH_FAIL' => 'Платеж завершился ошибкой или не прошел проверку 3D-Secure.',
         ];
@@ -124,12 +136,12 @@ class WebhookController3 extends Controller
              */
         ]);
         //REVERSING, REFUNDING, CANCELED, DEADLINE_EXPIRED, REJECTED, AUTH_FAIL
-        dump($response);
+
         /*
         На это уведомление важно правильно ответить (200-й код, в теле «OK»), иначе эйквайринг будет с упрямством коллектора слать одинаковые уведомления снова и снова.
         Для подстраховки от задваивания поступлений в базе данных рекомендую разрешить только уникальные комбинации Status + PaymentId.
         Либо по полю Token.
          */
-        return response()->json(['status' => 'OK'], 200);
+        return response('OK', 200)->header('Content-Type', 'text/plain');
     }
 }

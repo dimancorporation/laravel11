@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('opportunity')->nullable();
             $table->string('is_manual_opportunity');
             $table->string('currency_id');
+            $table->integer('payment_id')->nullable();
 
             $table->index(['title']);
             $table->index(['opportunity']);
