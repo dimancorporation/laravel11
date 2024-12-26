@@ -175,30 +175,35 @@
 
     <script src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff_v2.js"></script>
     <script type="text/javascript">
-        const TPF = document.getElementById("payform-tbank");
+        const TPF = document.getElementById('payform-tbank');
 
-        TPF.addEventListener("submit", function (e) {
+        TPF.addEventListener('submit', function (e) {
             e.preventDefault();
-            const {description, amount, email, phone, receipt} = TPF;
+            const {description, amount, email, phone, receipt, offer_agreement} = TPF;
+
+            if (!offer_agreement.checked) {
+                return alert('Обязательно согласие с договором публичной оферты');
+            }
 
             if (receipt) {
-                if (!email.value && !phone.value)
-                    return alert("Поле E-mail или Phone не должно быть пустым");
+                if (!email.value && !phone.value) {
+                    return alert('Поле E-mail или Phone не должно быть пустым');
+                }
 
                 TPF.receipt.value = JSON.stringify({
-                    "EmailCompany": "mail@mail.com",
-                    "Taxation": "patent",
-                    "FfdVersion": "1.2",
-                    "Items": [
+                    'EmailCompany': 'mail@mail.com',
+                    'Taxation': 'patent',
+                    'FfdVersion': '1.2',
+                    'Items': [
                         {
-                            "Name": description.value || "Оплата",
-                            "Price": Math.round(amount.value * 100),
-                            "Quantity": 1.00,
-                            "Amount": Math.round(amount.value * 100),
-                            "PaymentMethod": "full_prepayment",
-                            "PaymentObject": "service",
-                            "Tax": "none",
-                            "MeasurementUnit": "pc"
+                            'Name': description.value || 'Оплата',
+                            'Price': Math.round(amount.value * 100),
+                            'Quantity': 1.00,
+                            'Amount': Math.round(amount.value * 100),
+                            'PaymentMethod': 'full_prepayment',
+                            'PaymentObject': 'service',
+                            'Tax': 'none',
+                            'MeasurementUnit': 'pc'
                         }
                     ]
                 });
