@@ -20,7 +20,9 @@ class IncomingWebhookDealService
         $event = $data['event'];
         $domain = $data['auth']['domain'];
         $applicationToken = $data['auth']['application_token'];
-        if ($event !== 'ONCRMDEALUPDATE' || $domain !== 'b24-aiahsd.bitrix24.ru' || $applicationToken !== 'wquq6wp27009fcunwc0392fue9czyfii' || !isset($dealData['isUserCreateAccount'])) {
+        $bitrixWebhookDomain = env('BITRIX_WEBHOOK_DOMAIN');
+        $bitrixWebhookDealToken = env('BITRIX_WEBHOOK_DEAL_TOKEN');
+        if ($event !== 'ONCRMDEALUPDATE' || $domain !== $bitrixWebhookDomain || $applicationToken !== $bitrixWebhookDealToken || !isset($dealData['isUserCreateAccount'])) {
             return false;
         }
         return true;

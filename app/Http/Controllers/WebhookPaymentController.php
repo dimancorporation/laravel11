@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use App\Models\User;
-use App\Services\IncomingWebhookDealService;
+use App\Services\IncomingWebhookInvoiceService;
 use Bitrix24\SDK\Services\ServiceBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -16,20 +17,98 @@ use Illuminate\Http\Response;
 class WebhookPaymentController extends Controller
 {
     protected ServiceBuilder $serviceBuilder;
-    protected IncomingWebhookDealService $incomingWebhookDealService;
+    protected IncomingWebhookInvoiceService $incomingWebhookInvoiceService;
 
-    public function __construct(ServiceBuilder $serviceBuilder, IncomingWebhookDealService $incomingWebhookDealService)
+    public function __construct(ServiceBuilder $serviceBuilder, IncomingWebhookInvoiceService $incomingWebhookInvoiceService)
     {
         $this->serviceBuilder = $serviceBuilder;
-        $this->incomingWebhookDealService = $incomingWebhookDealService;
+        $this->incomingWebhookInvoiceService = $incomingWebhookInvoiceService;
     }
 
     public function handle(Request $request): ResponseFactory|Application|Response
     {
+        $bitrixInvoiceEntityTypeId = env('BITRIX_INVOICE_ENTITY_TYPE_ID');
         $path = 'logs/log.txt';
         $data = $request->all();
         Log::info('Онлайн касса прислала данные о платеже:', $data);
         Storage::put($path, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        return response('OK', 200)->header('Content-Type', 'text/plain');
+
+        $payment = Payment::where('order_id', '=', $data['OrderId'])
+            ->where('payment_id', '=', $data['PaymentId'])
+            ->first();
+        if (!$payment->exists()) {
+            $user = User::where('email', '=', $data['Data']['Email'])
+                        ->where('phone', '=', $data['Data']['Phone'])
+                        ->first();
+
+            $paymentId = $data['PaymentId'];
+            $orderId = $data['OrderId'];
+
+            $paymentNew = Payment::create([
+                'b24_deal_id' => $user->id_b24,
+                'b24_contact_id' => $user->contact_id,
+                'b24_invoice_id' => null,
+                'order_id' => $orderId,
+                'success' => $data['Success'],
+                'status' => $data['Status'],
+                'payment_id' => $paymentId,
+                'amount' => $data['Amount'] / 100,
+                'card_id' => $data['CardId'],
+                'email' => $data['Data']['Email'],
+                'name' => $data['Data']['Name'],
+                'phone' => $data['Data']['Phone'],
+                'source' => $data['Source'],
+                'user_agent' => $data['Data']['user_agent'],
+            ]);
+
+            $additionalInfo = [
+                'payment_id' => $paymentNew->id,
+                'PaymentId' => $paymentId,
+                'OrderId' => $orderId
+            ];
+            $additionalFieldB24 = json_encode($additionalInfo);
+
+            $response = $this->serviceBuilder->getCRMScope()->item()->add($bitrixInvoiceEntityTypeId, [
+                'title' => 'Счёт #'.$paymentId,
+                'contactId' => $user->contact_id,
+                'currencyId' => 'RUB',
+                'opportunity' => $data['Amount'] / 100,
+                "stageId" => $data['Status'] === 'CONFIRMED' ? 'DT31_3:P' : 'DT31_3:N',
+                'ufCrm_SMART_INVOICE_1712111561782' => 271,
+                'parentId2' => $user->contact_id,
+                'UF_CRM_SMART_INVOICE_1735207439444' => $additionalFieldB24,
+            ]);
+            return response('OK', 200)->header('Content-Type', 'text/plain');
+        }
+
+        if ($payment->status !== 'CONFIRMED') {
+            $paymentStatuses = [
+                'REVERSING' => 'Мерчант запросил отмену авторизованного, но еще неподтвержденного платежа.',
+                'PARTIAL_REVERSED' => 'Частичный возврат по авторизованному платежу завершился успешно.',
+                'REVERSED' => 'Полный возврат по авторизованному платежу завершился успешно.',
+                'REFUNDING' => 'Мерчант запросил отмену подтвержденного платежа.',
+                'PARTIAL_REFUNDED' => 'Частичный возврат по подтвержденному платежу завершился успешно.',
+                'REFUNDED' => 'Полный возврат по подтвержденному платежу завершился успешно.',
+                'CANCELED' => 'Мерчант отменил платеж.',
+                'DEADLINE_EXPIRED' => 'Клиент не завершил платеж в срок жизни ссылки на платежную форму PaymentURL или платеж не прошел проверку 3D-Secure в срок.',
+                'REJECTED' => 'Банк отклонил платеж.',
+                'AUTH_FAIL' => 'Платеж завершился ошибкой или не прошел проверку 3D-Secure.',
+            ];
+            $payment->update(['status' => $data['Status']]);
+            if ($paymentStatuses[$data['Status']]) {
+                $response = $this->serviceBuilder->getCRMScope()->item()->update($bitrixInvoiceEntityTypeId, $payment->b24_invoice_id, [
+                    'comments' => $paymentStatuses[$data['Status']],
+                ]);
+                return response('OK', 200)->header('Content-Type', 'text/plain');
+            }
+            if ($data['Status'] === 'CONFIRMED') {
+                $response = $this->serviceBuilder->getCRMScope()->item()->update($bitrixInvoiceEntityTypeId, $payment->b24_invoice_id, [
+                    'stageId' => 'DT31_2:P',
+                ]);
+                return response('OK', 200)->header('Content-Type', 'text/plain');
+            }
+        }
         return response('OK', 200)->header('Content-Type', 'text/plain');
 //        return response()->json(['status' => 'success'], 200);
 
@@ -112,7 +191,7 @@ class WebhookPaymentController extends Controller
         ];
         $currentPaymentStatus = $paymentStatuses[$data['Status']] ?? '';
         // создание счета по айди контакта
-        $response = $this->serviceBuilder->getCRMScope()->item()->add(31, [
+        $response = $this->serviceBuilder->getCRMScope()->item()->add($bitrixInvoiceEntityTypeId, [
             'title' => $data['Data']['Name'],
             'contactId' => $user->contact_id, // айди контакта
             'currencyId' => 'RUB',

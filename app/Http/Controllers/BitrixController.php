@@ -126,6 +126,18 @@ class BitrixController extends Controller
          * dump($response);
          */
 
+        $bitrixInvoiceEntityTypeId = env('BITRIX_INVOICE_ENTITY_TYPE_ID');
+        //stageId -> DT31_2:P - завершенный платеж
+        //stageId -> DT31_2:N
+        /* обновление данных счета битрикс24 */
+        $invoiceIdForUpdate = 2;
+        $response = $this->serviceBuilder->getCRMScope()->item()->update($bitrixInvoiceEntityTypeId, $invoiceIdForUpdate, [
+            'stageId' => 'DT31_2:P',
+            'opportunity' => 1001,
+            'title' => 'Новый платеж огого',
+        ]);
+        dump($response);
+
 //        $response = $this->serviceBuilder->getCRMScope()->item()->add(31, [
 //            'title' => 'New Payment 33',
 //            'contactId' => 23,
@@ -138,21 +150,22 @@ class BitrixController extends Controller
 //        ]);
 //        dump($response);
 
+//        ufCrm_SMART_INVOICE_1735207439444 - доп поле для счетов
 //        https://dev.1c-bitrix.ru/api_d7/bitrix/crm/crm_owner_type/identifiers.php
 //        для счетов entityTypeId = 31
          $response = $this->serviceBuilder->getCRMScope()->item()->list(
-             31,
+             $bitrixInvoiceEntityTypeId,
              [],
-             ['contactId' => 23, 'id' => 87],
+             ['id' => 4],
              ['*']
          )->getItems();
         dump($response);
 
-        $response = $this->serviceBuilder->getCRMScope()
-            ->deal()
-            ->get(3);
-        $deal = $response->deal();
-        dump($deal->ID);
+//        $response = $this->serviceBuilder->getCRMScope()
+//            ->deal()
+//            ->get(3);
+//        $deal = $response->deal();
+//        dump($deal->ID);
         return response()->json($response);
     }
 }

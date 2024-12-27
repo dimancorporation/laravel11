@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Invoice;
+use App\Models\Payment;
 use App\Models\PaymentMethod;
 use Bitrix24\SDK\Services\ServiceBuilder;
 use Exception;
@@ -31,8 +32,10 @@ class IncomingWebhookInvoiceService
         $entityTypeId = $data['data']['FIELDS']['ENTITY_TYPE_ID'];
         $path = 'logs/log.txt';
         Log::info('Bitrix24 webhook received isRequestFromWebhook:', $data);
-
-        if (!in_array($event, $allowedEvents) || $domain !== 'b24-aiahsd.bitrix24.ru' || $applicationToken !== '1m97q300edf7peg2jdtyc0uhaj7jfv4e' || $entityTypeId !== 31) {
+        $bitrixWebhookDomain = env('BITRIX_WEBHOOK_DOMAIN');
+        $bitrixWebhookInvoiceToken = env('BITRIX_WEBHOOK_INVOICE_TOKEN');
+        $bitrixInvoiceEntityTypeId = env('BITRIX_INVOICE_ENTITY_TYPE_ID');
+        if (!in_array($event, $allowedEvents) || $domain !== $bitrixWebhookDomain || $applicationToken !== $bitrixWebhookInvoiceToken || $entityTypeId !== $bitrixInvoiceEntityTypeId) {
             Storage::put($path, 'false');
             return false;
         }
@@ -64,10 +67,10 @@ class IncomingWebhookInvoiceService
          * https://dev.1c-bitrix.ru/api_d7/bitrix/crm/crm_owner_type/identifiers.php
          * для счетов entityTypeId = 31(хардкод от самого битрикс24)
          */
-        $entityTypeId = 31;
+        $bitrixInvoiceEntityTypeId = env('BITRIX_INVOICE_ENTITY_TYPE_ID');
         /* получение списка счетов по айди контакта, вместо списка полей можно использовать ['*'] */
         $invoiceData = iterator_to_array($this->serviceBuilder->getCRMScope()->item()->list(
-            $entityTypeId,
+            $bitrixInvoiceEntityTypeId,
             [],
             $filterFields,
             $invoiceFields
@@ -87,7 +90,25 @@ class IncomingWebhookInvoiceService
         $commonFields = $this->getInvoiceCommonFields($paymentId, $invoiceData, $paymentTypeName);
         $invoice = Invoice::where('b24_invoice_id', $invoiceId);
         if (!$invoice->exists()) {
-            $result = Invoice::create(array_merge(['b24_invoice_id' => $invoiceData['id']], $commonFields));
+            //UF_CRM_SMART_INVOICE_1735207439444 -> ufCrm_SMART_INVOICE_1735207439444
+            $fields = array_merge(['b24_invoice_id' => $invoiceData['id']], $commonFields);
+            if ($invoiceData['ufCrm_SMART_INVOICE_1735207439444']) {
+                $additionalFieldB24 = json_decode($invoiceData['ufCrm_SMART_INVOICE_1735207439444']); //ufCrm_SMART_INVOICE_1735207439444
+                $payment_id = $additionalFieldB24['payment_id']; //айди из таблицы payments
+                $PaymentId = $additionalFieldB24['PaymentId']; //данные от онлайн кассы
+                $OrderId = $additionalFieldB24['OrderId']; //данные от онлайн кассы
+                $fields = array_merge(['payment_id' => $payment_id, 'comments' => 'онлайн оплата через личный кабинет'], $fields);
+
+                $invoiceNew = Invoice::create($fields);
+                $invoiceNewId = $invoiceNew->id;
+
+                $paymentRow = Payment::where('order_id', $OrderId)
+                                     ->where('payment_id', $PaymentId)
+                                     ->first();
+                $paymentRow->update(['b24_invoice_id' => $invoiceNewId]);
+            } else {
+                $result = Invoice::create($fields);
+            }
         } else {
             $result = $invoice->update($commonFields);
         }
