@@ -161,6 +161,8 @@ class BitrixController extends Controller
          )->getItems();
         dump($response);
 
+        $response = $this->serviceBuilder->getCRMScope()->deal()->get(4)->deal();
+        dump($response);
 //        $response = $this->serviceBuilder->getCRMScope()
 //            ->deal()
 //            ->get(3);

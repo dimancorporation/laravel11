@@ -31,6 +31,10 @@ class WebhookController extends Controller
 
         $dealId = $data['data']['FIELDS']['ID'];
         $dealData = $this->incomingWebhookDealService->getDealData($dealId);
+
+        Log::info('Bitrix24 deal webhook received:', $dealData);
+        Storage::put($path, json_encode($dealData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
         $isRequestFromWebhook = $this->incomingWebhookDealService->isRequestFromWebhook($data, $dealData);
         if (!$isRequestFromWebhook) {
             return response()->json([

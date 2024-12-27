@@ -65,7 +65,7 @@ class IncomingWebhookDealService
                     $result['isUserCreateAccount'] = isset($dealData[$field->uf_crm_code]);
                     break;
                 case 'userStatus':
-                    $result['userStatus'] = $dealData[$field->uf_crm_code] ?? 0;
+                    $result['userStatus'] = $dealData[$field->uf_crm_code] ?: 0;
                     break;
                 case 'userContractAmount':
                     $result['userContractAmount'] = $dealData[$field->uf_crm_code] ?: 0;
