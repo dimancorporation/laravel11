@@ -48,6 +48,7 @@ class IncomingWebhookInvoiceService
         $invoiceFields = [
             'id',
             'ufCrm_SMART_INVOICE_1712111561782', /* тип оплаты */
+            'ufCrm_SMART_INVOICE_1735207439444', /* служебное поле с json данными */
             'title',
             'opportunity',
             'isManualOpportunity',
@@ -92,7 +93,7 @@ class IncomingWebhookInvoiceService
         if (!$invoice->exists()) {
             //UF_CRM_SMART_INVOICE_1735207439444 -> ufCrm_SMART_INVOICE_1735207439444
             $fields = array_merge(['b24_invoice_id' => $invoiceData['id']], $commonFields);
-            if ($invoiceData['ufCrm_SMART_INVOICE_1735207439444']) {
+            if (isset($invoiceData['ufCrm_SMART_INVOICE_1735207439444']) && $invoiceData['ufCrm_SMART_INVOICE_1735207439444']) {
                 $additionalFieldB24 = json_decode($invoiceData['ufCrm_SMART_INVOICE_1735207439444']); //ufCrm_SMART_INVOICE_1735207439444
                 $payment_id = $additionalFieldB24['payment_id']; //айди из таблицы payments
                 $PaymentId = $additionalFieldB24['PaymentId']; //данные от онлайн кассы
