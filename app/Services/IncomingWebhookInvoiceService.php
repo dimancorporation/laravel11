@@ -82,7 +82,12 @@ class IncomingWebhookInvoiceService
         Log::info('Bitrix24 webhook2 received:', $invoiceData);
         return $invoiceData;
     }
-
+    /*
+    тестовые данные карты
+    4300 0000 0000 0777
+    12/30
+    111
+     */
     public function createOrUpdateInvoice(int $invoiceId): bool
     {
         $invoiceData = $this->getInvoiceData($invoiceId);
@@ -91,22 +96,31 @@ class IncomingWebhookInvoiceService
         $commonFields = $this->getInvoiceCommonFields($paymentId, $invoiceData, $paymentTypeName);
         $invoice = Invoice::where('b24_invoice_id', $invoiceId);
         if (!$invoice->exists()) {
-            //UF_CRM_SMART_INVOICE_1735207439444 -> ufCrm_SMART_INVOICE_1735207439444
             $fields = array_merge(['b24_invoice_id' => $invoiceData['id']], $commonFields);
             if (isset($invoiceData['ufCrm_SMART_INVOICE_1735207439444']) && $invoiceData['ufCrm_SMART_INVOICE_1735207439444']) {
-                $additionalFieldB24 = json_decode($invoiceData['ufCrm_SMART_INVOICE_1735207439444']); //ufCrm_SMART_INVOICE_1735207439444
+                $additionalFieldB24 = json_decode($invoiceData['ufCrm_SMART_INVOICE_1735207439444'], true); //UF_CRM_SMART_INVOICE_1735207439444 -> ufCrm_SMART_INVOICE_1735207439444
                 $payment_id = $additionalFieldB24['payment_id']; //айди из таблицы payments
                 $PaymentId = $additionalFieldB24['PaymentId']; //данные от онлайн кассы
                 $OrderId = $additionalFieldB24['OrderId']; //данные от онлайн кассы
-                $fields = array_merge(['payment_id' => $payment_id, 'comments' => 'онлайн оплата через личный кабинет'], $fields);
+                $fields = array_merge(['payment_id' => $payment_id, 'comments' => 'Оплата через онлайн кассу'], $fields);
 
-                $invoiceNew = Invoice::create($fields);
-                $invoiceNewId = $invoiceNew->id;
+                /* ======================= */
+                $path = 'logs/log.txt';
+                $existingContent = Storage::get($path);
+                $newContent = $existingContent . "\n" . json_encode($fields, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+                Storage::put($path, $newContent);
+                Log::info('Онлайн касса прислала данные о платеже:', $fields);
+                /* ======================= */
 
-                $paymentRow = Payment::where('order_id', $OrderId)
-                                     ->where('payment_id', $PaymentId)
-                                     ->first();
-                $paymentRow->update(['b24_invoice_id' => $invoiceNewId]);
+                $payment = Payment::where('order_id', $OrderId)
+                                  ->where('payment_id', $PaymentId);
+
+                /* для invoice обновляем payment_id */
+                $invoice = Invoice::create($fields);
+                $invoice->payment_id = $payment->first()->id;
+                $invoice->save();
+                /* для payment обновляем b24_invoice_id */
+                $result = $payment->update(['b24_invoice_id' => $invoice->id]);
             } else {
                 $result = Invoice::create($fields);
             }
