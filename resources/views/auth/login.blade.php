@@ -6,7 +6,7 @@
         <div class="hidden">2169fac7f81608deba33b92a3b36aa26cd1a589030ac818f74784353dcd2c631</div>
         @csrf
 
-        <!-- Email Address -->
+        <!-- Email Address or Phone -->
         <div>
             <x-input-label for="login" :value="__('Email or Phone')" />
             <x-text-input id="login" class="block mt-1 w-full" type="text" name="login" :value="old('login')" required autofocus autocomplete="username" />
