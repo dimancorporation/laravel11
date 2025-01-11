@@ -31,6 +31,7 @@ class User extends Authenticatable
         'id_b24',
         'name',
         'email',
+        'phone',
         'password',
         'role',
         'is_first_auth',

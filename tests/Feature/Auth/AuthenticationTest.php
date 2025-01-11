@@ -17,12 +17,24 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_users_can_authenticate_using_the_login_screen(): void
+    public function test_users_can_login_with_email(): void
     {
         $user = User::factory()->create();
 
         $response = $this->post('/login', [
-            'email' => $user->email,
+            'login' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard', absolute: false));
+    }
+    public function test_users_can_login_with_phone(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->post('/login', [
+            'login' => $user->phone,
             'password' => 'password',
         ]);
 
