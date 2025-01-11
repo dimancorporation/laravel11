@@ -7,6 +7,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * User model for the Laravel application.
+ *
+ * Represents a user in the system and provides various functionalities,
+ * such as role management, B24 status associations, and custom attribute accessors.
+ *
+ * @property string role
+ * @property string id_b24
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */

@@ -1,12 +1,27 @@
 <?php
 
+
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Model representing b24 user fields.
+ *
+ * This model is used for managing the mapping between site fields and Bitrix24 fields.
+ * It supports filtering based on the site field and retrieving the corresponding uf_crm_code.
+ * @property string site_field
+ * @property string b24_field
+ * @property string uf_crm_code
+ * @method static Builder|B24UserField bySiteField(string $siteField) Scope to filter by site field.
+ */
 class B24UserField extends Model
 {
+    use HasFactory;
+
     protected $table = 'b24_user_fields';
 
     protected $fillable = [
@@ -36,8 +51,7 @@ class B24UserField extends Model
      */
     public static function getUfCrmCode(string $siteField): ?string
     {
-        return self::query()
-            ->bySiteField($siteField)
+        return self::bySiteField($siteField)
             ->value('uf_crm_code');
     }
 }
