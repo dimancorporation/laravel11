@@ -148,7 +148,7 @@
                         </div>
                     @endforeach
 
-                    @if (!$invoices)
+                    @if ($invoices)
                         <div
                             class="flex flex-row justify-between items-center odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 font-semibold">
                             <div class="px-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12"></div>

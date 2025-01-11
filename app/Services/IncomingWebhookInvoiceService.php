@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
+use App\Models\User;
 use Bitrix24\SDK\Services\ServiceBuilder;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -82,6 +83,7 @@ class IncomingWebhookInvoiceService
         Log::info('Bitrix24 webhook2 received:', $invoiceData);
         return $invoiceData;
     }
+
     /*
     тестовые данные карты
     4300 0000 0000 0777
@@ -159,5 +161,28 @@ class IncomingWebhookInvoiceService
     private function getPaymentTypeName(int $paymentId): string
     {
         return $this->paymentMethod->getPaymentName($paymentId);
+    }
+
+    public function createInvoiceFromOnlinePayment(User $user, Payment $payment, array $additionalInfo): void
+    {
+        //'На расчетный счет компании'
+        $paymentMethodCode = PaymentMethod::where('b24_payment_type_name', 'На расчетный счет компании')
+                                          ->value('b24_payment_type_id');
+
+        $bitrixInvoiceEntityTypeId = env('BITRIX_INVOICE_ENTITY_TYPE_ID');
+        $invoice = $this->serviceBuilder->getCRMScope()->item()->add($bitrixInvoiceEntityTypeId, [
+            'title' => 'Счёт #' . $payment->payment_id,
+            'contactId' => $user->contact_id,
+            'currencyId' => 'RUB',
+            'opportunity' => $payment->amount,
+            "stageId" => 'DT31_2:P',
+            'ufCrm_SMART_INVOICE_1712111561782' => $paymentMethodCode,
+            'parentId2' => $user->contact_id,
+            'ufCrm_SMART_INVOICE_1735207439444' => json_encode($additionalInfo),
+            'comments' => 'Оплата через онлайн кассу',
+        ]);
+
+        $invoiceData = iterator_to_array($invoice->item()->getIterator());
+        $payment->update(['b24_invoice_id' => $invoiceData['id']]);
     }
 }

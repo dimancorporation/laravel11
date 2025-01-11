@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Payment;
-use App\Models\PaymentMethod;
-use App\Models\User;
 use App\Services\IncomingWebhookInvoiceService;
+use App\Services\PaymentService;
 use Bitrix24\SDK\Services\ServiceBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -33,66 +32,51 @@ class WebhookPaymentController extends Controller
      */
     public function handle(Request $request): ResponseFactory|Application|Response
     {
-        $bitrixInvoiceEntityTypeId = env('BITRIX_INVOICE_ENTITY_TYPE_ID');
         $path = 'logs/log.txt';
         $data = $request->all();
+        $paymentService = new PaymentService($data);
         Log::info('Онлайн касса прислала данные о платеже:', $data);
         Storage::put($path, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        $payment = $paymentService->findPayment();
+//        $payment = Payment::where('order_id', $data['OrderId'])
+//                          ->where('payment_id', $data['PaymentId'])
+//                          ->first();
 
-        $payment = Payment::where('order_id', $data['OrderId'])
-                          ->where('payment_id', $data['PaymentId'])
-                          ->first();
-
-        $user = User::where('email', $data['Data']['Email'])
-                    ->where('phone', '+7'.$data['Data']['Phone'])
-                    ->first();
-
+//        $user = User::where('email', $data['Data']['Email'])
+//                    ->where('phone', '+7'.$data['Data']['Phone'])
+//                    ->first();
+        $user = $paymentService->findUser();
         if (!$payment) {
-            Payment::create([
-                'b24_deal_id' => $user->id_b24,
-                'b24_contact_id' => $user->contact_id,
-                'b24_invoice_id' => null,
-                'order_id' => $data['OrderId'],
-                'success' => $data['Success'],
-                'status' => $data['Status'],
-                'payment_id' => $data['PaymentId'],
-                'amount' => $data['Amount'] / 100,
-                'card_id' => $data['CardId'],
-                'email' => $data['Data']['Email'],
-                'name' => $data['Data']['Name'],
-                'phone' => '+7'.$data['Data']['Phone'],
-                'source' => $data['Data']['Source'],
-                'user_agent' => $data['Data']['user_agent'],
-            ]);
+            $paymentService->createPayment($user);
+//            Payment::create([
+//                'b24_deal_id' => $user->id_b24,
+//                'b24_contact_id' => $user->contact_id,
+//                'b24_invoice_id' => null,
+//                'order_id' => $data['OrderId'],
+//                'success' => $data['Success'],
+//                'status' => $data['Status'],
+//                'payment_id' => $data['PaymentId'],
+//                'amount' => $data['Amount'] / 100,
+//                'card_id' => $data['CardId'],
+//                'email' => $data['Data']['Email'],
+//                'name' => $data['Data']['Name'],
+//                'phone' => '+7'.$data['Data']['Phone'],
+//                'source' => $data['Data']['Source'],
+//                'user_agent' => $data['Data']['user_agent'],
+//            ]);
             return response('OK', 200)->header('Content-Type', 'text/plain');
         }
-
-        $payment->update(['status' => $data['Status']]);
+        $paymentService->updateExistingPayment($payment);
+//        $payment->update(['status' => $data['Status']]);
         if ($payment->status === 'CONFIRMED') {
-            $additionalInfo = [
-                'payment_id' => $payment->id,
-                'PaymentId' => $payment->payment_id,
-                'OrderId' => $payment->order_id
-            ];
+            $additionalInfo = $paymentService->generateAdditionalInfo($payment);
+//            $additionalInfo = [
+//                'payment_id' => $payment->id,
+//                'PaymentId' => $payment->payment_id,
+//                'OrderId' => $payment->order_id
+//            ];
 
-            //'На расчетный счет компании'
-            $paymentMethodCode = PaymentMethod::where('b24_payment_type_name', 'На расчетный счет компании')
-                                              ->value('b24_payment_type_id');
-
-            $invoice = $this->serviceBuilder->getCRMScope()->item()->add($bitrixInvoiceEntityTypeId, [
-                'title' => 'Счёт #'.$payment->payment_id,
-                'contactId' => $user->contact_id,
-                'currencyId' => 'RUB',
-                'opportunity' => $data['Amount'] / 100,
-                "stageId" => 'DT31_2:P',
-                'ufCrm_SMART_INVOICE_1712111561782' => $paymentMethodCode,
-                'parentId2' => $user->contact_id,
-                'ufCrm_SMART_INVOICE_1735207439444' => json_encode($additionalInfo), //ufCrm_SMART_INVOICE_1735207439444 - UF_CRM_SMART_INVOICE_1735207439444
-                'comments' => 'Оплата через онлайн кассу',
-            ]);
-
-            $invoiceData = iterator_to_array($invoice->item()->getIterator());
-            $payment->update(['b24_invoice_id' => $invoiceData['id']]);
+            $this->incomingWebhookInvoiceService->createInvoiceFromOnlinePayment($user, $payment, $additionalInfo);
             return response('OK', 200)->header('Content-Type', 'text/plain');
         }
         return response('OK', 200)->header('Content-Type', 'text/plain');
