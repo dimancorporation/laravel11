@@ -43,10 +43,21 @@ class IncomingWebhookDealService
 
     public function updateAuthData(int $dealId, string $phone, string $password): void
     {
+        $fields = B24UserField::whereIn('site_field', ['userLogin', 'userPassword'])
+                              ->pluck('uf_crm_code', 'site_field')->toArray();
+
+        $userLogin = $fields['userLogin']; // userLogin - код поля в б24 'UF_CRM_1708511589360'
+        $userPassword = $fields['userPassword']; // userPassword - код поля в б24 'UF_CRM_1708511607581'
+
         $this->serviceBuilder->getCRMScope()->deal()->update($dealId, [
-            'UF_CRM_1708511589360' => $phone,
-            'UF_CRM_1708511607581' => $password,
+            $userLogin => $phone,
+            $userPassword => $password,
         ]);
+
+//        $this->serviceBuilder->getCRMScope()->deal()->update($dealId, [
+//            'UF_CRM_1708511589360' => $phone,
+//            'UF_CRM_1708511607581' => $password,
+//        ]);
     }
 
     public function getDealData(int $dealId): array
@@ -65,10 +76,10 @@ class IncomingWebhookDealService
                     $result['isUserCreateAccount'] = isset($dealData[$field->uf_crm_code]);
                     break;
                 case 'userStatus':
-                    $result['userStatus'] = $dealData[$field->uf_crm_code] ?: 0;
+                    $result['userStatus'] = $dealData[$field->uf_crm_code] ? : 0;
                     break;
                 case 'userContractAmount':
-                    $result['userContractAmount'] = $dealData[$field->uf_crm_code] ?: 0;
+                    $result['userContractAmount'] = $dealData[$field->uf_crm_code] ? : 0;
                     break;
                 default:
                     $result[$field->site_field] = $dealData[$field->uf_crm_code];
@@ -79,23 +90,23 @@ class IncomingWebhookDealService
         return $result ?? [];
     }
 
-/*
-    public function getDealData(int $dealId): array
-    {
-        $dealData = iterator_to_array($this->serviceBuilder->getCRMScope()->deal()->get($dealId)->deal()->getIterator());
-        return [
-            'contactId' => $dealData['CONTACT_ID'], //Айди контакта
-            'isUserCreateAccount' => isset($dealData['UF_CRM_1708511654449']), //Создать лк клиенту
-            'userLogin' => $dealData['UF_CRM_1708511589360'], //Логин лк клиента
-            'userPassword' => $dealData['UF_CRM_1708511607581'], //Пароль лк клиента
-            'userStatus' => $dealData['UF_CRM_1709533755311'] == null ? 0 : $dealData['UF_CRM_1709533755311'], //Статус для лк клиента
-            'userContractAmount' => $dealData['UF_CRM_1725026451112'] == '' ? 0 : $dealData['UF_CRM_1725026451112'], //Сумма договора
-            'userMessageFromB24' => $dealData['UF_CRM_1708511318200'], //Сообщение клиенту от компании
-            'userLinkToCourt' => $dealData['UF_CRM_1708511472339'], //Ссылка на дело в суде
-            'userLastAuthDate' => $dealData['UF_CRM_1715524078722'], //Дата последней авторизации (МСК)
-        ];
-    }
- */
+    /*
+        public function getDealData(int $dealId): array
+        {
+            $dealData = iterator_to_array($this->serviceBuilder->getCRMScope()->deal()->get($dealId)->deal()->getIterator());
+            return [
+                'contactId' => $dealData['CONTACT_ID'], //Айди контакта
+                'isUserCreateAccount' => isset($dealData['UF_CRM_1708511654449']), //Создать лк клиенту
+                'userLogin' => $dealData['UF_CRM_1708511589360'], //Логин лк клиента
+                'userPassword' => $dealData['UF_CRM_1708511607581'], //Пароль лк клиента
+                'userStatus' => $dealData['UF_CRM_1709533755311'] == null ? 0 : $dealData['UF_CRM_1709533755311'], //Статус для лк клиента
+                'userContractAmount' => $dealData['UF_CRM_1725026451112'] == '' ? 0 : $dealData['UF_CRM_1725026451112'], //Сумма договора
+                'userMessageFromB24' => $dealData['UF_CRM_1708511318200'], //Сообщение клиенту от компании
+                'userLinkToCourt' => $dealData['UF_CRM_1708511472339'], //Ссылка на дело в суде
+                'userLastAuthDate' => $dealData['UF_CRM_1715524078722'], //Дата последней авторизации (МСК)
+            ];
+        }
+     */
 
     public function getDocuments(array $dealData): array
     {
@@ -113,20 +124,39 @@ class IncomingWebhookDealService
         return iterator_to_array($this->serviceBuilder->getCRMScope()->contact()->get($contactId)->contact()->getIterator());
     }
 
+    private function getValueByType(array $contactData, string $type): string
+    {
+        $key = strtoupper($type);
+
+        if (
+            isset($contactData[$key][0]['VALUE']) &&
+            is_array($contactData[$key]) &&
+            is_array($contactData[$key][0])
+        ) {
+            return $contactData[$key][0]['VALUE'];
+        }
+
+        return '';
+    }
+
     public function getEmail(array $contactData): string
     {
-        if (isset($contactData['EMAIL'][0]['VALUE']) && is_array($contactData['EMAIL']) && is_array($contactData['EMAIL'][0])) {
-            return $contactData['EMAIL'][0]['VALUE'];
-        }
-        return '';
+        return $this->getValueByType($contactData, 'EMAIL');
+
+//        if (isset($contactData['EMAIL'][0]['VALUE']) && is_array($contactData['EMAIL']) && is_array($contactData['EMAIL'][0])) {
+//            return $contactData['EMAIL'][0]['VALUE'];
+//        }
+//        return '';
     }
 
     public function getPhone(array $contactData): string
     {
-        if (isset($contactData['PHONE'][0]['VALUE']) && is_array($contactData['PHONE']) && is_array($contactData['PHONE'][0])) {
-            return $contactData['PHONE'][0]['VALUE'];
-        }
-        return '';
+        return $this->getValueByType($contactData, 'PHONE');
+
+//        if (isset($contactData['PHONE'][0]['VALUE']) && is_array($contactData['PHONE']) && is_array($contactData['PHONE'][0])) {
+//            return $contactData['PHONE'][0]['VALUE'];
+//        }
+//        return '';
     }
 
     public function getContactFullName(array $contactData): string

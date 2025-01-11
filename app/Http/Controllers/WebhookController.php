@@ -48,42 +48,36 @@ class WebhookController extends Controller
         $email = $this->incomingWebhookDealService->getEmail($contactData);
         $phone = $this->incomingWebhookDealService->getPhone($contactData);
         $b24Status = B24Status::where('b24_status_id', $dealData['userStatus'])->first();
-
+        $userData = [
+            'name' => $contactFullName,
+            'email' => $email,
+            'phone' => $phone,
+            'b24_status' => $b24Status->id,
+            'role' => $b24Status->name === 'Должник' ? 'blocked' : 'user',
+            'sum_contract' => $dealData['userContractAmount'],
+            'link_to_court' => $dealData['userLinkToCourt'],
+        ];
         // userMessageFromB24 - сохранить в БД "Сообщение клиенту от компании"
         $user = User::where('id_b24', $dealId);
         if (!$user->exists()) {
             $password = $this->incomingWebhookDealService->generatePassword();
             $this->incomingWebhookDealService->updateAuthData($dealId, $phone, $password);
             $b24Documents = B24Documents::create();
-            $user = User::create([
-                'name' => $contactFullName,
-                'email' => $email,
-                'phone' => $phone,
+            User::create(array_merge($userData, [
                 'password' => Hash::make($password),
-                'id_b24' => $dealId,
-                'b24_status' => $b24Status->id,
-                'role' => $b24Status->name === 'Должник' ? 'blocked' : 'user',
-                'sum_contract' => $dealData['userContractAmount'],
                 'is_first_auth' => true,
                 'is_registered_myself' => false,
                 'documents_id' => $b24Documents->id,
                 'link_to_court' => $dealData['userLinkToCourt'],
                 'contact_id' => $dealData['contactId'],
-            ]);
+            ]));
         } else {
             $b24documentsId = B24Documents::where('id', $user->first()->documents_id);
             $documents = $this->incomingWebhookDealService->getDocuments($dealData);
             $b24documentsId->update($documents);
-            $user->update([
-                'name' => $contactFullName,
-                'email' => $email,
-                'phone' => $phone,
+            $user->update(array_merge($userData, [
                 'password' => Hash::make($dealData['userPassword']),
-                'b24_status' => $b24Status->id,
-                'role' => $b24Status->name === 'Должник' ? 'blocked' : 'user',
-                'sum_contract' => $dealData['userContractAmount'],
-                'link_to_court' => $dealData['userLinkToCourt'],
-            ]);
+            ]));
         }
 
         Storage::put($path, json_encode($dealData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));

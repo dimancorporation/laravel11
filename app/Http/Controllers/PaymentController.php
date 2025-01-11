@@ -2,21 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Invoice;
-use App\Models\Payment;
-use App\Models\User;
+use App\Services\InvoiceService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PaymentController extends Controller
 {
+    protected InvoiceService $invoiceService;
 
+    public function __construct(InvoiceService $invoiceService)
+    {
+        $this->invoiceService = $invoiceService;
+    }
     public function index(Request $request): View
     {
         $user = $request->user();
-        $invoices = Invoice::where('contact_id', $user->contact_id)
-                           ->where('stage_id', 'DT31_3:P')
-                           ->get();
+//        $invoices = Invoice::where('contact_id', $user->contact_id)
+//                           ->where('stage_id', 'DT31_2:P')
+//                           ->get();
+        /* статус в б24 оплаченного счета 'DT31_2:P', но может и меняться, например: 'DT31_3:P' */
+//        $invoices = Invoice::where('contact_id', $user->contact_id)
+//                           ->where('stage_id', 'like', '%:P') // Найдем все stage_id, заканчивающиеся на :P
+//                           ->get();
+        $invoices = $this->invoiceService->getUserInvoices($user);
         return view('payment', compact('invoices', 'user'));
     }
 
