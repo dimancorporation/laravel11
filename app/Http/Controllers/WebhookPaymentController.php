@@ -18,11 +18,13 @@ class WebhookPaymentController extends Controller
     private string $paymentSuccessStatus = 'CONFIRMED';
     protected ServiceBuilder $serviceBuilder;
     protected IncomingWebhookInvoiceService $incomingWebhookInvoiceService;
+    protected PaymentService $paymentService;
 
-    public function __construct(ServiceBuilder $serviceBuilder, IncomingWebhookInvoiceService $incomingWebhookInvoiceService)
+    public function __construct(ServiceBuilder $serviceBuilder, IncomingWebhookInvoiceService $incomingWebhookInvoiceService, PaymentService $paymentService)
     {
         $this->serviceBuilder = $serviceBuilder;
         $this->incomingWebhookInvoiceService = $incomingWebhookInvoiceService;
+        $this->paymentService = $paymentService;
     }
     /*
     тестовые данные карты
@@ -34,19 +36,19 @@ class WebhookPaymentController extends Controller
     {
         $path = 'logs/log.txt';
         $data = $request->all();
-        $paymentService = new PaymentService($data);
+//        $paymentService = new PaymentService($data);
         Log::info('Онлайн касса прислала данные о платеже:', $data);
         Storage::put($path, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        $payment = $paymentService->findPayment();
-        $user = $paymentService->findUser();
+        $payment = $this->paymentService->findPayment($data);
+        $user = $this->paymentService->findUser($data);
         if (!$payment) {
-            $paymentService->createPayment($user);
+            $this->paymentService->createPayment($user, $data);
             return response('OK', 200)->header('Content-Type', 'text/plain');
         }
-        $paymentService->updateExistingPayment($payment);
+        $this->paymentService->updateExistingPayment($payment, $data);
 //        if ($payment->status === 'CONFIRMED') {
         if ($payment->status === $this->paymentSuccessStatus) {
-            $additionalInfo = $paymentService->generateAdditionalInfo($payment);
+            $additionalInfo = $this->paymentService->generateAdditionalInfo($payment);
             $this->incomingWebhookInvoiceService->createInvoiceFromOnlinePayment($user, $payment, $additionalInfo);
             return response('OK', 200)->header('Content-Type', 'text/plain');
         }

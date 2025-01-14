@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
+use App\Services\DashboardService;
 use App\Services\IncomingWebhookDealService;
 use App\Services\IncomingWebhookInvoiceService;
 use App\Services\PaymentService;
 use App\Services\InvoiceService;
 use App\Services\ProgressBarService;
 use App\Services\ProgressStatusService;
+use App\Services\SettingsService;
 use App\Services\UpdateCRMService;
 use Bitrix24\SDK\Services\ServiceBuilder;
 use Illuminate\Support\ServiceProvider;
@@ -25,6 +27,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(InvoiceService::class);
         $this->app->singleton(ProgressStatusService::class);
         $this->app->singleton(ProgressBarService::class);
+        $this->app->singleton(DashboardService::class);
+        $this->app->singleton(SettingsService::class);
         $this->app->singleton(ServiceBuilder::class);
         $this->app->bind(UpdateCRMService::class, function ($app) {
             return new UpdateCRMService($app[ServiceBuilder::class]);

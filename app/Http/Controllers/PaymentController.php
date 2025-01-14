@@ -2,17 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Setting;
 use App\Services\InvoiceService;
+use App\Services\PaymentService;
+use App\Services\SettingsService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PaymentController extends Controller
 {
     protected InvoiceService $invoiceService;
+    protected PaymentService $paymentService;
+    protected SettingsService $settingsService;
 
-    public function __construct(InvoiceService $invoiceService)
+    public function __construct(InvoiceService $invoiceService, PaymentService $paymentService, SettingsService $settingsService)
     {
         $this->invoiceService = $invoiceService;
+        $this->paymentService = $paymentService;
+        $this->settingsService = $settingsService;
     }
     public function index(Request $request): View
     {
@@ -24,8 +31,15 @@ class PaymentController extends Controller
 //        $invoices = Invoice::where('contact_id', $user->contact_id)
 //                           ->where('stage_id', 'like', '%:P') // Найдем все stage_id, заканчивающиеся на :P
 //                           ->get();
+
+
+        $paymentSettings = $this->settingsService->getPaymentSettings();
+//        dump($paymentSettings);
+//        $paymentData = $this->paymentService->getPaymentData();
+//        $terminalKey = $paymentData['TERMINAL_KEY'];
+//        $emailCompany = $paymentData['EmailCompany'];
         $invoices = $this->invoiceService->getUserInvoices($user);
-        return view('payment', compact('invoices', 'user'));
+        return view('payment', compact('invoices', 'user', 'paymentSettings'));
     }
 
     public function store(Request $request)

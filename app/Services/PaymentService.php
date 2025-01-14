@@ -2,65 +2,48 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Payment;
 use App\Models\User;
 
 class PaymentService
 {
-    private array $data;
-    private string $path;
-
-    public function __construct(array $data)
+    public function findUser(array $data): ?User
     {
-        $this->data = $data;
-        $this->path = 'logs/log.txt';
-    }
-
-    public function logRequest(): void
-    {
-        Log::info('Онлайн касса прислала данные о платеже:', $this->data);
-        Storage::put($this->path, json_encode($this->data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-    }
-
-    public function findUser(): ?User
-    {
-        return User::where('email', $this->data['Data']['Email'])
-                   ->where('phone', '+7' . $this->data['Data']['Phone'])
+        return User::where('email', $data['Data']['Email'])
+                   ->where('phone', '+7' . $data['Data']['Phone'])
                    ->first();
     }
 
-    public function findPayment(): ?Payment
+    public function findPayment(array $data): ?Payment
     {
-        return Payment::where('order_id', $this->data['OrderId'])
-                      ->where('payment_id', $this->data['PaymentId'])
+        return Payment::where('order_id', $data['OrderId'])
+                      ->where('payment_id', $data['PaymentId'])
                       ->first();
     }
 
-    public function createPayment(User $user): void
+    public function createPayment(User $user, array $data): void
     {
         Payment::create([
             'b24_deal_id' => $user->id_b24,
             'b24_contact_id' => $user->contact_id,
             'b24_invoice_id' => null,
-            'order_id' => $this->data['OrderId'],
-            'success' => $this->data['Success'],
-            'status' => $this->data['Status'],
-            'payment_id' => $this->data['PaymentId'],
-            'amount' => $this->data['Amount'] / 100,
-            'card_id' => $this->data['CardId'],
-            'email' => $this->data['Data']['Email'],
-            'name' => $this->data['Data']['Name'],
-            'phone' => '+7' . $this->data['Data']['Phone'],
-            'source' => $this->data['Data']['Source'],
-            'user_agent' => $this->data['Data']['user_agent'],
+            'order_id' => $data['OrderId'],
+            'success' => $data['Success'],
+            'status' => $data['Status'],
+            'payment_id' => $data['PaymentId'],
+            'amount' => $data['Amount'] / 100,
+            'card_id' => $data['CardId'],
+            'email' => $data['Data']['Email'],
+            'name' => $data['Data']['Name'],
+            'phone' => '+7' . $data['Data']['Phone'],
+            'source' => $data['Data']['Source'],
+            'user_agent' => $data['Data']['user_agent'],
         ]);
     }
 
-    public function updateExistingPayment(Payment $payment): void
+    public function updateExistingPayment(Payment $payment, array $data): void
     {
-        $payment->update(['status' => $this->data['Status']]);
+        $payment->update(['status' => $data['Status']]);
     }
 
     public function generateAdditionalInfo(Payment $payment): array

@@ -20,6 +20,9 @@ export default {
 
     plugins: [
         forms,
-        require('flowbite/plugin')
+        require('flowbite/plugin')({
+            wysiwyg: true,
+        }),
+        require('flowbite-typography'),
     ],
 };

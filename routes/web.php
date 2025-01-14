@@ -23,8 +23,10 @@ Route::get('/test', [BitrixController::class, 'getUserList'])->name('bitrix');
 Route::middleware(['auth', 'roles', 'web'])->group(function () {
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
 
+    //Http/Middleware/RoleRedirectMiddleware.php
     Route::post('/save-user-fields', [B24UserFieldController::class, 'store'])->name('save.user.fields');
     Route::post('/save-doc-fields', [B24DocFieldController::class, 'store'])->name('save.doc.fields');
+    Route::post('/save-setting-fields', [SettingsController::class, 'store'])->name('save.setting.fields');
     Route::post('/upload-offer-agreement', [OfferAgreement::class, 'store'])->name('upload.offer.agreement');
 });
 

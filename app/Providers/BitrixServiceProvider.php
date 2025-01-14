@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\SettingsService;
 use Bitrix24\SDK\Core\Core;
 use Bitrix24\SDK\Services\ServiceBuilder;
 use Bitrix24\SDK\Services\ServiceBuilderFactory;
@@ -16,6 +17,8 @@ class BitrixServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(ServiceBuilder::class, function ($app) {
+//            $settingsService = app(SettingsService::class);
+//            $webhookUrl = $settingsService->getBitrixWebhookUrl();
             $webhookUrl = config('bitrix.webhook_url');
 
             if (empty($webhookUrl)) {

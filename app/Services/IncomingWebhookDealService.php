@@ -3,16 +3,22 @@
 namespace App\Services;
 
 use App\Models\B24DocField;
+use App\Models\B24Documents;
+use App\Models\B24Status;
 use App\Models\B24UserField;
+use App\Models\User;
 use Bitrix24\SDK\Services\ServiceBuilder;
+use Illuminate\Support\Facades\Hash;
 
 class IncomingWebhookDealService
 {
     protected ServiceBuilder $serviceBuilder;
+    protected SettingsService $settingsService;
 
-    public function __construct(ServiceBuilder $serviceBuilder)
+    public function __construct(ServiceBuilder $serviceBuilder, SettingsService $settingsService)
     {
         $this->serviceBuilder = $serviceBuilder;
+        $this->settingsService = $settingsService;
     }
 
     public function isRequestFromWebhook(array $data, array $dealData): bool
@@ -20,8 +26,10 @@ class IncomingWebhookDealService
         $event = $data['event'];
         $domain = $data['auth']['domain'];
         $applicationToken = $data['auth']['application_token'];
-        $bitrixWebhookDomain = env('BITRIX_WEBHOOK_DOMAIN');
-        $bitrixWebhookDealToken = env('BITRIX_WEBHOOK_DEAL_TOKEN');
+//        $bitrixWebhookDomain = env('BITRIX_WEBHOOK_DOMAIN');
+//        $bitrixWebhookDealToken = env('BITRIX_WEBHOOK_DEAL_TOKEN');
+        $bitrixWebhookDomain = $this->settingsService->getValueByCode('BITRIX_WEBHOOK_DOMAIN');
+        $bitrixWebhookDealToken = $this->settingsService->getValueByCode('BITRIX_WEBHOOK_DEAL_TOKEN');
         if ($event !== 'ONCRMDEALUPDATE' || $domain !== $bitrixWebhookDomain || $applicationToken !== $bitrixWebhookDealToken || !isset($dealData['isUserCreateAccount'])) {
             return false;
         }
@@ -44,7 +52,7 @@ class IncomingWebhookDealService
     public function updateAuthData(int $dealId, string $phone, string $password): void
     {
         $fields = B24UserField::whereIn('site_field', ['userLogin', 'userPassword'])
-                              ->pluck('uf_crm_code', 'site_field')->toArray();
+            ->pluck('uf_crm_code', 'site_field')->toArray();
 
         $userLogin = $fields['userLogin']; // userLogin - код поля в б24 'UF_CRM_1708511589360'
         $userPassword = $fields['userPassword']; // userPassword - код поля в б24 'UF_CRM_1708511607581'
@@ -170,5 +178,56 @@ class IncomingWebhookDealService
             ($contactSecondName ?? ' ') .
             ($contactLastName ?? '')
         );
+    }
+
+    public function getCommonUserData(array $dealData): array
+    {
+        $contactData = $this->getContactData($dealData['contactId']);
+        $contactFullName = $this->getContactFullName($contactData);
+        $email = $this->getEmail($contactData);
+        $phone = $this->getPhone($contactData);
+        $b24Status = B24Status::where('b24_status_id', $dealData['userStatus'])->first();
+        return [
+            'name' => $contactFullName,
+            'email' => $email,
+            'phone' => $phone,
+            'b24_status' => $b24Status->id,
+            'role' => $b24Status->name === 'Должник' ? 'blocked' : 'user',
+            'sum_contract' => $dealData['userContractAmount'],
+            'link_to_court' => $dealData['userLinkToCourt'],
+        ];
+    }
+
+    public function createOrUpdateUser($dealId, $dealData)
+    {
+        $user = User::where('id_b24', $dealId)->first();
+        $userData = $this->getCommonUserData($dealData);
+
+        if ($user === null) {
+            $password = $this->generatePassword();
+            $this->updateAuthData($dealId, $userData['phone'], $password);
+
+            $b24Documents = B24Documents::create();
+            $newUserData = array_merge($userData, [
+                'password' => Hash::make($password),
+                'is_first_auth' => true,
+                'is_registered_myself' => false,
+                'documents_id' => $b24Documents->id,
+                'link_to_court' => $dealData['userLinkToCourt'],
+                'contact_id' => $dealData['contactId']
+            ]);
+
+            return User::create($newUserData);
+        } else {
+            $b24documentsId = B24Documents::find($user->documents_id);
+            $documents = $this->getDocuments($dealData);
+            $b24documentsId->update($documents);
+
+            $updatedUserData = array_merge($userData, [
+                'password' => Hash::make($dealData['userPassword'])
+            ]);
+
+            return $user->update($updatedUserData);
+        }
     }
 }

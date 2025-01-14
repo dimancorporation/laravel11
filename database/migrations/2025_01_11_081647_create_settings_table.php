@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->string('name');
             $table->text('value');
+            $table->timestamps();
         });
 
         DB::table('settings')->insert([
@@ -46,13 +47,13 @@ return new class extends Migration
                 'value' => '31'
             ],
             [
-                'code' => 'terminalKey',
+                'code' => 'TERMINAL_KEY',
                 'name' => 'Идентификатор магазина для онлайн оплаты через терминал Т-Кассы',
                 'value' => '1734786275434DEMO'
             ],
             [
-                'code' => 'EmailCompany',
-                'name' => 'Email компании',
+                'code' => 'EMAIL_COMPANY',
+                'name' => 'Email компании для оплаты через Т-Кассу',
                 'value' => 'mail@mail.com'
             ],
         ]);

@@ -22,7 +22,15 @@ class RoleRedirectMiddleware
             return redirect()->route('login');
         }
 
-        if ($user->isAdmin() && !$request->routeIs('settings')) {
+        $excludedRoutesForAdmins = [
+            'settings',
+            'save.user.fields',
+            'save.doc.fields',
+            'save.setting.fields',
+            'upload.offer.agreement',
+        ];
+
+        if ($user->isAdmin() && !in_array($request->route()->getName(), $excludedRoutesForAdmins)) {
             return redirect()->route('settings');
         }
 
@@ -31,7 +39,13 @@ class RoleRedirectMiddleware
         }
 
         if ($user->isUser()) {
-            $allowedRoutes = ['dashboard', 'payment', 'documents', 'status-descriptions', 'offer-agreement'];
+            $allowedRoutes = [
+                'dashboard',
+                'payment',
+                'documents',
+                'status-descriptions',
+                'offer-agreement',
+            ];
 
             if (!in_array($request->route()->getName(), $allowedRoutes)) {
                 return redirect()->route('dashboard');

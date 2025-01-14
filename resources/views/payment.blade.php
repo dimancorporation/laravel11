@@ -30,7 +30,7 @@
                 <div class="p-4 md:p-5 space-y-4">
                     <form class="space-y-2 px-5 pb-5" name="payform-tbank" id="payform-tbank">
                         <!-- Скрытые поля -->
-                        <input type="hidden" name="terminalkey" value="1734786275434DEMO">
+                        <input type="hidden" name="terminalkey" value="{{ $paymentSettings[1] }}">
                         <input type="hidden" name="frame" value="false">
                         <input type="hidden" name="language" value="ru">
                         <input type="hidden" name="receipt" value="">
@@ -180,6 +180,10 @@
 
     <script src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff_v2.js"></script>
     <script type="text/javascript">
+        const terminalKey = "{{ $paymentSettings[0] }}";
+        const emailCompany = "{{ $paymentSettings[1] }}";
+        console.log(terminalKey);
+        console.log(emailCompany);
         const TPF = document.getElementById('payform-tbank');
 
         TPF.addEventListener('submit', function (e) {
