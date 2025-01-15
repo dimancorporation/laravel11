@@ -16,6 +16,7 @@ class IncomingWebhookInvoiceService
     protected ServiceBuilder $serviceBuilder;
     protected PaymentMethod $paymentMethod;
     protected SettingsService $settingsService;
+
     public function __construct(ServiceBuilder $serviceBuilder, PaymentMethod $paymentMethod, SettingsService $settingsService)
     {
         $this->serviceBuilder = $serviceBuilder;
@@ -38,10 +39,12 @@ class IncomingWebhookInvoiceService
 //        $bitrixWebhookInvoiceToken = env('BITRIX_WEBHOOK_INVOICE_TOKEN');
 //        $bitrixInvoiceEntityTypeId = env('BITRIX_INVOICE_ENTITY_TYPE_ID');
         $bitrixWebhookDomain = $this->settingsService->getValueByCode('BITRIX_WEBHOOK_DOMAIN');
-        $bitrixWebhookInvoiceToken = $this->settingsService->getValueByCode('BITRIX_WEBHOOK_DEAL_TOKEN');
+        $bitrixWebhookInvoiceToken = $this->settingsService->getValueByCode('BITRIX_WEBHOOK_INVOICE_TOKEN');
         $bitrixInvoiceEntityTypeId = $this->settingsService->getValueByCode('BITRIX_INVOICE_ENTITY_TYPE_ID');
+        Log::info('isRequestFromWebhook1:', ['qwe' => 'qwe1', 'q1' => $bitrixWebhookDomain, 'q2' => $bitrixWebhookInvoiceToken, 'q3' => $bitrixInvoiceEntityTypeId]);
         if (!in_array($event, $allowedEvents) || $domain !== $bitrixWebhookDomain || $applicationToken !== $bitrixWebhookInvoiceToken || $entityTypeId !== $bitrixInvoiceEntityTypeId) {
             Storage::put($path, 'false');
+            Log::info('isRequestFromWebhook2:', ['qwe' => 'qwe2']);
             return false;
         }
         Storage::put($path, 'true');
@@ -73,7 +76,8 @@ class IncomingWebhookInvoiceService
          * https://dev.1c-bitrix.ru/api_d7/bitrix/crm/crm_owner_type/identifiers.php
          * для счетов entityTypeId = 31(хардкод от самого битрикс24)
          */
-        $bitrixInvoiceEntityTypeId = env('BITRIX_INVOICE_ENTITY_TYPE_ID');
+        //$bitrixInvoiceEntityTypeId = env('BITRIX_INVOICE_ENTITY_TYPE_ID');
+        $bitrixInvoiceEntityTypeId = $this->settingsService->getValueByCode('BITRIX_INVOICE_ENTITY_TYPE_ID');
         /* получение списка счетов по айди контакта, вместо списка полей можно использовать ['*'] */
         $invoiceData = iterator_to_array($this->serviceBuilder->getCRMScope()->item()->list(
             $bitrixInvoiceEntityTypeId,
