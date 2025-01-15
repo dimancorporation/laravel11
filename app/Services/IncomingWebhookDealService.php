@@ -232,7 +232,7 @@ class IncomingWebhookDealService
             $newUserData = array_merge($userData, [
                 'password' => Hash::make($password),
                 'is_first_auth' => true,
-                'is_registered_myself' => $dealData['dkp_spouse'],
+                'is_registered_myself' => false,
                 'documents_id' => $b24Documents->id,
                 'link_to_court' => $dealData['userLinkToCourt'],
                 'contact_id' => $dealData['contactId'],
