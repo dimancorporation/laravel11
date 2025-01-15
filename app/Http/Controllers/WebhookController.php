@@ -31,7 +31,7 @@ class WebhookController extends Controller
         $dealId = $data['data']['FIELDS']['ID'];
         $dealData = $this->incomingWebhookDealService->getDealData($dealId);
 
-        Log::info('Bitrix24 deal webhook received:', $dealData);
+        Log::info('dealData received:', $dealData);
         Storage::put($path, json_encode($dealData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
         $isRequestFromWebhook = $this->incomingWebhookDealService->isRequestFromWebhook($data, $dealData);
@@ -42,49 +42,6 @@ class WebhookController extends Controller
             ], 400);
         }
 
-//        $contactData = $this->incomingWebhookDealService->getContactData($dealData['contactId']);
-//        $contactFullName = $this->incomingWebhookDealService->getContactFullName($contactData);
-//        $email = $this->incomingWebhookDealService->getEmail($contactData);
-//        $phone = $this->incomingWebhookDealService->getPhone($contactData);
-//        $b24Status = B24Status::where('b24_status_id', $dealData['userStatus'])->first();
-//        $userData = [
-//            'name' => $contactFullName,
-//            'email' => $email,
-//            'phone' => $phone,
-//            'b24_status' => $b24Status->id,
-//            'role' => $b24Status->name === 'Должник' ? 'blocked' : 'user',
-//            'sum_contract' => $dealData['userContractAmount'],
-//            'link_to_court' => $dealData['userLinkToCourt'],
-//        ];
-
-        /*
-        $userData = $this->incomingWebhookDealService->getCommonUserData($dealData);
-//        $phone = $userData['phone'];
-        // userMessageFromB24 - сохранить в БД "Сообщение клиенту от компании"
-        $user = User::where('id_b24', $dealId);
-        if (!$user->exists()) {
-            $password = $this->incomingWebhookDealService->generatePassword();
-            $this->incomingWebhookDealService->updateAuthData($dealId, $userData['phone'], $password);
-//            $this->incomingWebhookDealService->updateAuthData($dealId, $phone, $password);
-            $b24Documents = B24Documents::create();
-            User::create(array_merge($userData, [
-                'password' => Hash::make($password),
-                'is_first_auth' => true,
-                'is_registered_myself' => false,
-                'documents_id' => $b24Documents->id,
-                'link_to_court' => $dealData['userLinkToCourt'],
-                'contact_id' => $dealData['contactId'],
-            ]));
-        } else {
-            $b24documentsId = B24Documents::where('id', $user->first()->documents_id);
-            $documents = $this->incomingWebhookDealService->getDocuments($dealData);
-            $b24documentsId->update($documents);
-            $user->update(array_merge($userData, [
-                'password' => Hash::make($dealData['userPassword']),
-            ]));
-        }
-*/
-//        $userData = $this->incomingWebhookDealService->getCommonUserData($dealData);
         $this->incomingWebhookDealService->createOrUpdateUser($dealId, $dealData);
 
         Storage::put($path, json_encode($dealData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));

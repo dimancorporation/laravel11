@@ -19,10 +19,14 @@ return [
 
     'allowed_methods' => ['*'], // Разрешённые методы
 
-    'allowed_origins' => [
-        'https://ee5c-94-180-116-162.ngrok-free.app',
-        'https://ee5c-94-180-116-162.ngrok-free123.app',
-    ], // Разрешённые источники (временно разрешаем всё)
+    'allowed_origins' => ['*'], // Разрешённые источники (временно разрешаем всё)
+
+//    'allowed_origins' => [
+//        'https://ee5c-94-180-116-162.ngrok-free.app',
+//        'https://ee5c-94-180-116-162.ngrok-free123.app',
+//        'https://d1a2-155-94-251-73.ngrok-free.app',
+//        'https://6gxnnx-94-180-116-162.ru.tuna.am',
+//    ], // Разрешённые источники (временно разрешаем всё)
 
     'allowed_origins_patterns' => [], // Шаблон для разрешений
 

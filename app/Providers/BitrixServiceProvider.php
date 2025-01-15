@@ -17,9 +17,9 @@ class BitrixServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(ServiceBuilder::class, function ($app) {
-//            $settingsService = app(SettingsService::class);
-//            $webhookUrl = $settingsService->getBitrixWebhookUrl();
-            $webhookUrl = config('bitrix.webhook_url');
+            $settingsService = app(SettingsService::class);
+            $webhookUrl = $settingsService->getBitrixWebhookUrl();
+//            $webhookUrl = config('bitrix.webhook_url');
 
             if (empty($webhookUrl)) {
                 throw new InvalidArgumentException('Bitrix24 Webhook URL is not configured.');

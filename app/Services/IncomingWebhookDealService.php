@@ -9,6 +9,8 @@ use App\Models\B24UserField;
 use App\Models\User;
 use Bitrix24\SDK\Services\ServiceBuilder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class IncomingWebhookDealService
 {
@@ -30,13 +32,14 @@ class IncomingWebhookDealService
 //        $bitrixWebhookDealToken = env('BITRIX_WEBHOOK_DEAL_TOKEN');
         $bitrixWebhookDomain = $this->settingsService->getValueByCode('BITRIX_WEBHOOK_DOMAIN');
         $bitrixWebhookDealToken = $this->settingsService->getValueByCode('BITRIX_WEBHOOK_DEAL_TOKEN');
-        if ($event !== 'ONCRMDEALUPDATE' || $domain !== $bitrixWebhookDomain || $applicationToken !== $bitrixWebhookDealToken || !isset($dealData['isUserCreateAccount'])) {
+        //проверить пароль, если нету, то все Ок, если есть пароль, то ничё не делаем
+        if ($event !== 'ONCRMDEALUPDATE' || $domain !== $bitrixWebhookDomain || $applicationToken !== $bitrixWebhookDealToken || !$dealData['isUserCreateAccount']) {
             return false;
         }
         return true;
     }
 
-    public function generatePassword(int $length = 8): string
+    private function generatePassword(int $length = 8): string
     {
         $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $password = '';
@@ -49,7 +52,7 @@ class IncomingWebhookDealService
         return $password;
     }
 
-    public function updateAuthData(int $dealId, string $phone, string $password): void
+    private function updateAuthData(int $dealId, string $phone, string $password): void
     {
         $fields = B24UserField::whereIn('site_field', ['userLogin', 'userPassword'])
             ->pluck('uf_crm_code', 'site_field')->toArray();
@@ -74,14 +77,14 @@ class IncomingWebhookDealService
         $dealData = iterator_to_array(
             $this->serviceBuilder->getCRMScope()->deal()->get($dealId)->deal()->getIterator()
         );
-
+        $result = [];
         foreach ($userFields as $field) {
             switch ($field->site_field) {
                 case 'contactId':
                     $result['contactId'] = $dealData['CONTACT_ID'];
                     break;
                 case 'isUserCreateAccount':
-                    $result['isUserCreateAccount'] = isset($dealData[$field->uf_crm_code]);
+                    $result['isUserCreateAccount'] = isset($dealData[$field->uf_crm_code]) && $dealData[$field->uf_crm_code] !== '';
                     break;
                 case 'userStatus':
                     $result['userStatus'] = $dealData[$field->uf_crm_code] ? : 0;
@@ -94,8 +97,8 @@ class IncomingWebhookDealService
                     break;
             }
         }
-
-        return $result ?? [];
+        $userDocuments = $this->getDocuments($dealData);
+        return array_merge($result, $userDocuments) ?? [];
     }
 
     /*
@@ -116,7 +119,7 @@ class IncomingWebhookDealService
         }
      */
 
-    public function getDocuments(array $dealData): array
+    private function getDocuments(array $dealData): array
     {
         $docFields = B24DocField::all();
         $documents = [];
@@ -127,7 +130,7 @@ class IncomingWebhookDealService
         return $documents;
     }
 
-    public function getContactData(int $contactId): array
+    private function getContactData(int $contactId): array
     {
         return iterator_to_array($this->serviceBuilder->getCRMScope()->contact()->get($contactId)->contact()->getIterator());
     }
@@ -147,27 +150,17 @@ class IncomingWebhookDealService
         return '';
     }
 
-    public function getEmail(array $contactData): string
+    private function getEmail(array $contactData): string
     {
         return $this->getValueByType($contactData, 'EMAIL');
-
-//        if (isset($contactData['EMAIL'][0]['VALUE']) && is_array($contactData['EMAIL']) && is_array($contactData['EMAIL'][0])) {
-//            return $contactData['EMAIL'][0]['VALUE'];
-//        }
-//        return '';
     }
 
-    public function getPhone(array $contactData): string
+    private function getPhone(array $contactData): string
     {
         return $this->getValueByType($contactData, 'PHONE');
-
-//        if (isset($contactData['PHONE'][0]['VALUE']) && is_array($contactData['PHONE']) && is_array($contactData['PHONE'][0])) {
-//            return $contactData['PHONE'][0]['VALUE'];
-//        }
-//        return '';
     }
 
-    public function getContactFullName(array $contactData): string
+    private function getContactFullName(array $contactData): string
     {
         $contactName = $contactData['NAME'];
         $contactSecondName = $contactData['SECOND_NAME'];
@@ -180,7 +173,7 @@ class IncomingWebhookDealService
         );
     }
 
-    public function getCommonUserData(array $dealData): array
+    private function getCommonUserData(array $dealData): array
     {
         $contactData = $this->getContactData($dealData['contactId']);
         $contactFullName = $this->getContactFullName($contactData);
@@ -198,29 +191,59 @@ class IncomingWebhookDealService
         ];
     }
 
+    private function prepareDocumentsData(array $dealData): array
+    {
+        return [
+            'passport_all_pages' => $dealData['passport_all_pages'],
+            'scan_inn' => $dealData['scan_inn'],
+            'snils' => $dealData['snils'],
+            'marriage_certificate' => $dealData['marriage_certificate'],
+            'passport_spouse' => $dealData['passport_spouse'],
+            'snils_spouse' => $dealData['snils_spouse'],
+            'divorce_certificate' => $dealData['divorce_certificate'],
+            'ndfl' => $dealData['ndfl'],
+            'childrens_birth_certificate' => $dealData['childrens_birth_certificate'],
+            'extract_egrn' => $dealData['extract_egrn'],
+            'scan_pts' => $dealData['scan_pts'],
+            'sts' => $dealData['sts'],
+            'pts_spouse' => $dealData['pts_spouse'],
+            'sts_spouse' => $dealData['sts_spouse'],
+            'dkp' => $dealData['dkp'],
+            'dkp_spouse' => $dealData['dkp_spouse'],
+            'other' => $dealData['other'],
+        ];
+    }
+
     public function createOrUpdateUser($dealId, $dealData)
     {
-        $user = User::where('id_b24', $dealId)->first();
+        $path = 'logs/log.txt';
+        Log::info('createOrUpdateUser:', $dealData);
+        Storage::put($path, json_encode($dealData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
+        $documents = $this->prepareDocumentsData($dealData);
+
+        Storage::put($path, json_encode($documents, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
         $userData = $this->getCommonUserData($dealData);
-
-        if ($user === null) {
+        $user = User::where('id_b24', $dealId)->first();
+        if (!$user) {
             $password = $this->generatePassword();
-            $this->updateAuthData($dealId, $userData['phone'], $password);
-
-            $b24Documents = B24Documents::create();
+            $b24Documents = B24Documents::create($documents);
             $newUserData = array_merge($userData, [
                 'password' => Hash::make($password),
                 'is_first_auth' => true,
-                'is_registered_myself' => false,
+                'is_registered_myself' => $dealData['dkp_spouse'],
                 'documents_id' => $b24Documents->id,
                 'link_to_court' => $dealData['userLinkToCourt'],
-                'contact_id' => $dealData['contactId']
+                'contact_id' => $dealData['contactId'],
+                'id_b24' => $dealId,
             ]);
+            $newUser = User::create($newUserData);
+            $this->updateAuthData($dealId, $userData['phone'], $password);
 
-            return User::create($newUserData);
+            return $newUser;
         } else {
             $b24documentsId = B24Documents::find($user->documents_id);
-            $documents = $this->getDocuments($dealData);
             $b24documentsId->update($documents);
 
             $updatedUserData = array_merge($userData, [
