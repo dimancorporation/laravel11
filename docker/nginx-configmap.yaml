@@ -4,36 +4,60 @@ metadata:
   name: nginx-config
 data:
   nginx.conf: |
-    server {
-      listen 80;
-      listen [::]:80;
-      dev-ksu.ru;
-      root /var/www/my_deal/public;
+    user nginx;
+    worker_processes auto;
 
-      add_header X-Frame-Options "SAMEORIGIN";
-      add_header X-Content-Type-Options "nosniff";
+    error_log /var/log/nginx/error.log warn;
+    pid /var/run/nginx.pid;
 
-      index index.php;
+    events {
+       worker_connections 1024;
+    }
 
-      charset utf-8;
+    http {
+       include /etc/nginx/mime.types;
+       default_type application/octet-stream;
 
-      location / {
-          try_files $uri $uri/ /index.php?$query_string;
-      }
+       log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                       '$status $body_bytes_sent "$http_referer" '
+                       '"$http_user_agent" "$http_x_forwarded_for"';
 
-      location = /favicon.ico { access_log off; log_not_found off; }
-      location = /robots.txt  { access_log off; log_not_found off; }
+       access_log /var/log/nginx/access.log main;
 
-      error_page 404 /index.php;
+       sendfile on;
+       keepalive_timeout 65;
 
-      location ~ ^/index\.php(/|$) {
-          fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
-          fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-          include fastcgi_params;
-          fastcgi_hide_header X-Powered-By;
-      }
+       server {
+          listen 80;
+          listen [::]:80;
+          server_name dev-ksu.ru;
+          root /var/www/dev-ksu.ru;
 
-      location ~ /\.(?!well-known).* {
-          deny all;
-      }
-  }
+          add_header X-Frame-Options "SAMEORIGIN";
+          add_header X-Content-Type-Options "nosniff";
+
+          index index.php;
+
+          charset utf-8;
+
+          location / {
+            try_files $uri $uri/ /index.php?$query_string;
+          }
+
+          location = /favicon.ico { access_log off; log_not_found off; }
+          location = /robots.txt  { access_log off; log_not_found off; }
+
+          error_page 404 /index.php;
+
+          location ~ ^/index\.php(/|$) {
+            fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+            fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+            include fastcgi_params;
+            fastcgi_hide_header X-Powered-By;
+          }
+
+          location ~ /\.(?!well-known).* {
+            deny all;
+          }
+       }
+    }
