@@ -28,11 +28,8 @@ class IncomingWebhookDealService
         $event = $data['event'];
         $domain = $data['auth']['domain'];
         $applicationToken = $data['auth']['application_token'];
-//        $bitrixWebhookDomain = env('BITRIX_WEBHOOK_DOMAIN');
-//        $bitrixWebhookDealToken = env('BITRIX_WEBHOOK_DEAL_TOKEN');
         $bitrixWebhookDomain = $this->settingsService->getValueByCode('BITRIX_WEBHOOK_DOMAIN');
         $bitrixWebhookDealToken = $this->settingsService->getValueByCode('BITRIX_WEBHOOK_DEAL_TOKEN');
-        //проверить пароль, если нету, то все Ок, если есть пароль, то ничё не делаем
         if ($event !== 'ONCRMDEALUPDATE' || $domain !== $bitrixWebhookDomain || $applicationToken !== $bitrixWebhookDealToken || !$dealData['isUserCreateAccount']) {
             return false;
         }
@@ -64,11 +61,6 @@ class IncomingWebhookDealService
             $userLogin => $phone,
             $userPassword => $password,
         ]);
-
-//        $this->serviceBuilder->getCRMScope()->deal()->update($dealId, [
-//            'UF_CRM_1708511589360' => $phone,
-//            'UF_CRM_1708511607581' => $password,
-//        ]);
     }
 
     public function getDealData(int $dealId): array
@@ -100,24 +92,6 @@ class IncomingWebhookDealService
         $userDocuments = $this->getDocuments($dealData);
         return array_merge($result, $userDocuments) ?? [];
     }
-
-    /*
-        public function getDealData(int $dealId): array
-        {
-            $dealData = iterator_to_array($this->serviceBuilder->getCRMScope()->deal()->get($dealId)->deal()->getIterator());
-            return [
-                'contactId' => $dealData['CONTACT_ID'], //Айди контакта
-                'isUserCreateAccount' => isset($dealData['UF_CRM_1708511654449']), //Создать лк клиенту
-                'userLogin' => $dealData['UF_CRM_1708511589360'], //Логин лк клиента
-                'userPassword' => $dealData['UF_CRM_1708511607581'], //Пароль лк клиента
-                'userStatus' => $dealData['UF_CRM_1709533755311'] == null ? 0 : $dealData['UF_CRM_1709533755311'], //Статус для лк клиента
-                'userContractAmount' => $dealData['UF_CRM_1725026451112'] == '' ? 0 : $dealData['UF_CRM_1725026451112'], //Сумма договора
-                'userMessageFromB24' => $dealData['UF_CRM_1708511318200'], //Сообщение клиенту от компании
-                'userLinkToCourt' => $dealData['UF_CRM_1708511472339'], //Ссылка на дело в суде
-                'userLastAuthDate' => $dealData['UF_CRM_1715524078722'], //Дата последней авторизации (МСК)
-            ];
-        }
-     */
 
     private function getDocuments(array $dealData): array
     {

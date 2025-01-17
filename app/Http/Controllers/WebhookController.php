@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\B24Documents;
-use App\Models\User;
 use App\Services\IncomingWebhookDealService;
 use Bitrix24\SDK\Services\ServiceBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 

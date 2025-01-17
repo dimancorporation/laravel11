@@ -56,6 +56,21 @@ return new class extends Migration
                 'name' => 'Email компании для оплаты через Т-Кассу',
                 'value' => 'mail@mail.com'
             ],
+            [
+                'code' => 'ADDITIONAL_PAYMENT_INFO',
+                'name' => 'Служебное поле с json данными',
+                'value' => 'ufCrm_SMART_INVOICE_1735207439444'
+            ],
+            [
+                'code' => 'PAYMENT_TYPE',
+                'name' => 'Тип оплаты',
+                'value' => 'ufCrm_SMART_INVOICE_1712111561782'
+            ],
+            [
+                'code' => 'SUCCESS_INVOICE_STAGE',
+                'name' => 'Код успешной оплаты битрикс24',
+                'value' => 'DT31_2:P'
+            ],
         ]);
     }
 

@@ -35,9 +35,6 @@ class IncomingWebhookInvoiceService
         $entityTypeId = $data['data']['FIELDS']['ENTITY_TYPE_ID'];
         $path = 'logs/log.txt';
         Log::info('Bitrix24 webhook received isRequestFromWebhook:', $data);
-//        $bitrixWebhookDomain = env('BITRIX_WEBHOOK_DOMAIN');
-//        $bitrixWebhookInvoiceToken = env('BITRIX_WEBHOOK_INVOICE_TOKEN');
-//        $bitrixInvoiceEntityTypeId = env('BITRIX_INVOICE_ENTITY_TYPE_ID');
         $bitrixWebhookDomain = $this->settingsService->getValueByCode('BITRIX_WEBHOOK_DOMAIN');
         $bitrixWebhookInvoiceToken = $this->settingsService->getValueByCode('BITRIX_WEBHOOK_INVOICE_TOKEN');
         $bitrixInvoiceEntityTypeId = $this->settingsService->getValueByCode('BITRIX_INVOICE_ENTITY_TYPE_ID');
@@ -53,10 +50,12 @@ class IncomingWebhookInvoiceService
 
     private function getInvoiceData(int $invoiceId): array
     {
+        $additionalPaymentInfo = $this->settingsService->getValueByCode('ADDITIONAL_PAYMENT_INFO');
+        $paymentType = $this->settingsService->getValueByCode('PAYMENT_TYPE');
         $invoiceFields = [
             'id',
-            'ufCrm_SMART_INVOICE_1712111561782', /* тип оплаты */
-            'ufCrm_SMART_INVOICE_1735207439444', /* служебное поле с json данными */
+            $paymentType, /* тип оплаты, таблица Settings */
+            $additionalPaymentInfo, /* служебное поле с json данными, таблица Settings */
             'title',
             'opportunity',
             'isManualOpportunity',
@@ -101,14 +100,16 @@ class IncomingWebhookInvoiceService
     public function createOrUpdateInvoice(int $invoiceId): bool
     {
         $invoiceData = $this->getInvoiceData($invoiceId);
-        $paymentId = $invoiceData['ufCrm_SMART_INVOICE_1712111561782'];
+        $paymentType = $this->settingsService->getValueByCode('PAYMENT_TYPE'); /* тип оплаты, таблица Settings */
+        $paymentId = $invoiceData[$paymentType];
         $paymentTypeName = $this->getPaymentTypeName($paymentId);
         $commonFields = $this->getInvoiceCommonFields($paymentId, $invoiceData, $paymentTypeName);
         $invoice = Invoice::where('b24_invoice_id', $invoiceId);
         if (!$invoice->exists()) {
             $fields = array_merge(['b24_invoice_id' => $invoiceData['id']], $commonFields);
-            if (isset($invoiceData['ufCrm_SMART_INVOICE_1735207439444']) && $invoiceData['ufCrm_SMART_INVOICE_1735207439444']) {
-                $additionalFieldB24 = json_decode($invoiceData['ufCrm_SMART_INVOICE_1735207439444'], true); //UF_CRM_SMART_INVOICE_1735207439444 -> ufCrm_SMART_INVOICE_1735207439444
+            $additionalPaymentInfo = $this->settingsService->getValueByCode('ADDITIONAL_PAYMENT_INFO');
+            if (isset($invoiceData[$additionalPaymentInfo]) && $invoiceData[$additionalPaymentInfo]) {
+                $additionalFieldB24 = json_decode($invoiceData[$additionalPaymentInfo], true);
                 $payment_id = $additionalFieldB24['payment_id']; //айди из таблицы payments
                 $PaymentId = $additionalFieldB24['PaymentId']; //данные от онлайн кассы
                 $OrderId = $additionalFieldB24['OrderId']; //данные от онлайн кассы
@@ -177,16 +178,19 @@ class IncomingWebhookInvoiceService
         $paymentMethodCode = PaymentMethod::where('b24_payment_type_name', 'На расчетный счет компании')
                                           ->value('b24_payment_type_id');
 
-        $bitrixInvoiceEntityTypeId = env('BITRIX_INVOICE_ENTITY_TYPE_ID');
+        $bitrixInvoiceEntityTypeId = $this->settingsService->getValueByCode('BITRIX_INVOICE_ENTITY_TYPE_ID');
+        $successInvoiceStage = $this->settingsService->getValueByCode('SUCCESS_INVOICE_STAGE');
+        $additionalPaymentInfo = $this->settingsService->getValueByCode('ADDITIONAL_PAYMENT_INFO');
+        $paymentType = $this->settingsService->getValueByCode('PAYMENT_TYPE');
         $invoice = $this->serviceBuilder->getCRMScope()->item()->add($bitrixInvoiceEntityTypeId, [
             'title' => 'Счёт #' . $payment->payment_id,
             'contactId' => $user->contact_id,
             'currencyId' => 'RUB',
             'opportunity' => $payment->amount,
-            "stageId" => 'DT31_2:P',
-            'ufCrm_SMART_INVOICE_1712111561782' => $paymentMethodCode,
+            'stageId' => $successInvoiceStage,
+            $paymentType => $paymentMethodCode,
             'parentId2' => $user->contact_id,
-            'ufCrm_SMART_INVOICE_1735207439444' => json_encode($additionalInfo),
+            $additionalPaymentInfo => json_encode($additionalInfo),
             'comments' => 'Оплата через онлайн кассу',
         ]);
 

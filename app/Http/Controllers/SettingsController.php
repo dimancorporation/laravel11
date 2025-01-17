@@ -25,12 +25,6 @@ class SettingsController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->all();
-//        dump($data);
-
-        $path = 'logs/log.txt';
-        Log::info('SettingsController:', $data);
-        Storage::put($path, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-
         foreach ($data as $key => $value) {
             if ($key === '_token') continue;
 
