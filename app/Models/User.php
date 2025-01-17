@@ -39,6 +39,8 @@ class User extends Authenticatable
         'b24_status',
         'documents_id',
         'contact_id',
+        'link_to_court',
+        'sum_contract',
     ];
 
     /**

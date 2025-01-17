@@ -4,7 +4,7 @@ use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\WebhookPaymentController;
 use App\Http\Controllers\WebhookInvoiceController;
 use Illuminate\Support\Facades\Route;
-
+/* todo переименовать /webhook, /webhook2, /webhook3 в более понятные */
 //для обновления-создания сделки
 Route::post('/webhook', [WebhookController::class, 'handle'])->withoutMiddleware('csrf');
 //для работы со счетами
