@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laravel-php-fpm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: laravel
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: laravel
+        tier: backend
+    spec:
+      containers:
+        - name: php-fpm
+          image: php:8.2-fpm  # Use the appropriate PHP-FPM image
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - name: laravel-code
+              mountPath: /var/www/html
+          env:
+            - name: APP_ENV
+              value: production
+            - name: APP_KEY
+              value: base64:your_app_key_here  # Replace with your Laravel app key
+            - name: DB_HOST
+              value: laravel-db  # Replace with your database service name
+            - name: DB_DATABASE
+              value: laravel
+            - name: DB_USERNAME
+              value: root
+            - name: DB_PASSWORD
+              value: password
+      volumes:
+        - name: laravel-code
+          persistentVolumeClaim:
+            claimName: laravel-code-pvc  # Replace with your PVC name
