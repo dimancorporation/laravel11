@@ -27,6 +27,7 @@ class RoleRedirectMiddleware
             'save.user.fields',
             'save.doc.fields',
             'save.setting.fields',
+            'save.b24statuses.fields',
             'upload.offer.agreement',
         ];
 

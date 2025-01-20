@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\B24DocFieldController;
+use App\Http\Controllers\B24StatusController;
 use App\Http\Controllers\B24UserFieldController;
 use App\Http\Controllers\BitrixController;
 use App\Http\Controllers\DashboardController;
@@ -27,6 +28,7 @@ Route::middleware(['auth', 'roles', 'web'])->group(function () {
     Route::post('/save-user-fields', [B24UserFieldController::class, 'store'])->name('save.user.fields');
     Route::post('/save-doc-fields', [B24DocFieldController::class, 'store'])->name('save.doc.fields');
     Route::post('/save-setting-fields', [SettingsController::class, 'store'])->name('save.setting.fields');
+    Route::post('/save-b24statuses-fields', [B24StatusController::class, 'store'])->name('save.b24statuses.fields');
     Route::post('/upload-offer-agreement', [OfferAgreement::class, 'store'])->name('upload.offer.agreement');
 });
 
