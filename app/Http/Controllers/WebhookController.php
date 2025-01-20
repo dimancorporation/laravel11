@@ -35,8 +35,8 @@ class WebhookController extends Controller
         if (!$isRequestFromWebhook) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Bad Request'
-            ], 400);
+                'message' => 'Insufficient permissions to create account'
+            ], 403);
         }
 
         $this->incomingWebhookDealService->createOrUpdateUser($dealId, $dealData);

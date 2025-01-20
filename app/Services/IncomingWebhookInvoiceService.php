@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 
 class IncomingWebhookInvoiceService
 {
+    private string $paymentType = 'На расчетный счет компании';
     protected ServiceBuilder $serviceBuilder;
     protected PaymentMethod $paymentMethod;
     protected SettingsService $settingsService;
@@ -99,6 +100,7 @@ class IncomingWebhookInvoiceService
      */
     public function createOrUpdateInvoice(int $invoiceId): bool
     {
+        /* todo использовать listener и event-ы */
         $invoiceData = $this->getInvoiceData($invoiceId);
         $paymentType = $this->settingsService->getValueByCode('PAYMENT_TYPE'); /* тип оплаты, таблица Settings */
         $paymentId = $invoiceData[$paymentType];
@@ -175,7 +177,7 @@ class IncomingWebhookInvoiceService
     public function createInvoiceFromOnlinePayment(User $user, Payment $payment, array $additionalInfo): void
     {
         //'На расчетный счет компании'
-        $paymentMethodCode = PaymentMethod::where('b24_payment_type_name', 'На расчетный счет компании')
+        $paymentMethodCode = PaymentMethod::where('b24_payment_type_name', $this->paymentType)
                                           ->value('b24_payment_type_id');
 
         $bitrixInvoiceEntityTypeId = $this->settingsService->getValueByCode('BITRIX_INVOICE_ENTITY_TYPE_ID');

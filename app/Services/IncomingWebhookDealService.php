@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\UpdateAuthDataEvent;
 use App\Models\B24DocField;
 use App\Models\B24Documents;
 use App\Models\B24Status;
@@ -19,6 +20,8 @@ class IncomingWebhookDealService
 
     public function __construct(ServiceBuilder $serviceBuilder, SettingsService $settingsService)
     {
+//        $this->serviceBuilder = app(ServiceBuilder::class);
+//        $this->settingsService = app(SettingsService::class);
         $this->serviceBuilder = $serviceBuilder;
         $this->settingsService = $settingsService;
     }
@@ -190,14 +193,8 @@ class IncomingWebhookDealService
 
     public function createOrUpdateUser($dealId, $dealData)
     {
-        $path = 'logs/log.txt';
-        Log::info('createOrUpdateUser:', $dealData);
-        Storage::put($path, json_encode($dealData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-
+        /* todo использовать listener и event-ы */
         $documents = $this->prepareDocumentsData($dealData);
-
-        Storage::put($path, json_encode($documents, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-
         $userData = $this->getCommonUserData($dealData);
         $user = User::where('id_b24', $dealId)->first();
         if (!$user) {
@@ -213,8 +210,7 @@ class IncomingWebhookDealService
                 'id_b24' => $dealId,
             ]);
             $newUser = User::create($newUserData);
-            $this->updateAuthData($dealId, $userData['phone'], $password);
-
+            event(new UpdateAuthDataEvent($dealId, $userData['phone'], $password));
             return $newUser;
         } else {
             $b24documentsId = B24Documents::find($user->documents_id);
