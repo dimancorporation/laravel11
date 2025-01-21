@@ -28,6 +28,7 @@ class RoleRedirectMiddleware
             'save.doc.fields',
             'save.setting.fields',
             'save.b24statuses.fields',
+            'save.debtor.text',
             'upload.offer.agreement',
         ];
 

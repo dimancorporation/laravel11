@@ -5,6 +5,7 @@ use App\Http\Controllers\B24StatusController;
 use App\Http\Controllers\B24UserFieldController;
 use App\Http\Controllers\BitrixController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DebtorController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\OfferAgreement;
 use App\Http\Controllers\PaymentController;
@@ -29,14 +30,13 @@ Route::middleware(['auth', 'roles', 'web'])->group(function () {
     Route::post('/save-doc-fields', [B24DocFieldController::class, 'store'])->name('save.doc.fields');
     Route::post('/save-setting-fields', [SettingsController::class, 'store'])->name('save.setting.fields');
     Route::post('/save-b24statuses-fields', [B24StatusController::class, 'store'])->name('save.b24statuses.fields');
+    Route::post('/save-debtor-text', [SettingsController::class, 'debtor'])->name('save.debtor.text');
     Route::post('/upload-offer-agreement', [OfferAgreement::class, 'store'])->name('upload.offer.agreement');
 });
 
 // Секция должников
 Route::middleware(['auth', 'roles'])->group(function () {
-    Route::get('/debtor', function () {
-        return view('debtor');
-    })->name('debtor');
+    Route::get('/debtor', [DebtorController::class, 'store'])->name('debtor');
 });
 
 // Секция для user

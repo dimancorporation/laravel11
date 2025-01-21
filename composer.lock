@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c251286b6ece3873160fe307c048a78e",
+    "content-hash": "1ec13e545b6fb3dd884f56307067d713",
     "packages": [
         {
             "name": "bitrix24/b24phpsdk",
@@ -1127,6 +1127,59 @@
                 }
             ],
             "time": "2024-07-20T21:45:45+00:00"
+        },
+        {
+            "name": "greymich/php-totp",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sunnyvision/php-totp.git",
+                "reference": "1f88bdf47e0e4bae07f2d94bdd67aebdc56b54c2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sunnyvision/php-totp/zipball/1f88bdf47e0e4bae07f2d94bdd67aebdc56b54c2",
+                "reference": "1f88bdf47e0e4bae07f2d94bdd67aebdc56b54c2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Greymich\\TOTP\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Tam",
+                    "email": "h.y.michael@icloud.com"
+                },
+                {
+                    "name": "Michael Tam",
+                    "email": "michael@sunnyvision.com"
+                }
+            ],
+            "description": "PHP TOTP implementation for rfc6238 ",
+            "keywords": [
+                "One Time Password",
+                "composer",
+                "php",
+                "totp"
+            ],
+            "support": {
+                "issues": "https://github.com/sunnyvision/php-totp/issues",
+                "source": "https://github.com/sunnyvision/php-totp/tree/2.0"
+            },
+            "time": "2021-05-07T09:54:52+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
