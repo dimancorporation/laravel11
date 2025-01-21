@@ -18,18 +18,10 @@ class SettingsController extends Controller
         $b24UserFields = B24UserField::all()->sortBy('id');
         $b24DocFields = B24DocField::all()->sortBy('id');
         $b24Statuses = B24Status::all()->sortBy('id');
-        $settingsFields = Setting::all()->sortBy('id');
-//        $debtorMessage = htmlspecialchars_decode(Setting::where('code', 'DEBTOR_MESSAGE')->value('value'));
+        $settingsFields = Setting::where('code', '!=', 'DEBTOR_MESSAGE')->orderBy('id')->get();
+        $tinymceApiKey = $settingsFields->firstWhere('code', 'TINYMCE_API_KEY')?->value;
         $debtorMessage = Setting::where('code', 'DEBTOR_MESSAGE')->first();
-//        $debtorMessage = htmlspecialchars_decode($debtorMessage->value);
-//        $search = array('&amp;', '&lt;', '&gt;', '&quot;', '&#039;');
-//        $replace = array('&', '<', '>', '"', '\'');
-//        $debtorMessage = str_replace($search, $replace, $debtorMessage->value);
         $debtorMessage = htmlspecialchars_decode($debtorMessage->value);
-
-
-
-        $tinymceApiKey = Setting::where('code', 'TINYMCE_API_KEY')->value('value');
 
         return view('settings', compact('b24UserFields', 'b24DocFields', 'b24Statuses', 'settingsFields', 'debtorMessage', 'tinymceApiKey'));
     }
