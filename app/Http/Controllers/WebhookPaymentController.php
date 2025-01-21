@@ -15,43 +15,55 @@ use Illuminate\Http\Response;
 // обрабатываем данные от онлайн кассы
 class WebhookPaymentController extends Controller
 {
-    private string $paymentSuccessStatus = 'CONFIRMED';
+    private const LOG_FILE_PATH = 'logs/log.txt';
+    private string $paymentConfirmedStatus = 'CONFIRMED';
+
     protected ServiceBuilder $serviceBuilder;
     protected IncomingWebhookInvoiceService $incomingWebhookInvoiceService;
     protected PaymentService $paymentService;
 
-    public function __construct(ServiceBuilder $serviceBuilder, IncomingWebhookInvoiceService $incomingWebhookInvoiceService, PaymentService $paymentService)
-    {
+    public function __construct(
+        ServiceBuilder $serviceBuilder,
+        IncomingWebhookInvoiceService $incomingWebhookInvoiceService,
+        PaymentService $paymentService
+    ) {
         $this->serviceBuilder = $serviceBuilder;
         $this->incomingWebhookInvoiceService = $incomingWebhookInvoiceService;
         $this->paymentService = $paymentService;
     }
-    /*
-    тестовые данные карты
-    4300 0000 0000 0777
-    12/30
-    111
-     */
+
     public function handle(Request $request): ResponseFactory|Application|Response
     {
-        $path = 'logs/log.txt';
         $data = $request->all();
-//        $paymentService = new PaymentService($data);
+
+        // Event?
         Log::info('Онлайн касса прислала данные о платеже:', $data);
-        Storage::put($path, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        $payment = $this->paymentService->findPayment($data);
-        $user = $this->paymentService->findUser($data);
-        if (!$payment) {
-            $this->paymentService->createPayment($user, $data);
-            return response('OK', 200)->header('Content-Type', 'text/plain');
+        Storage::put(self::LOG_FILE_PATH, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
+        $user = $this->paymentService->findUser($request);
+        $payment = $this->paymentService->findPayment($request);
+
+        if ($payment) {
+            $this->processPaymentForUser($user, $payment, $data);
+            return $this->sendOKResponse();
         }
+
+        $this->paymentService->createPayment($request);
+        return $this->sendOKResponse();
+    }
+
+    private function processPaymentForUser($user, $payment, $data): void
+    {
         $this->paymentService->updateExistingPayment($payment, $data);
-//        if ($payment->status === 'CONFIRMED') {
-        if ($payment->status === $this->paymentSuccessStatus) {
+
+        if ($payment->status === $this->paymentConfirmedStatus) {
             $additionalInfo = $this->paymentService->generateAdditionalInfo($payment);
             $this->incomingWebhookInvoiceService->createInvoiceFromOnlinePayment($user, $payment, $additionalInfo);
-            return response('OK', 200)->header('Content-Type', 'text/plain');
         }
+    }
+
+    private function sendOKResponse(): Response
+    {
         return response('OK', 200)->header('Content-Type', 'text/plain');
     }
 }
