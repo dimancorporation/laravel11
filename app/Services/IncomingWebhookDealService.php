@@ -215,12 +215,7 @@ class IncomingWebhookDealService
         } else {
             $b24documentsId = B24Documents::find($user->documents_id);
             $b24documentsId->update($documents);
-
-            $updatedUserData = array_merge($userData, [
-                'password' => Hash::make($dealData['userPassword'])
-            ]);
-
-            return $user->update($updatedUserData);
+            return $user->update($userData);
         }
     }
 }
