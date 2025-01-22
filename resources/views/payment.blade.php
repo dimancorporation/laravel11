@@ -30,7 +30,7 @@
                 <div class="p-4 md:p-5 space-y-4">
                     <form class="space-y-2 px-5 pb-5" name="payform-tbank" id="payform-tbank">
                         <!-- Скрытые поля -->
-                        <input type="hidden" name="terminalkey" value="{{ $paymentSettings[1] }}">
+                        <input type="hidden" name="terminalkey" value="{{ $paymentSettings[0] }}">
                         <input type="hidden" name="frame" value="false">
                         <input type="hidden" name="language" value="ru">
                         <input type="hidden" name="receipt" value="">
@@ -114,7 +114,8 @@
                         <div
                             class="flex flex-row justify-between items-center odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                             <div class="px-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12">
-                                {{ date_format(date_create($invoice->moved_time), 'd.m.Y') }}
+                                {{ date_format(date_create($invoice->moved_time), 'd.m.Y') }}<br/>
+                                {{ date_format(date_create($invoice->moved_time), 'H:i') }}
                             </div>
                             <div class="px-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12">
                                 <div id="tooltip-top{{$invoice->id}}" role="tooltip"
@@ -200,7 +201,7 @@
                 }
 
                 TPF.receipt.value = JSON.stringify({
-                    'EmailCompany': 'mail@mail.com',
+                    'EmailCompany': emailCompany,
                     'Taxation': 'patent',
                     'FfdVersion': '1.2',
                     'Items': [
