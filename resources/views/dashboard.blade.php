@@ -52,7 +52,7 @@
                                     Оплачено на текущий момент:
                                 </div>
                                 <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-green-500 rounded-lg">
-                                    {{ number_format(Auth::user()->already_paid, 0, ',', ' ') }} руб
+                                    {{ number_format($alreadyPaid, 0, ',', ' ') }} руб
                                 </div>
                             </div>
                             <div class="flex min-[280px]:flex-col min-[430px]:flex-row min-[280px]:items-end min-[430px]:items-center mb-3 w-full">
@@ -65,7 +65,7 @@
                                         Оплачено полностью!
                                     @else
                                         <a href="{{ route('payment') }}" class="hover:text-blue-800 hover:underline">
-                                            {{ number_format(Auth::user()->sum_contract - Auth::user()->already_paid, 0, ',', ' ') }} руб
+                                            {{ number_format(Auth::user()->sum_contract - $alreadyPaid, 0, ',', ' ') }} руб
                                         </a>
                                     @endif
 
