@@ -8,6 +8,9 @@
     <div class="py-4">
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 flex justify-center min-[950px]:flex-row min-[320px]:flex-col gap-20">
+                    {{ Auth::user()->message_from_b24 }}
+                </div>
                 <div class="p-6 text-gray-900 flex justify-between min-[950px]:flex-row min-[320px]:flex-col gap-20">
                     <div class="min-[320px]:w-full min-[950px]:w-2/4 block rounded-lg bg-white text-center text-surface shadow-secondary-1 dark:bg-surface-dark dark:text-white">
                         <div class="border-b-2 border-neutral-100 px-6 py-3 dark:border-white/10 text-3xl">
@@ -26,8 +29,9 @@
                                 <div class="min-[280px]:w-full min-[430px]:w-2/4 mr-3 text-right">
                                     Посмотреть в Арбитражном суде:
                                 </div>
-                                <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-blue-500 rounded-lg">
-                                    <a href="{{ Auth::user()->link_to_court }}" class="hover:text-blue-800 hover:underline" target="_blank">
+                                <div class="min-[280px]:w-full min-[430px]:w-2/4 p-2 flex justify-center items-center border-2 border-solid border-blue-500 rounded-lg group cursor-pointer"
+                                     onclick="window.open(this.querySelector('a').getAttribute('href'), '_blank');">
+                                    <a href="{{ Auth::user()->link_to_court }}" class="hover:text-blue-800 hover:underline underline-offset-4 group-hover:text-blue-800 group-hover:underline" target="_blank">
                                         Арбитражный суд
                                     </a>
                                 </div>
@@ -64,7 +68,7 @@
                                     @if(Auth::user()->sum_contract !== 0 && Auth::user()->sum_contract === Auth::user()->already_paid)
                                         Оплачено полностью!
                                     @else
-                                        <a href="{{ route('payment') }}" class="hover:text-blue-800 hover:underline">
+                                        <a href="{{ route('payment') }}" class="hover:text-blue-800 hover:underline underline-offset-4">
                                             {{ number_format(Auth::user()->sum_contract - $alreadyPaid, 0, ',', ' ') }} руб
                                         </a>
                                     @endif

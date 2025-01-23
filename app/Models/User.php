@@ -50,6 +50,7 @@ class User extends Authenticatable
         'contact_id',
         'link_to_court',
         'sum_contract',
+        'message_from_b24',
     ];
 
     /**

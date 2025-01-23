@@ -107,7 +107,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="min-[300px]:px-0 sm:p-6 text-gray-900">
                     @php
-                        $totalSum = $invoices->sum('opportunity');
+                        $alreadyPaid = $invoices->sum('opportunity');
                     @endphp
 
                     @foreach($invoices as $invoice)
@@ -157,7 +157,17 @@
                                 ИТОГО:
                             </div>
                             <div class="pl-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12">
-                                {{ number_format($totalSum, 0, ',', ' ') }} руб
+                                {{ number_format($alreadyPaid, 0, ',', ' ') }} руб
+                            </div>
+                        </div>
+                        <div
+                            class="flex flex-row justify-between items-center odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 font-semibold">
+                            <div class="px-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12"></div>
+                            <div class="px-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12">
+                                ОСТАТОК ПО ДОГОВОРУ:
+                            </div>
+                            <div class="pl-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12">
+                                {{ number_format(Auth::user()->sum_contract - $alreadyPaid, 0, ',', ' ') }} руб
                             </div>
                         </div>
                     @endif

@@ -165,6 +165,7 @@ class IncomingWebhookDealService
             'role' => $b24Status->name === 'Должник' ? 'blocked' : 'user',
             'sum_contract' => $dealData['userContractAmount'],
             'link_to_court' => $dealData['userLinkToCourt'],
+            'message_from_b24' => $dealData['userMessageFromB24'],
         ];
     }
 

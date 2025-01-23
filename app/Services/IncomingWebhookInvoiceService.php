@@ -39,10 +39,8 @@ class IncomingWebhookInvoiceService
         $bitrixWebhookDomain = $this->settingsService->getValueByCode('BITRIX_WEBHOOK_DOMAIN');
         $bitrixWebhookInvoiceToken = $this->settingsService->getValueByCode('BITRIX_WEBHOOK_INVOICE_TOKEN');
         $bitrixInvoiceEntityTypeId = $this->settingsService->getValueByCode('BITRIX_INVOICE_ENTITY_TYPE_ID');
-        Log::info('isRequestFromWebhook1:', ['qwe' => 'qwe1', 'q1' => $bitrixWebhookDomain, 'q2' => $bitrixWebhookInvoiceToken, 'q3' => $bitrixInvoiceEntityTypeId]);
         if (!in_array($event, $allowedEvents) || $domain !== $bitrixWebhookDomain || $applicationToken !== $bitrixWebhookInvoiceToken || $entityTypeId !== $bitrixInvoiceEntityTypeId) {
             Storage::put($path, 'false');
-            Log::info('isRequestFromWebhook2:', ['qwe' => 'qwe2']);
             return false;
         }
         Storage::put($path, 'true');
@@ -98,6 +96,9 @@ class IncomingWebhookInvoiceService
     12/30
     111
      */
+    /**
+     * @throws Exception
+     */
     public function createOrUpdateInvoice(int $invoiceId): bool
     {
         /* todo использовать listener и event-ы */
@@ -142,6 +143,13 @@ class IncomingWebhookInvoiceService
         }
 
         return (bool)$result;
+    }
+
+    public function deleteInvoice(int $invoiceId): void
+    {
+        if (Invoice::where('b24_invoice_id', $invoiceId)->exists()) {
+            Invoice::where('b24_invoice_id', $invoiceId)->delete();
+        }
     }
 
     private function getInvoiceCommonFields(int $paymentId, array $invoiceData, string $paymentTypeName): array

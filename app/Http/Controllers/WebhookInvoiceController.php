@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\IncomingWebhookInvoiceService;
 use Bitrix24\SDK\Services\ServiceBuilder;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -18,6 +19,10 @@ class WebhookInvoiceController extends Controller
         $this->serviceBuilder = $serviceBuilder;
         $this->incomingWebhookInvoiceService = $incomingWebhookInvoiceService;
     }
+
+    /**
+     * @throws Exception
+     */
     public function handle(Request $request): JsonResponse
     {
         $path = 'logs/log.txt';
@@ -32,6 +37,11 @@ class WebhookInvoiceController extends Controller
                 'status' => 'error',
                 'message' => 'Bad Request'
             ], 400);
+        }
+
+        if ($data['event'] === 'ONCRMDYNAMICITEMDELETE') {
+            $this->incomingWebhookInvoiceService->deleteInvoice($invoiceId);
+            return response()->json(['status' => 'success'], 200);
         }
 
         $this->incomingWebhookInvoiceService->createOrUpdateInvoice($invoiceId);
