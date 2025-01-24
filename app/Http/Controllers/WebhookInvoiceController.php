@@ -44,6 +44,10 @@ class WebhookInvoiceController extends Controller
             return response()->json(['status' => 'success'], 200);
         }
 
+        if ($data['event'] === 'ONCRMDYNAMICITEMUPDATE') {
+            sleep(3);
+        }
+
         $this->incomingWebhookInvoiceService->createOrUpdateInvoice($invoiceId);
         return response()->json(['status' => 'success'], 200);
     }

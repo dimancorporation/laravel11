@@ -114,8 +114,14 @@
                         <div
                             class="flex flex-row justify-between items-center odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                             <div class="px-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12">
-                                {{ date_format(date_create($invoice->moved_time), 'd.m.Y') }}<br/>
-                                {{ date_format(date_create($invoice->moved_time), 'H:i') }}
+                                <div class="flex items-center gap-1 mb-1">
+                                    <img class="w-[18px] h-[18px]" src="{{ asset('images/icons/calendar.png' )}}" alt="Дата оплаты" title="Дата оплаты">
+                                    {{ date_format(date_create($invoice->moved_time), 'd.m.Y') }}
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <img class="w-[18px] h-[18px]" src="{{ asset('images/icons/clock.png' )}}" alt="Время оплаты" title="Время оплаты">
+                                    {{ date_format(date_create($invoice->moved_time), 'H:i') }}
+                                </div>
                             </div>
                             <div class="px-6 py-4 dark:text-white text-sm font-medium text-slate-700 w-4/12">
                                 <div id="tooltip-top{{$invoice->id}}" role="tooltip"
