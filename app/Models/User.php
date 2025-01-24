@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Notifications\CustomResetPasswordNotification;
 use Database\Factories\UserFactory;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,10 +27,12 @@ use Illuminate\Notifications\Notifiable;
  * @method static Builder byEmailAndPhone(string $string, mixed $email)
  * @method User firstOrFail($columns = ['*'])
  */
-class User extends Authenticatable
+class User extends Authenticatable implements HasLocalePreference
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    protected string $locale = 'ru';
 
     /**
      * The attributes that are mass assignable.
@@ -63,6 +66,11 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function preferredLocale(): string
+    {
+        return $this->locale;
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -124,6 +132,7 @@ class User extends Authenticatable
     {
         return $this->role === 'Blocked';
     }
+
     public function getIdB24(): bool
     {
         return $this->id_b24;
