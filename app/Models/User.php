@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\CustomResetPasswordNotification;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -139,6 +140,11 @@ class User extends Authenticatable
     public function scopeByEmailAndPhone(Builder $query, string $email, string $phone): Builder
     {
         return $query->where('email', $email)
-            ->where('phone', '+7' . $phone);
+                     ->where('phone', '+7' . $phone);
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new CustomResetPasswordNotification($token));
     }
 }
