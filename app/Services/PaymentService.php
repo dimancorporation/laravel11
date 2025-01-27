@@ -12,11 +12,7 @@ class PaymentService
 {
     public function findUser(Request $request): User
     {
-        return User::byEmailAndPhone(
-            $request->input('Data.Email'),
-            $request->input('Data.Phone')
-        )
-            ->first();
+        return User::byEmailAndPhone($request->input('Data.Phone'))->first();
     }
 
     public function findPayment(Request $request): ?Payment

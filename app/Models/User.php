@@ -23,7 +23,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read mixed $b24Status
  * @property-read mixed $contact_id
  * @mixin Builder
- * @method static Builder byEmailAndPhone(string $string, mixed $email)
+ * @method static Builder byEmailAndPhone(mixed $email)
  * @method User firstOrFail($columns = ['*'])
  */
 class User extends Authenticatable
@@ -134,14 +134,12 @@ class User extends Authenticatable
      * Scope a query to filter by email and phone.
      *
      * @param Builder $query
-     * @param string $email
      * @param string $phone
      * @return Builder
      */
-    public function scopeByEmailAndPhone(Builder $query, string $email, string $phone): Builder
+    public function scopeByEmailAndPhone(Builder $query, string $phone): Builder
     {
-        return $query->where('email', $email)
-                     ->where('phone', '+7' . $phone);
+        return $query->where('phone', '+7' . $phone);
     }
 
     public function sendPasswordResetNotification($token): void
