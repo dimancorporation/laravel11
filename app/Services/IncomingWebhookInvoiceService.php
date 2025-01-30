@@ -199,9 +199,9 @@ class IncomingWebhookInvoiceService
             'opportunity' => $payment->amount,
             'stageId' => $successInvoiceStage,
             $paymentType => $paymentMethodCode,
-            'parentId2' => $user->contact_id,
+            'parentId2' => $user->id_b24,
             $additionalPaymentInfo => json_encode($additionalInfo),
-            'comments' => 'Оплата через онлайн кассу',
+            'comments' => 'Оплата через онлайн кассу от ' . $user->name,
         ]);
 
         $invoiceData = iterator_to_array($invoice->item()->getIterator());
