@@ -52,6 +52,7 @@ class User extends Authenticatable
         'link_to_court',
         'sum_contract',
         'message_from_b24',
+        'ip_address',
     ];
 
     /**

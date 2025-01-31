@@ -11,19 +11,17 @@ use App\Models\User;
 use Bitrix24\SDK\Services\ServiceBuilder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
+use Random\RandomException;
 
 class IncomingWebhookDealService
 {
     protected ServiceBuilder $serviceBuilder;
     protected SettingsService $settingsService;
 
-    public function __construct(ServiceBuilder $serviceBuilder, SettingsService $settingsService)
+    public function __construct()
     {
-//        $this->serviceBuilder = app(ServiceBuilder::class);
-//        $this->settingsService = app(SettingsService::class);
-        $this->serviceBuilder = $serviceBuilder;
-        $this->settingsService = $settingsService;
+        $this->serviceBuilder = app(ServiceBuilder::class);
+        $this->settingsService = app(SettingsService::class);
     }
 
     public function isRequestFromWebhook(array $data, array $dealData): bool
@@ -39,6 +37,9 @@ class IncomingWebhookDealService
         return true;
     }
 
+    /**
+     * @throws RandomException
+     */
     private function generatePassword(int $length = 8): string
     {
         $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -50,20 +51,6 @@ class IncomingWebhookDealService
         }
 
         return $password;
-    }
-
-    private function updateAuthData(int $dealId, string $phone, string $password): void
-    {
-        $fields = B24UserField::whereIn('site_field', ['userLogin', 'userPassword'])
-            ->pluck('uf_crm_code', 'site_field')->toArray();
-
-        $userLogin = $fields['userLogin']; // userLogin - код поля в б24 'UF_CRM_1708511589360'
-        $userPassword = $fields['userPassword']; // userPassword - код поля в б24 'UF_CRM_1708511607581'
-
-        $this->serviceBuilder->getCRMScope()->deal()->update($dealId, [
-            $userLogin => $phone,
-            $userPassword => $password,
-        ]);
     }
 
     public function getDealData(int $dealId): array
@@ -156,7 +143,15 @@ class IncomingWebhookDealService
         $contactFullName = $this->getContactFullName($contactData);
         $email = $this->getEmail($contactData);
         $phone = $this->getPhone($contactData);
+
         $b24Status = B24Status::where('b24_status_id', $dealData['userStatus'])->first();
+
+        if (!$b24Status) {
+            return [
+                'error' => 'Запись с указанным статусом(b24_statuses) не найдена ' . $dealData['userStatus'],
+            ];
+        }
+
         return [
             'name' => $contactFullName,
             'email' => $email,
@@ -197,6 +192,15 @@ class IncomingWebhookDealService
         /* todo использовать listener и event-ы */
         $documents = $this->prepareDocumentsData($dealData);
         $userData = $this->getCommonUserData($dealData);
+
+        if (isset($userData['error'])) {
+            Log::error($userData['error']);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An internal server error has occurred.',
+            ], 500);
+        }
+
         $user = User::where('id_b24', $dealId)->first();
         if (!$user) {
             $password = $this->generatePassword();
@@ -212,11 +216,21 @@ class IncomingWebhookDealService
             ]);
             $newUser = User::create($newUserData);
             event(new UpdateAuthDataEvent($dealId, $userData['phone'], $password));
+            Log::info('Deal created:', $newUserData);
             return $newUser;
         } else {
             $b24documentsId = B24Documents::find($user->documents_id);
             $b24documentsId->update($documents);
+            unset($userData['email']);
+            Log::info('Deal updated:', $userData);
             return $user->update($userData);
         }
+    }
+
+    public function validateRequestData(array $data): bool
+    {
+        return array_key_exists('data', $data) &&
+            array_key_exists('FIELDS', $data['data']) &&
+            array_key_exists('ID', $data['data']['FIELDS']);
     }
 }

@@ -52,6 +52,8 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
+        $userIP = $request->ip();
+        $user->update(['ip' => $userIP]);
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

@@ -7,7 +7,6 @@ use Bitrix24\SDK\Services\ServiceBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class WebhookController extends Controller
 {
@@ -20,28 +19,31 @@ class WebhookController extends Controller
     }
     public function handle(Request $request): JsonResponse
     {
-        $path = 'logs/log.txt';
         $data = $request->all();
         Log::info('Bitrix24 deal webhook received:', $data);
-        Storage::put($path, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
         $dealId = $data['data']['FIELDS']['ID'];
-        $dealData = $this->incomingWebhookDealService->getDealData($dealId);
+        if (!$this->incomingWebhookDealService->validateRequestData($data)) {
+            Log::error('Invalid request data received. Missing required keys.');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid request data.'
+            ], 400);
+        }
 
-        Log::info('dealData received:', $dealData);
-        Storage::put($path, json_encode($dealData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        $dealData = $this->incomingWebhookDealService->getDealData($dealId);
+        Log::info('Received data by deal id:', $dealData);
 
         $isRequestFromWebhook = $this->incomingWebhookDealService->isRequestFromWebhook($data, $dealData);
         if (!$isRequestFromWebhook) {
+            Log::error('Bad request from deal webhook.');
             return response()->json([
                 'status' => 'error',
-                'message' => 'Insufficient permissions to create account'
+                'message' => 'Insufficient permissions.'
             ], 403);
         }
 
         $this->incomingWebhookDealService->createOrUpdateUser($dealId, $dealData);
-
-        Storage::put($path, json_encode($dealData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return response()->json(['status' => 'success'], 200);
     }
 }
