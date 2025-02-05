@@ -15,48 +15,42 @@ jobs:
       SSH_PORT: ${{ secrets.SSH_PORT || 22 }}
 
     steps:
-      - name: display
-        run: |
-          echo "SERVER_IP" |  awk '$1=$1' FS= OFS=" "
-
-          touch .env
-          echo SERVER_IP = $SERVER_IP >> .env
-
-          cat .env | awk '$1=$1' FS= OFS=" "
-
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Create target directory on VPS
         uses: appleboy/ssh-action@v1.2.0
         with:
-          envs: SERVER_IP, SSH_USERNAME, SSH_PRIVATE_KEY, SSH_PORT
           host: ${{ env.SERVER_IP }}
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           port: ${{ env.SSH_PORT || 22 }}
           script: |
-            mkdir -p /home/${{ secrets.SSH_USERNAME }}/app_manifests/
+            mkdir -p /home/${{ env.SSH_USERNAME }}/app_manifests/
 
       - name: Install K3s on VPS
-        run: |
-          ssh -o StrictHostKeyChecking=no \
-              -i ~/.ssh/id_rsa \
-              ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} '
-              curl -sfL https://get.k3s.io | sh -s - \
-                --node-ip ${{ secrets.SERVER_IP }} \
-                --disable traefik \
-                --disable servicelb \
-                --flannel-backend=host-gw
-          '
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: ${{ env.SSH_USERNAME }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          port: ${{ env.SSH_PORT || 22 }}
+          script: |
+            curl -sfL https://get.k3s.io | sh -s - \
+              --node-ip ${{ env.SERVER_IP }} \
+              --disable traefik \
+              --disable servicelb \
+              --flannel-backend=host-gw
 
       - name: Verify K3s Installation
-        run: |
-          ssh -o StrictHostKeyChecking=no \
-              -i ~/.ssh/id_rsa \
-              ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} '
-              sudo kubectl get nodes
-          '
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: ${{ env.SSH_USERNAME }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          port: ${{ env.SSH_PORT || 22 }}
+          script: |
+            kubectl get nodes
 
       - name: Copy Kubernetes manifests to VPS
         uses: appleboy/scp-action@v0.1.6
