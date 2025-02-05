@@ -55,20 +55,20 @@ jobs:
       - name: Copy Kubernetes manifests to VPS
         uses: appleboy/scp-action@v0.1.6
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT || 22 }}
+          host: ${{ env.SERVER_IP }}
+          username: ${{ env.SSH_USERNAME }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          port: ${{ env.SSH_PORT || 22 }}
           source: "kubernetes/*"  # Path to your manifests in the repository
-          target: "/home/${{ secrets.SSH_USERNAME }}/app_manifests/"
+          target: "/home/${{ env.SSH_USERNAME }}/app_manifests/"
 
       - name: Apply manifests using kubectl
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT || 22 }}
+          host: ${{ env.SERVER_IP }}
+          username: ${{ env.SSH_USERNAME }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          port: ${{ env.SSH_PORT || 22 }}
           script: |
             export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-            kubectl apply -f /home/${{ secrets.SSH_USERNAME }}/app_manifests/
+            kubectl apply -f /home/${{ env.SSH_USERNAME }}/app_manifests/kubernetes
