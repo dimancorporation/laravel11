@@ -8,17 +8,27 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env:
+      SERVER_IP: ${{ secrets.SERVER_IP }}
+      SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      SSH_PORT: ${{ secrets.SSH_PORT || 22 }}
+
     steps:
+      - name: display
+        run: |
+          echo "SERVER_IP" |  awk '$1=$1' FS= OFS=" "
+
+          touch .env
+          echo SERVER_IP = SERVER_IP >> .env
+
+          cat .env | awk '$1=$1' FS= OFS=" "
+
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Create target directory on VPS
         uses: appleboy/ssh-action@v1.2.0
-        env:
-          SERVER_IP: ${{ secrets.SERVER_IP }}
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_PORT: ${{ secrets.SSH_PORT || 22 }}
         with:
           envs: SERVER_IP, SSH_USERNAME, SSH_PRIVATE_KEY, SSH_PORT
           host: ${{ env.SERVER_IP }}
