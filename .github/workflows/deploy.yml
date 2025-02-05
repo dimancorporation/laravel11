@@ -12,9 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Check Secrets
-        run: echo "${{ secrets.SERVER_IP }}"
-
       - name: Create target directory on VPS
         uses: appleboy/ssh-action@v1.2.0
         env:
@@ -23,11 +20,13 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_PORT: ${{ secrets.SSH_PORT || 22 }}
         with:
+          envs: SERVER_IP, SSH_USERNAME, SSH_PRIVATE_KEY, SSH_PORT
           host: ${{ env.SERVER_IP }}
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           port: ${{ env.SSH_PORT || 22 }}
           script: |
+            echo "$SERVER_IP"
             mkdir -p /home/${{ secrets.SSH_USERNAME }}/app_manifests/
 
       - name: Install K3s on VPS
