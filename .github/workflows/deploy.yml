@@ -20,10 +20,10 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_PORT: ${{ secrets.SSH_PORT || 22 }}
         with:
-          host: "$SERVER_IP"
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT || 22 }}
+          host: ${{ env.SERVER_IP }}
+          username: ${{ env.SSH_USERNAME }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          port: ${{ env.SSH_PORT || 22 }}
           script: |
             mkdir -p /home/${{ secrets.SSH_USERNAME }}/app_manifests/
 
