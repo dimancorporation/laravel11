@@ -110,4 +110,4 @@ jobs:
               --optimize-autoloader \
               --no-interaction \
               --no-progress
-            kubectl exec "$POD_NAME" -- npm run build
+            kubectl exec "$POD_NAME" -- npm install && npm run build
