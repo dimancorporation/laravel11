@@ -39,7 +39,6 @@ jobs:
             curl -sfL https://get.k3s.io | sh -s - \
               --node-ip ${{ env.SERVER_IP }} \
               --disable traefik \
-              --disable servicelb \
               --flannel-backend=host-gw
 
       - name: Verify K3s Installation
