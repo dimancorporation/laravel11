@@ -1,0 +1,72 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [ "master" ]
+
+env:
+  HOST: ${{ secrets.SERVER_IP }}
+  USERNAME: ${{ secrets.SSH_USERNAME }}
+  PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  PORT: ${{ secrets.SSH_PORT || 22 }}
+  TARGET_DIR: "/home/${{ secrets.SSH_USERNAME }}/app_manifests"
+  KUBECONFIG_PATH: "/etc/rancher/k3s/k3s.yaml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create target directory on VPS
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ env.HOST }}
+          username: ${{ env.USERNAME }}
+          key: ${{ env.PRIVATE_KEY }}
+          port: ${{ env.PORT }}
+          script: |
+            mkdir -p /home/${{ secrets.SSH_USERNAME }}/app_manifests/
+
+      - name: Install K3s on VPS
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+              -i ~/.ssh/id_rsa \
+              ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} '
+              curl -sfL https://get.k3s.io | sh -s - \
+                --node-ip ${{ secrets.SERVER_IP }} \
+                --disable traefik \
+                --disable servicelb \
+                --flannel-backend=host-gw
+          '
+
+      - name: Verify K3s Installation
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+              -i ~/.ssh/id_rsa \
+              ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} '
+              sudo kubectl get nodes
+          '
+
+      - name: Copy Kubernetes manifests to VPS
+        uses: appleboy/scp-action@v0.1.6
+        with:
+          host: ${{ env.HOST }}
+          username: ${{ env.USERNAME }}
+          key: ${{ env.PRIVATE_KEY }}
+          port: ${{ env.PORT }}
+          source: "kubernetes/*"  # Path to your manifests in the repository
+          target: "/home/${{ env.USERNAME }}/app_manifests/"
+
+      - name: Apply manifests using kubectl
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ env.HOST }}
+          username: ${{ env.USERNAME }}
+          key: ${{ env.PRIVATE_KEY }}
+          port: ${{ env.PORT }}
+          script: |
+            export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+            kubectl apply -f /home/${{ secrets.SSH_USERNAME }}/app_manifests/

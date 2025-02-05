@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: setup-scripts
+data:
+  setup-app.sh: |
+    #!/bin/sh
+    # Скрипт для настройки приложения
+    set -e
+    if [ -d "/var/www/html/.git" ]; then
+      echo "Репозиторий уже инициализирован. Обновление..."
+      cd /var/www/html
+      git fetch
+      git checkout "$GIT_BRANCH"
+      git pull origin "$GIT_BRANCH"
+    else
+      echo "Клонирование нового репозитория..."
+      git clone --branch "$GIT_BRANCH" --single-branch "$GIT_REPO" /var/www/html
+    fi
+
+    cd /var/www/html
+
+    echo "Установка зависимостей через Composer..."
+    composer install --no-dev --optimize-autoloader
+
+    echo "Генерация уникального ключа приложения..."
+    if [ ! -f ".env" ]; then
+      echo "Копирование .env.example в .env..."
+      cp .env.example .env
+    fi
+
+    php artisan key:generate
+
+    echo "Установка зависимостей Node.js..."
+    npm ci
+
+    echo "Сборка фронтенд-ресурсов..."
+    npm run build
+
+    echo "Настройка завершена."

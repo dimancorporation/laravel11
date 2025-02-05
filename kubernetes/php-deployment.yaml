@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-fpm
+  labels:
+    app: php-fpm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php-fpm
+  template:
+    metadata:
+      labels:
+        app: php-fpm
+    spec:
+      volumes:
+        - name: app-code
+          hostPath:
+            path: /c/Users/valfr/Documents/PhpstormProjects/my-deal
+            type: Directory
+      containers:
+        - name: php-fpm
+          image: valfred88/my-deal:latest
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - name: app-code
+              mountPath: /var/www/html
+          env:
+            - name: APP_ENV
+              value: "production"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
