@@ -62,6 +62,19 @@ jobs:
           source: "kubernetes/*"  # Path to your manifests in the repository
           target: "/home/${{ env.SSH_USERNAME }}/app_manifests/"
 
+      - name: Create env on K3s cluster
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: ${{ env.SSH_USERNAME }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          port: ${{ env.SSH_PORT || 22 }}
+          script: |
+            kubectl create secret generic secret \
+              --from-literal=password=${{ secrets.SSH_USERNAME }} \
+              --dry-run=client -o yaml | kubectl apply -f -
+
+
       - name: Apply manifests using kubectl
         uses: appleboy/ssh-action@v1.2.0
         with:
