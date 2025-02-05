@@ -94,3 +94,20 @@ jobs:
           script: |
             export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
             kubectl apply -f /home/${{ env.SSH_USERNAME }}/app_manifests/kubernetes
+
+      - name: Install dependencies
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: ${{ env.SSH_USERNAME }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          port: ${{ env.SSH_PORT || 22 }}
+          script: |
+            POD_NAME=$(kubectl get pods -l app=php-fpm -o jsonpath='{.items[0].metadata.name}')
+            cd /var/www/app
+            kubectl exec "$POD_NAME" -- composer install \
+              --no-dev \
+              --optimize-autoloader \
+              --no-interaction \
+              --no-progress
+            kubectl exec "$POD_NAME" -- npm build
