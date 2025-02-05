@@ -37,7 +37,7 @@ spec:
       volumes:
         - name: app-code
           hostPath:
-            path: /c/Users/valfr/Documents/PhpstormProjects/my-deal
+            path: /var/www/app
             type: Directory
         - name: nginx-config-volume
           configMap:

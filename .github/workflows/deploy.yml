@@ -52,6 +52,16 @@ jobs:
           script: |
             kubectl get nodes
 
+      - name: Copy app to VPS
+        uses: appleboy/scp-action@v0.1.6
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: ${{ env.SSH_USERNAME }}
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          port: ${{ env.SSH_PORT || 22 }}
+          source: "./*"
+          target: "/var/www/app/"
+
       - name: Copy Kubernetes manifests to VPS
         uses: appleboy/scp-action@v0.1.6
         with:
@@ -59,7 +69,7 @@ jobs:
           username: ${{ env.SSH_USERNAME }}
           key: ${{ env.SSH_PRIVATE_KEY }}
           port: ${{ env.SSH_PORT || 22 }}
-          source: "kubernetes/*"  # Path to your manifests in the repository
+          source: "kubernetes/*"
           target: "/home/${{ env.SSH_USERNAME }}/app_manifests/"
 
       - name: Create env on K3s cluster
