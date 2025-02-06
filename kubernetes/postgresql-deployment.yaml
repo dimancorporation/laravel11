@@ -1,35 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: php-fpm
+  name: pgsql
   labels:
-    app: php-fpm
+    app: pgsql
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: php-fpm
+      app: pgsql
   template:
     metadata:
       labels:
-        app: php-fpm
+        app: pgsql
     spec:
-      volumes:
-        - name: app-code
-          hostPath:
-            path: /var/www/app
-            type: Directory
       containers:
-        - name: php-fpm
-          image: valfred88/my-deal:latest
-          ports:
-            - containerPort: 9000
-          volumeMounts:
-            - name: app-code
-              mountPath: /var/www/html
+        - name: postgres
+          image: postgres:15-alpine
           env:
-            - name: APP_ENV
-              value: "production"
             - name: DB_DATABASE
               valueFrom:
                 secretKeyRef:
@@ -50,10 +38,37 @@ spec:
                 secretKeyRef:
                   name: pgsql-credentials
                   key: port
-          resources:
-            requests:
-              memory: "128Mi"
-              cpu: "100m"
-            limits:
-              memory: "256Mi"
-              cpu: "200m"
+
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-storage
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgsql-service
+spec:
+  selector:
+    app: pgsql
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
