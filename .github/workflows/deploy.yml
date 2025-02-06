@@ -83,6 +83,7 @@ jobs:
           key: ${{ env.SSH_PRIVATE_KEY }}
           port: ${{ env.SSH_PORT || 22 }}
           script: |
+            cd /var/www/app
             envsubst \
               '${DB_DATABASE},${DB_USERNAME},${DB_PASSWORD},${DB_PORT}' < .env.example > .env
             kubectl create secret generic secret \
