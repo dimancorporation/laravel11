@@ -14,9 +14,9 @@ jobs:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       SSH_PORT: ${{ secrets.SSH_PORT || 22 }}
       DB_DATABASE: ${{ secrets.DATABASE }}
-      DB_USERNAME: ${{ env.DB_USERNAME }}
-      DB_PASSWORD: ${{ env.DB_PASSWORD }}
-      DB_PORT: ${{ env.DB_PORT }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_PORT: ${{ secrets.DB_PORT }}
 
     steps:
       - name: Checkout code
