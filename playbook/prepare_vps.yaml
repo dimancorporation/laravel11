@@ -1,0 +1,56 @@
+---
+- name: Deploy
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Ensure Docker is installed
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Ensure Docker service is running and enabled
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Ensure KUBECONFIG is set in .bashrc
+      lineinfile:
+        path: ~/.bashrc
+        line: 'export KUBECONFIG=/etc/rancher/k3s/k3s.yaml'
+        create: true
+
+    - name: Source .bashrc to apply changes
+      shell: source ~/.bashrc
+
+    - name: Check kube config
+      command: kubectl get nodes
+      register: kubeconfig_check
+      ignore_errors: true
+
+    - name: Display kubeconfig check result
+      debug:
+        var: kubeconfig_check
+
+    - name: Check if Helm is installed
+      command: helm version --client
+      register: helm_check
+      ignore_errors: true
+
+    - name: Install Helm if not installed
+      apt:
+        name: helm
+        state: present
+        update_cache: yes
+      when: helm_check.rc != 0
+
+    - name: Check if ingress-nginx is installed
+      command: helm list -n ingress-nginx
+      register: helm_list_output
+
+    - name: Install ingress-nginx if not installed
+      command: >
+        helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace
+      when: "ingress-nginx" not in helm_list_output.stdout

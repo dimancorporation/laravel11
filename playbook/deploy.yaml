@@ -1,0 +1,61 @@
+---
+- name: Deploy
+  hosts: all
+  become: true
+
+  vars:
+    APP_LOCALE: en
+    DB_HOST: localhost
+    DB_PORT: 5432
+    DB_DATABASE: laravel_db
+    DB_USERNAME: laravel_user
+    DB_PASSWORD: secret123
+    APP_NAME: app
+
+  tasks:
+    - name: Clone Laravel repository
+      git:
+        repo: https://github.com/dimancorporation/laravel11
+        dest: /var/www/{{ APP_NAME }}
+        version: master
+        force: yes
+
+    - name: Create Laravel .env file
+      template:
+        src: templates/laravel_env.j2
+        dest: /var/www/{{ APP_NAME }}/.env
+        mode: '0644'
+        owner: "{{ ansible_user | default('www-data') }}"
+        group: "{{ ansible_user | default('www-data') }}"
+
+    - name: Get the pod name for php-fpm
+      shell: |
+        kubectl get pods -l app=php-fpm -o jsonpath='{.items[0].metadata.name}'
+      register: php_fpm_pod_name
+
+    - name: Allow /var/www/html as safe directory in git
+      shell: |
+        kubectl exec "{{ php_fpm_pod_name.stdout }}" -- git config \
+          --global \
+          --add safe.directory /var/www/html
+
+    - name: Run composer install on php-fpm pod
+      shell: |
+        kubectl exec "{{ php_fpm_pod_name.stdout }}" --request-timeout=600s -- \
+          env COMPOSER_ALLOW_SUPERUSER=1 composer install \
+            --no-dev \
+            --optimize-autoloader \
+            --no-interaction \
+            --no-progress
+
+    - name: Generate application key
+      shell: |
+        kubectl exec "{{ php_fpm_pod_name.stdout }}" -- php artisan key:generate
+
+    - name: Install npm dependencies
+      shell: |
+        kubectl exec "{{ php_fpm_pod_name.stdout }}" -- npm ci --omit=dev --maxsockets=3
+
+    - name: Build npm assets
+      shell: |
+        kubectl exec "{{ php_fpm_pod_name.stdout }}" -- npm run build

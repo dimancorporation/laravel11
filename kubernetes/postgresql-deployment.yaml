@@ -18,6 +18,11 @@ spec:
         - name: postgres
           image: postgres:15-alpine
           env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgsql-credentials
+                  key: password
             - name: DB_DATABASE
               valueFrom:
                 secretKeyRef:

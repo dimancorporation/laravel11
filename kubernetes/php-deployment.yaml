@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: php-fpm
+        tier: php
     spec:
       volumes:
         - name: app-code
