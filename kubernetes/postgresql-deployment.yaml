@@ -14,6 +14,26 @@ spec:
       labels:
         app: pgsql
     spec:
+      terminationGracePeriodSeconds: 30
+      initContainers:
+        - name: init-postgres
+          image: postgres:15-alpine
+          command: [
+            "sh",
+            "-c",
+            "PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U postgres -c \"CREATE DATABASE $DB_DATABASE;\""
+          ]
+          env:
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: pgsql-credentials
+                  key: database
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgsql-credentials
+                  key: password
       containers:
         - name: postgres
           image: postgres:15-alpine
