@@ -15,55 +15,25 @@ spec:
         app: pgsql
     spec:
       terminationGracePeriodSeconds: 30
-      initContainers:
-        - name: init-postgres
-          image: postgres:15-alpine
-          command: [
-            "sh",
-            "-c",
-            "sleep 10 && PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U postgres -c \"CREATE DATABASE $DB_DATABASE;\""
-          ]
-          env:
-            - name: DB_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: pgsql-credentials
-                  key: database
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: pgsql-credentials
-                  key: password
       containers:
         - name: postgres
           image: postgres:15-alpine
           env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: pgsql-credentials
+                  key: database
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: pgsql-credentials
+                  key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: pgsql-credentials
                   key: password
-            - name: DB_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: pgsql-credentials
-                  key: database
-            - name: DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: pgsql-credentials
-                  key: username
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: pgsql-credentials
-                  key: password
-            - name: DB_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: pgsql-credentials
-                  key: port
-
           ports:
             - containerPort: 5432
           volumeMounts:
