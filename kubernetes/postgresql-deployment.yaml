@@ -21,7 +21,7 @@ spec:
           command: [
             "sh",
             "-c",
-            "PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U postgres -c \"CREATE DATABASE $DB_DATABASE;\""
+            "sleep 10 && PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U postgres -c \"CREATE DATABASE $DB_DATABASE;\""
           ]
           env:
             - name: DB_DATABASE
