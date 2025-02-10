@@ -123,4 +123,4 @@ jobs:
               --no-progress
             kubectl exec "$POD_NAME" -- npm ci --omit=dev
             kubectl exec "$POD_NAME" -- npm run build
-            kubectl exec "$POD_NAME" -- php artisan migrate --seed
+            kubectl exec "$POD_NAME" -- php artisan migrate --seed --force
