@@ -59,3 +59,7 @@
     - name: Build npm assets
       shell: |
         kubectl exec "{{ php_fpm_pod_name.stdout }}" -- npm run build
+
+    - name: Database migrations
+      shell: |
+        kubectl exec "{{ php_fpm_pod_name.stdout }}" -- php artisan migrate --seed
