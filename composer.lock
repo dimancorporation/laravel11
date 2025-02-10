@@ -41,10 +41,10 @@
                 "symfony/http-client-contracts": "^2 || ^3",
                 "symfony/http-foundation": "^6 || ^7",
                 "symfony/mime": "^6 || ^7",
-                "symfony/uid": "^6 || ^7",
-                "fakerphp/faker": "^1"
+                "symfony/uid": "^6 || ^7"
             },
             "require-dev": {
+                "fakerphp/faker": "^1",
                 "ergebnis/composer-normalize": "^2",
                 "friendsofphp/php-cs-fixer": "^3",
                 "lendable/composer-license-checker": "^1.2",
