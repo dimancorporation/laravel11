@@ -18,13 +18,13 @@ spec:
       volumes:
         - name: app-code
           hostPath:
-            path: /var/www/app
+            path: /Users/valfred88/PhpstormProjects/laravel11
             type: Directory
       containers:
         - name: php-fpm
           image: valfred88/my-deal:latest
           ports:
-            - containerPort: 9000
+            - containerPort: 80
           volumeMounts:
             - name: app-code
               mountPath: /var/www/html
@@ -54,7 +54,7 @@ spec:
           resources:
             requests:
               memory: "128Mi"
-              cpu: "100m"
+              cpu: "150m"
             limits:
               memory: "256Mi"
-              cpu: "200m"
+              cpu: "300m"

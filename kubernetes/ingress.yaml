@@ -6,19 +6,47 @@ metadata:
     app: nginx
   namespace: default
   annotations:
-    nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
-    nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
-    nginx.ingress.kubernetes.io/fastcgi-params-configmap: "dev-ksu"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - app.kube.local
   rules:
-    - host: test.dev-ksu.ru
+    - host: app.kube.local
       http:
         paths:
           - path: /
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: php-fpm-service
                 port:
-                  number: 9000
+                  number: 80
+#---
+#apiVersion: networking.k8s.io/v1
+#kind: Ingress
+#metadata:
+#  name: kubernetes-dashboard
+#  namespace: kubernetes-dashboard
+#  annotations:
+#    konghq.com/strip-path: "true"
+#    cert-manager.io/issuer: "letsencrypt-staging"
+#    nginx.ingress.kubernetes.io/rewrite-target: /
+#    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+#spec:
+#  ingressClassName: nginx
+#  tls:
+#    - hosts:
+#        - dashboard.kube.local
+#  rules:
+#    - host: dashboard.kube.local
+#      http:
+#        paths:
+#          - path: /
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: kubernetes-dashboard-kong-proxy
+#                port:
+#                  number: 443

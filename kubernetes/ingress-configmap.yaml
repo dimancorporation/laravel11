@@ -3,5 +3,6 @@ kind: ConfigMap
 metadata:
   name: dev-ksu
 data:
-  SCRIPT_FILENAME: "$realpath_root$fastcgi_script_name;"
-  DOCUMENT_ROOT: "/var/www/html/public"
+#  SCRIPT_FILENAME: "/var/www/html/public/index.php"
+  SCRIPT_FILENAME: "$realpath_root$fastcgi_script_name"
+  DOCUMENT_ROOT: "/var/www/html"

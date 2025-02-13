@@ -1,0 +1,16 @@
+<VirtualHost *:80>
+    ServerAdmin admin@{{ APP_DOMAIN }}
+    ServerName {{ APP_DOMAIN }}
+    ServerAlias {{ APP_DOMAIN }}
+    DocumentRoot /var/www/html/public
+
+    <Directory /var/www/html/public>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    LogLevel debug
+    ErrorLog /var/log/apache2/error.log
+    CustomLog /var/log/apache2/access.log combined
+</VirtualHost>

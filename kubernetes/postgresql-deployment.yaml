@@ -18,7 +18,11 @@ spec:
       containers:
         - name: postgres
           image: postgres:15-alpine
+#          command: [ "sleep" ]
+#          args: [ "600" ]
           env:
+            - name: PGOPTIONS
+              value: "-c zero_damaged_pages=on"
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
@@ -39,6 +43,10 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgres-storage
+          lifecycle:
+            preStop:
+              exec:
+                command: [ "/bin/sh", "-c", "pg_ctl -D /var/lib/postgres/data -w -t 60 -m fast stop" ]
       volumes:
         - name: postgres-storage
           persistentVolumeClaim:
@@ -66,7 +74,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: postgres-storage
   local:
-    path: /var/lib/postgresql/data
+    path: /Users/valfred88/PhpstormProjects/laravel11/pgsql/data
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -74,7 +82,7 @@ spec:
             - key: kubernetes.io/hostname
               operator: In
               values:
-                - 185-46-9-205.cloudvps.regruhosting.ru
+                - docker-desktop
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
