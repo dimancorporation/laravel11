@@ -9,6 +9,7 @@ use App\Models\B24Status;
 use App\Models\B24UserField;
 use App\Models\User;
 use Bitrix24\SDK\Services\ServiceBuilder;
+use Exception;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Random\RandomException;
@@ -53,34 +54,78 @@ class IncomingWebhookDealService
         return $password;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getDealData(int $dealId): array
     {
-        $userFields = B24UserField::all();
-        $dealData = iterator_to_array(
-            $this->serviceBuilder->getCRMScope()->deal()->get($dealId)->deal()->getIterator()
-        );
-        $result = [];
-        foreach ($userFields as $field) {
-            switch ($field->site_field) {
-                case 'contactId':
-                    $result['contactId'] = $dealData['CONTACT_ID'];
-                    break;
-                case 'isUserCreateAccount':
-                    $result['isUserCreateAccount'] = isset($dealData[$field->uf_crm_code]) && $dealData[$field->uf_crm_code] !== '';
-                    break;
-                case 'userStatus':
-                    $result['userStatus'] = $dealData[$field->uf_crm_code] ? : 0;
-                    break;
-                case 'userContractAmount':
-                    $result['userContractAmount'] = $dealData[$field->uf_crm_code] ? : 0;
-                    break;
-                default:
-                    $result[$field->site_field] = $dealData[$field->uf_crm_code];
-                    break;
+        Log::info('Начало получения данных по сделке', [
+            'deal_id' => $dealId,
+        ]);
+
+        try {
+            $userFields = B24UserField::all();
+            Log::info('Получены поля пользователя', [
+                'userFields_count' => $userFields->count(),
+            ]);
+
+            $dealData = iterator_to_array(
+                $this->serviceBuilder->getCRMScope()->deal()->get($dealId)->deal()->getIterator()
+            );
+
+            $result = [];
+            foreach ($userFields as $field) {
+                switch ($field->site_field) {
+                    case 'contactId':
+                        $result['contactId'] = $dealData['CONTACT_ID'];
+                        break;
+                    case 'isUserCreateAccount':
+                        $result['isUserCreateAccount'] = isset($dealData[$field->uf_crm_code]) && $dealData[$field->uf_crm_code] !== '';
+                        break;
+                    case 'userStatus':
+                        $result['userStatus'] = $dealData[$field->uf_crm_code] ?: 0;
+                        break;
+                    case 'userContractAmount':
+                        $result['userContractAmount'] = $dealData[$field->uf_crm_code] ?: 0;
+                        break;
+                    default:
+                        $result[$field->site_field] = $dealData[$field->uf_crm_code];
+                        break;
+                }
+
+                if ($field->site_field !== 'userPassword') {
+                    Log::info('Обработано поле', [
+                        'field' => $field->site_field,
+                        'value' => $result[$field->site_field] ?? null,
+                    ]);
+                }
             }
+
+            $userDocuments = $this->getDocuments($dealData);
+            Log::info('Получены документы пользователя', [
+                'documents_count' => count($userDocuments),
+            ]);
+
+            $finalResult = array_merge($result, $userDocuments);
+            $finalResultCopy = [];
+            foreach ($finalResult as $key => $value) {
+                if ($key !== 'userPassword') {
+                    $finalResultCopy[$key] = $value;
+                }
+            }
+            Log::info('Формирование итоговых данных по сделке', [
+                'finalResult' => $finalResultCopy,
+            ]);
+
+            return $finalResult;
+        } catch (Exception $e) {
+            Log::error('Ошибка при получении данных по сделке', [
+                'deal_id' => $dealId,
+                'error_message' => $e->getMessage(),
+            ]);
+
+            throw new Exception('Ошибка при получении данных по сделке: ' . $e->getMessage());
         }
-        $userDocuments = $this->getDocuments($dealData);
-        return array_merge($result, $userDocuments) ?? [];
     }
 
     private function getDocuments(array $dealData): array
@@ -190,11 +235,32 @@ class IncomingWebhookDealService
     public function createOrUpdateUser($dealId, $dealData)
     {
         /* todo использовать listener и event-ы */
+        $dealDataCopy = [];
+        foreach ($dealData as $key => $value) {
+            if ($key !== 'userPassword') {
+                $dealDataCopy[$key] = $value;
+            }
+        }
+        Log::info('Начало процесса создания или обновления пользователя', [
+            'deal_id' => $dealId,
+            'deal_data' => $dealDataCopy,
+        ]);
+
         $documents = $this->prepareDocumentsData($dealData);
+        Log::info('Подготовлены данные документов', [
+            'documents' => $documents,
+        ]);
+
         $userData = $this->getCommonUserData($dealData);
+        Log::info('Получены общие данные пользователя', [
+            'user_data' => $userData,
+        ]);
 
         if (isset($userData['error'])) {
-            Log::error($userData['error']);
+            Log::error('Ошибка получения данных пользователя', [
+                'error' => $userData['error'],
+            ]);
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'An internal server error has occurred.',
@@ -203,11 +269,15 @@ class IncomingWebhookDealService
 
         $user = User::where('id_b24', $dealId)->first();
         if (!$user) {
+            Log::info('Пользователь не найден, создается новый', [
+                'deal_id' => $dealId,
+            ]);
+
             $password = $this->generatePassword();
             $b24Documents = B24Documents::create($documents);
             $newUserData = array_merge($userData, [
                 'password' => Hash::make($password),
-                'is_first_auth' => true,
+                'is_first_auth' => false,
                 'is_registered_myself' => false,
                 'documents_id' => $b24Documents->id,
                 'link_to_court' => $dealData['userLinkToCourt'],
@@ -216,14 +286,46 @@ class IncomingWebhookDealService
             ]);
             $newUser = User::create($newUserData);
             event(new UpdateAuthDataEvent($dealId, $userData['phone'], $password));
-            Log::info('Deal created:', $newUserData);
+
+            $newUserDataCopy = [];
+            foreach ($newUserData as $key => $value) {
+                if ($key !== 'userPassword') {
+                    $newUserDataCopy[$key] = $value;
+                }
+            }
+            Log::info('Новый пользователь создан', [
+                'new_user_data' => $newUserDataCopy,
+            ]);
+
             return $newUser;
         } else {
+            Log::info('Пользователь найден, обновление данных', [
+                'user_id' => $user->id,
+                'deal_id' => $dealId,
+            ]);
+
             $b24documentsId = B24Documents::find($user->documents_id);
-            $b24documentsId->update($documents);
+            if ($b24documentsId) {
+                $b24documentsId->update($documents);
+                Log::info('Документы обновлены', [
+                    'documents_id' => $b24documentsId->id,
+                    'updated_data' => $documents,
+                ]);
+            } else {
+                Log::warning('Документы не найдены для обновления', [
+                    'user_id' => $user->id,
+                    'documents_id' => $user->documents_id,
+                ]);
+            }
+
             unset($userData['email']);
-            Log::info('Deal updated:', $userData);
-            return $user->update($userData);
+            Log::info('Данные пользователя обновлены', [
+                'updated_user_data' => $userData,
+            ]);
+
+            return $user->update(array_merge($userData, [
+                'password' => $dealData['userPassword'],
+            ]));
         }
     }
 

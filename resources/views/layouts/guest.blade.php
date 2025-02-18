@@ -18,7 +18,15 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
             <div>
                 <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                    @php
+                        $filePath = 'images/logo/logo.png';
+                    @endphp
+
+                    @if (file_exists(storage_path('app/public/' . $filePath)))
+                        <img src="{{ Storage::url($filePath) }}" alt="Логотип" style="max-width: 320px;">
+                    @else
+                        <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                    @endif
                 </a>
             </div>
 

@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\UpdateLastAuthDateTime;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use DateTime;
-use DateTimeZone;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Bitrix24\SDK\Services\ServiceBuilder;
 
@@ -36,24 +34,13 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
-        $dateTimeInMSK = (new DateTime("now", new DateTimeZone('Europe/Moscow')))->format('d.m.Y H:i:s');
-        $user = Auth::user();
-        if ($user->role !== 'Admin') {
-//        if ($user->isAdmin()) {
-            $b24Id = $user->id_b24;
-            $lastAuthDate = DB::table('b24_user_fields')
-                ->where('site_field', 'userLastAuthDate')
-                ->value('uf_crm_code');
-            $this->serviceBuilder->getCRMScope()->deal()->update($b24Id, [
-                $lastAuthDate => $dateTimeInMSK,
-            ]);
-        }
-
+        $user = auth()->user();
         $userIP = $request->ip();
-        $user->update(['ip' => $userIP]);
+
+        event(new UpdateLastAuthDateTime($user, $userIP));
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

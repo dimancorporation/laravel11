@@ -17,6 +17,11 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->string('name');
             $table->text('value');
+            $table->text('description')->nullable();
+            $table->string('category')->nullable();
+            $table->boolean('is_visible')->default(true);
+            $table->boolean('is_editable')->default(true);
+            $table->boolean('is_required')->default(false);
             $table->timestamps();
         });
 

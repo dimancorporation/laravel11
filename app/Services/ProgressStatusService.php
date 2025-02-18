@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\ThemeSetting;
+
 class ProgressStatusService
 {
     public function getProgressStatusImages(int $key): array
@@ -11,6 +13,7 @@ class ProgressStatusService
 
     protected function getImages(int $key): array
     {
+        $activeTheme = ThemeSetting::active();
         $tasks = [
             ['Запрос БКИ', 'status01', 2],
             ['Запрос ОКБ', 'status02', 2],
@@ -43,12 +46,27 @@ class ProgressStatusService
             $alt = array_shift($task);
             $filename = array_shift($task);
             $thresholds = $task;
+
+            $themeName = $activeTheme->theme_name;
+            $notCompletedPath = "images/progress-statuses/$themeName/not_completed/$filename.png";
+            $inProgressPath = "images/progress-statuses/$themeName/in_progress/$filename.png";
+            $completedPath = "images/progress-statuses/$themeName/completed/$filename.png";
+
             if ($key < $thresholds[0] || $key == 0) {
-                $imagePaths[] = "images/progress-statuses/not_completed/$filename.png";
+                if (!file_exists($notCompletedPath)) {
+                    $themeName = 'default';
+                }
+                $imagePaths[] = "images/progress-statuses/$themeName/not_completed/$filename.png";
             } elseif (($thresholds[1] ?? $thresholds[0]) >= $key) {
-                $imagePaths[] = "images/progress-statuses/in_progress/$filename.png";
+                if (!file_exists($inProgressPath)) {
+                    $themeName = 'default';
+                }
+                $imagePaths[] = "images/progress-statuses/$themeName/in_progress/$filename.png";
             } else {
-                $imagePaths[] = "images/progress-statuses/completed/$filename.png";
+                if (!file_exists($completedPath)) {
+                    $themeName = 'default';
+                }
+                $imagePaths[] = "images/progress-statuses/$themeName/completed/$filename.png";
             }
         }
 

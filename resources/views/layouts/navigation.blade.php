@@ -6,7 +6,15 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                        @php
+                            $filePath = 'images/logo/logo.png';
+                        @endphp
+
+                        @if (file_exists(storage_path('app/public/' . $filePath)))
+                            <img src="{{ Storage::url($filePath) }}" alt="Логотип" style="max-height: 36px;">
+                        @else
+                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                        @endif
                     </a>
                 </div>
 

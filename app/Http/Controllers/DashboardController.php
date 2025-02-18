@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\DashboardService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -15,6 +16,9 @@ class DashboardController extends Controller
         $this->dashboardService = $dashboardService;
     }
 
+    /**
+     * @throws Exception
+     */
     public function index(Request $request): View
     {
         $user = $request->user();

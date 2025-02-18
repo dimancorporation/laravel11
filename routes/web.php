@@ -7,13 +7,13 @@ use App\Http\Controllers\BitrixController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DebtorController;
 use App\Http\Controllers\DocumentsController;
+use App\Http\Controllers\LogoController;
 use App\Http\Controllers\OfferAgreement;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
-use App\Http\Middleware\FirstAuthMiddleware;
+use App\Http\Controllers\ThemeController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -32,6 +32,8 @@ Route::middleware(['auth', 'roles', 'web'])->group(function () {
     Route::post('/save-b24statuses-fields', [B24StatusController::class, 'store'])->name('save.b24statuses.fields');
     Route::post('/save-debtor-text', [SettingsController::class, 'debtor'])->name('save.debtor.text');
     Route::post('/upload-offer-agreement', [OfferAgreement::class, 'store'])->name('upload.offer.agreement');
+    Route::post('/theme', [ThemeController::class, 'update'])->name('admin.theme.update');
+    Route::post('/logo', [LogoController::class, 'update'])->name('admin.logo.update');
 });
 
 // Секция должников

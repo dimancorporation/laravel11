@@ -34,12 +34,14 @@
                         <input type="hidden" name="frame" value="false">
                         <input type="hidden" name="language" value="ru">
                         <input type="hidden" name="receipt" value="">
+                        <input type="hidden" name="userId" value="{{ Auth::user()->id }}">
+                        <input type="hidden" name="b24DealId" value="{{ Auth::user()->id_b24 }}">
                         <!-- Видимые поля -->
                         <div class="flex flex-col space-y-1">
-                            <label for="amount">Сумма заказа</label>
+                            <label for="amount">Сумма</label>
                             <input id="amount"
                                    class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                   type="text" placeholder="Сумма заказа" name="amount" required>
+                                   type="text" placeholder="Сумма" name="amount" required>
                         </div>
                         <div class="flex flex-col space-y-1 hidden">
                             <label for="order">Номер заказа</label>
@@ -56,7 +58,7 @@
                                    class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    type="text" placeholder="Описание заказа" name="description">
                         </div>
-                        <div class="flex flex-col space-y-1">
+                        <div class="flex flex-col space-y-1 hidden">
                             <label for="name">ФИО плательщика</label>
                             <input id="name"
                                    value="{{ $user->name }}"
@@ -64,7 +66,7 @@
                                    class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    type="text" placeholder="ФИО плательщика" name="name">
                         </div>
-                        <div class="flex flex-col space-y-1">
+                        <div class="flex flex-col space-y-1 hidden">
                             <label for="email">E-mail</label>
                             <input id="email"
                                    value="{{ $user->email }}"
@@ -72,7 +74,7 @@
                                    class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    type="email" placeholder="E-mail" name="email">
                         </div>
-                        <div class="flex flex-col space-y-1">
+                        <div class="flex flex-col space-y-1 hidden">
                             <label for="phone">Контактный телефон</label>
                             <input id="phone"
                                    value="{{ $user->phone }}"
@@ -234,6 +236,7 @@
                     ]
                 });
             }
+            console.log('TPF', TPF);
             pay(TPF);
         })
     </script>

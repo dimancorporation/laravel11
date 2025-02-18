@@ -35,7 +35,7 @@ class IncomingWebhookInvoiceService
         /* обрабатываем только ENTITY_TYPE_ID = 31, тк это сущность "Счета" */
         $entityTypeId = $data['data']['FIELDS']['ENTITY_TYPE_ID'];
         $path = 'logs/log.txt';
-        Log::info('Bitrix24 webhook received isRequestFromWebhook:', $data);
+        Log::info('Проверка данных в запросе, поступившем через вебхук по счетам:', $data);
         $bitrixWebhookDomain = $this->settingsService->getValueByCode('BITRIX_WEBHOOK_DOMAIN');
         $bitrixWebhookInvoiceToken = $this->settingsService->getValueByCode('BITRIX_WEBHOOK_INVOICE_TOKEN');
         $bitrixInvoiceEntityTypeId = $this->settingsService->getValueByCode('BITRIX_INVOICE_ENTITY_TYPE_ID');
@@ -86,7 +86,7 @@ class IncomingWebhookInvoiceService
 
         $path = 'logs/log.txt';
         Storage::put($path, json_encode($invoiceData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        Log::info('Bitrix24 webhook2 received:', $invoiceData);
+        Log::info('Получены данные по счету:', $invoiceData);
         return $invoiceData;
     }
 
@@ -96,50 +96,195 @@ class IncomingWebhookInvoiceService
     12/30
     111
      */
+    /*
+        use Illuminate\Support\Facades\Log;
+        use Illuminate\Support\Facades\Storage;
+
+        public function createOrUpdateInvoice(int $invoiceId): bool
+        {
+            $invoiceData = $this->getInvoiceData($invoiceId);
+            $paymentType = $this->settingsService->getValueByCode('PAYMENT_TYPE');
+            $paymentId = $invoiceData[$paymentType];
+            $paymentTypeName = $this->getPaymentTypeName($paymentId);
+            $commonFields = $this->getInvoiceCommonFields($paymentId, $invoiceData, $paymentTypeName);
+
+            $invoice = Invoice::where('b24_invoice_id', $invoiceId)->first();
+
+            if (!$invoice) {
+                return $this->createNewInvoice($invoiceData, $commonFields);
+            }
+
+            return $this->updateExistingInvoice($invoice, $commonFields);
+        }
+
+        private function createNewInvoice(array $invoiceData, array $commonFields): bool
+        {
+            $fields = array_merge(['b24_invoice_id' => $invoiceData['id']], $commonFields);
+            $additionalPaymentInfo = $this->settingsService->getValueByCode('ADDITIONAL_PAYMENT_INFO');
+
+            if (isset($invoiceData[$additionalPaymentInfo]) && $invoiceData[$additionalPaymentInfo]) {
+                $additionalFieldB24 = json_decode($invoiceData[$additionalPaymentInfo], true);
+                $fields = $this->handleOnlineCashPayment($additionalFieldB24, $fields);
+            }
+
+            $invoice = Invoice::create($fields);
+            $this->logInvoiceCreation($invoice);
+
+            return true;
+        }
+
+        private function handleOnlineCashPayment(array $additionalFieldB24, array $fields): array
+        {
+            $payment_id = $additionalFieldB24['payment_id'];
+            $PaymentId = $additionalFieldB24['PaymentId'];
+            $OrderId = $additionalFieldB24['OrderId'];
+
+            $fields = array_merge(['payment_id' => $payment_id, 'comments' => 'Оплата через онлайн кассу'], $fields);
+
+            $this->logOnlineCashPayment($fields);
+
+            $payment = Payment::where('order_id', $OrderId)
+                ->where('payment_id', $PaymentId)
+                ->first();
+
+            if ($payment) {
+                $fields['payment_id'] = $payment->id;
+            }
+
+            return $fields;
+        }
+
+        private function logOnlineCashPayment(array $fields): void
+        {
+            $path = 'logs/log.txt';
+            $existingContent = Storage::get($path);
+            $newContent = $existingContent . "\n" . json_encode($fields, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            Storage::put($path, $newContent);
+
+            Log::info('Онлайн касса прислала данные о платеже:', $fields);
+        }
+
+        private function logInvoiceCreation(Invoice $invoice): void
+        {
+            Log::info('Новый invoice создан:', ['invoice_id' => $invoice->id]);
+        }
+
+        private function updateExistingInvoice(Invoice $invoice, array $commonFields): bool
+        {
+            $result = $invoice->update($commonFields);
+            Log::info('Invoice обновлен:', ['invoice_id' => $invoice->id]);
+
+            return $result;
+        }
+    */
     /**
      * @throws Exception
      */
     public function createOrUpdateInvoice(int $invoiceId): bool
     {
-        /* todo использовать listener и event-ы */
+        Log::info('Начинаем создание или обновление счета.', ['invoice_id' => $invoiceId]);
+
         $invoiceData = $this->getInvoiceData($invoiceId);
-        $paymentType = $this->settingsService->getValueByCode('PAYMENT_TYPE'); /* тип оплаты, таблица Settings */
+        Log::info('Получены данные счета:', ['invoice_data' => $invoiceData]);
+
+        $paymentType = $this->settingsService->getValueByCode('PAYMENT_TYPE');
         $paymentId = $invoiceData[$paymentType];
-        $paymentTypeName = $this->getPaymentTypeName($paymentId);
+
+        if ($paymentId === null) {
+            $paymentTypeMessage = 'Тип оплаты не найден, ставим первый тип оплаты';
+            $paymentMethodFirst = PaymentMethod::first();
+            $paymentId = $paymentMethodFirst->b24_payment_type_id;
+            $paymentTypeName = $paymentMethodFirst->b24_payment_type_name;
+        } else {
+            $paymentTypeMessage = 'Тип оплаты найден';
+            $paymentTypeName = $this->getPaymentTypeName($paymentId);
+        }
+        Log::info('Тип оплаты счета:', [
+            'payment_type_message' => $paymentTypeMessage,
+            'payment_id' => $paymentId,
+            'payment_type_name' => $paymentTypeName
+        ]);
         $commonFields = $this->getInvoiceCommonFields($paymentId, $invoiceData, $paymentTypeName);
-        $invoice = Invoice::where('b24_invoice_id', $invoiceId);
-        if (!$invoice->exists()) {
+        Log::info('Общие поля счета:', [
+            'common_fields' => $commonFields
+        ]);
+        $invoiceQuery = Invoice::where('b24_invoice_id', $invoiceId);
+        if (!$invoiceQuery->exists()) {
+            Log::info('Счет не существует, создается новый.', ['invoice_id' => $invoiceId]);
+
             $fields = array_merge(['b24_invoice_id' => $invoiceData['id']], $commonFields);
             $additionalPaymentInfo = $this->settingsService->getValueByCode('ADDITIONAL_PAYMENT_INFO');
+
             if (isset($invoiceData[$additionalPaymentInfo]) && $invoiceData[$additionalPaymentInfo]) {
                 $additionalFieldB24 = json_decode($invoiceData[$additionalPaymentInfo], true);
-                $payment_id = $additionalFieldB24['payment_id']; //айди из таблицы payments
-                $PaymentId = $additionalFieldB24['PaymentId']; //данные от онлайн кассы
-                $OrderId = $additionalFieldB24['OrderId']; //данные от онлайн кассы
-                $fields = array_merge(['payment_id' => $payment_id, 'comments' => 'Оплата через онлайн кассу'], $fields);
+                $payment_id = $additionalFieldB24['payment_id']; // ID из таблицы payments
+                $PaymentId = $additionalFieldB24['PaymentId']; // Данные от онлайн кассы
+                $OrderId = $additionalFieldB24['OrderId']; // Данные от онлайн кассы
 
-                /* ======================= */
-                $path = 'logs/log.txt';
-                $existingContent = Storage::get($path);
-                $newContent = $existingContent . "\n" . json_encode($fields, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-                Storage::put($path, $newContent);
-                Log::info('Онлайн касса прислала данные о платеже:', $fields);
-                /* ======================= */
+                Log::info('Дополнительная информация о платеже найдена, обрабатываем платеж.', [
+                    'payment_id' => $payment_id,
+                    'PaymentId' => $PaymentId,
+                    'OrderId' => $OrderId,
+                ]);
+
+                $fields = array_merge(['payment_id' => $payment_id, 'comments' => 'Оплата через онлайн кассу'], $fields);
 
                 $payment = Payment::where('order_id', $OrderId)
                                   ->where('payment_id', $PaymentId);
 
                 /* для invoice обновляем payment_id */
-                $invoice = Invoice::create($fields);
-                $invoice->payment_id = $payment->first()->id;
-                $invoice->save();
-                /* для payment обновляем b24_invoice_id */
-                $result = $payment->update(['b24_invoice_id' => $invoice->id]);
+                try {
+                    $invoice = Invoice::create($fields);
+                    Log::info('Счет успешно создан.', ['invoice' => $invoice]);
+
+                    if ($payment->exists()) {
+                        $invoice->payment_id = $payment->first()->id;
+                        $invoice->save();
+                        Log::info('ID платежа обновлен для счета.', [
+                            'invoice_id' => $invoice->id,
+                            'payment_id' => $invoice->payment_id,
+                        ]);
+                    } else {
+                        Log::warning('Запись о платеже не найдена для данного OrderId и PaymentId.', [
+                            'OrderId' => $OrderId,
+                            'PaymentId' => $PaymentId,
+                        ]);
+                    }
+
+                    /* для payment обновляем b24_invoice_id */
+                    $result = $payment->update(['b24_invoice_id' => $invoice->id]);
+                } catch (Exception $e) {
+                    Log::error('Ошибка при создании счета или обновлении платежа.', [
+                        'error_message' => $e->getMessage(),
+                        'invoice_data' => $fields,
+                    ]);
+                    return false;
+                }
             } else {
-                $result = Invoice::create($fields);
+                Log::info('Дополнительная информация о платеже не найдена, создаем счет без нее.');
+                try {
+                    $result = Invoice::create($fields);
+                    Log::info('Счет успешно создан без дополнительной информации о платеже.', ['fields' => $fields]);
+                } catch (Exception $e) {
+                    Log::error('Ошибка при создании счета без дополнительной информации о платеже.', [
+                        'error_message' => $e->getMessage(),
+                        'fields' => $fields,
+                    ]);
+                    return false;
+                }
             }
         } else {
-            $result = $invoice->update($commonFields);
+            Log::info('Счет существует, обновляем его.', ['invoice_id' => $invoiceId]);
+            try {
+                $result = $invoiceQuery->update($commonFields);
+                Log::info('Счет успешно обновлен.', ['invoice_id' => $invoiceId]);
+            } catch (Exception $e) {
+                Log::error('Ошибка при обновлении счета.', [
+                    'error_message' => $e->getMessage(),
+                    'invoice_id' => $invoiceId,
+                ]);
+                return false;
+            }
         }
 
         return (bool)$result;
@@ -193,7 +338,7 @@ class IncomingWebhookInvoiceService
         $additionalPaymentInfo = $this->settingsService->getValueByCode('ADDITIONAL_PAYMENT_INFO');
         $paymentType = $this->settingsService->getValueByCode('PAYMENT_TYPE');
         $invoice = $this->serviceBuilder->getCRMScope()->item()->add($bitrixInvoiceEntityTypeId, [
-            'title' => 'Счёт #' . $payment->payment_id,
+            'title' => 'Счёт #' . $payment->order_id,
             'contactId' => $user->contact_id,
             'currencyId' => 'RUB',
             'opportunity' => $payment->amount,

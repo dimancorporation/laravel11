@@ -13,6 +13,15 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <!-- Get active css theme -->
+        @php
+            $activeTheme = \App\Models\ThemeSetting::active();
+            $themeName = $activeTheme ? $activeTheme->theme_name : 'default';
+            $themePath = public_path('css/themes/' . $themeName . '.css');
+            $themeUrl = asset('css/themes/' . (file_exists($themePath) ? $themeName : 'default') . '.css');
+        @endphp
+        <link href="{{ $themeUrl }}" rel="stylesheet">
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">

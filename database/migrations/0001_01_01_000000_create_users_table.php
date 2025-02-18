@@ -29,7 +29,7 @@ return new class extends Migration
             $table->enum('role', ['admin', 'user', 'blocked'])->default('user');
             $table->unsignedBigInteger('id_b24')->nullable();
             // Первая авторизация пользователя в личный кабинет
-            $table->boolean('is_first_auth')->default(true);
+            $table->boolean('is_first_auth')->default(false);
             // Самостоятельная регистрация пользователя через форму регистрации
             $table->boolean('is_registered_myself')->default(false);
             $table->rememberToken();

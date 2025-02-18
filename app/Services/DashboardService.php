@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\User;
+use Exception;
+use Illuminate\Support\Facades\Log;
 
 class DashboardService
 {
@@ -18,20 +20,58 @@ class DashboardService
 
     }
 
+    /**
+     * @throws Exception
+     */
     public function getDashboardData(User $user): array
     {
-        $b24Status = $user->b24Status;
-        $progressImages = $this->progressStatusService->getProgressStatusImages($user->b24_status);
-        $progressBarData = $this->progressBarService->getProgressBar($user->b24_status);
-        $invoices = $this->invoiceService->getUserInvoices($user);
-        $alreadyPaid = $invoices->sum('opportunity');
+        Log::info('Начало получения данных для пользовательской панели', [
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+        ]);
 
-        return [
-            'user' => $user,
-            'b24Status' => $b24Status,
-            'progressImages' => $progressImages,
-            'progressBarData' => $progressBarData,
-            'alreadyPaid' => $alreadyPaid,
-        ];
+        try {
+            $b24Status = $user->b24Status;
+            Log::info('Получен статус, на котором сейчас находится дело', [
+                'b24Status' => $b24Status,
+            ]);
+
+            $progressImages = $this->progressStatusService->getProgressStatusImages($user->b24_status);
+            Log::info('Получены изображения статуса прогресса', [
+                'progressImages_count' => count($progressImages),
+            ]);
+
+            $progressBarData = $this->progressBarService->getProgressBar($user->b24_status);
+            Log::info('Получены данные для прогресс-бара', [
+                'progressBarData' => $progressBarData,
+            ]);
+
+            $invoices = $this->invoiceService->getUserInvoices($user);
+            Log::info('Получены счета пользователя', [
+                'invoices_count' => $invoices->count(),
+                'total_opportunity' => $invoices->sum('opportunity'),
+            ]);
+
+            $alreadyPaid = $invoices->sum('opportunity');
+
+            Log::info('Получены данные об общей суммы оплаты', [
+                'alreadyPaid' => $alreadyPaid,
+            ]);
+
+            return [
+                'user' => $user,
+                'b24Status' => $b24Status,
+                'progressImages' => $progressImages,
+                'progressBarData' => $progressBarData,
+                'alreadyPaid' => $alreadyPaid,
+            ];
+        } catch (Exception $e) {
+            Log::error('Ошибка при получении данных для пользовательской панели', [
+                'user_id' => $user->id,
+                'error_message' => $e->getMessage(),
+            ]);
+
+            throw new Exception('Ошибка при получении данных: ' . $e->getMessage());
+        }
     }
 }

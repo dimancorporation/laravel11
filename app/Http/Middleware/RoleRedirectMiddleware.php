@@ -30,6 +30,8 @@ class RoleRedirectMiddleware
             'save.b24statuses.fields',
             'save.debtor.text',
             'upload.offer.agreement',
+            'admin.theme.update',
+            'admin.logo.update',
         ];
 
         if ($user->isAdmin() && !in_array($request->route()->getName(), $excludedRoutesForAdmins)) {

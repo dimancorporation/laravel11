@@ -6,6 +6,7 @@ use App\Events\UpdateAuthDataEvent;
 use App\Models\B24UserField;
 use Bitrix24\SDK\Services\ServiceBuilder;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class UpdateAuthDataListener
 {
@@ -39,6 +40,12 @@ class UpdateAuthDataListener
             $userLogin = $fields['userLogin'];
             $userPassword = $fields['userPassword'];
 
+            Log::info('Обновление данных пользователя в CRM', [
+                'deal_id' => $event->dealId,
+                'phone' => $event->phone,
+                'user_login' => $userLogin,
+            ]);
+
             $this->serviceBuilder->getCRMScope()->deal()->update(
                 $event->dealId,
                 [
@@ -46,7 +53,16 @@ class UpdateAuthDataListener
                     $userPassword => $event->password,
                 ]
             );
+
+            Log::info('Данные успешно обновлены в CRM', [
+                'deal_id' => $event->dealId,
+            ]);
         } catch (Exception $e) {
+            Log::error('Ошибка при обновлении данных в CRM', [
+                'error_message' => $e->getMessage(),
+                'deal_id' => $event->dealId,
+            ]);
+
             throw new Exception("Ошибка при обновлении данных в CRM: " . $e->getMessage());
         }
     }
