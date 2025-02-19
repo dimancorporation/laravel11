@@ -38,13 +38,12 @@ class SettingsService
             $b24DocFields = B24DocField::all()->sortBy('id');
             $b24Statuses = B24Status::all()->sortBy('id');
             $settingsFields = Setting::where('code', '!=', 'DEBTOR_MESSAGE')->orderBy('id')->get();
-            $tinymceApiKey = $settingsFields->firstWhere('code', 'TINYMCE_API_KEY')?->value;
             $debtorMessage = Setting::where('code', 'DEBTOR_MESSAGE')->first();
             $debtorMessage = htmlspecialchars_decode($debtorMessage->value);
             $activeTheme = ThemeSetting::active();
             $themes = ThemeSetting::where('is_visible', true)->get();
 
-            return compact('b24UserFields', 'b24DocFields', 'b24Statuses', 'settingsFields', 'debtorMessage', 'tinymceApiKey', 'activeTheme', 'themes');
+            return compact('b24UserFields', 'b24DocFields', 'b24Statuses', 'settingsFields', 'debtorMessage', 'activeTheme', 'themes');
         } catch (Exception $e) {
             Log::error('Ошибка при получении данных для страницы настроек: ' . $e->getMessage(), [
                 'exception' => $e,
