@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('payment_id');
             $table->integer('amount');
             $table->integer('card_id');
-            $table->string('email');
+            $table->string('email')->nullable();
             $table->string('name')->nullable();
             $table->string('phone');
             $table->string('source')->nullable();
