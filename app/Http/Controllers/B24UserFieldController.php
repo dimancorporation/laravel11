@@ -10,11 +10,9 @@ class B24UserFieldController extends Controller
 {
     public function store(Request $request): RedirectResponse
     {
-        // Получение всех полей формы
         $data = $request->all();
 
         foreach ($data as $key => $value) {
-            // Пропускаем скрытые поля
             if ($key === '_token') continue;
 
             $field = B24UserField::where('site_field', $key)->first();

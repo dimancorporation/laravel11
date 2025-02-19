@@ -25,12 +25,12 @@ class WebhookController extends Controller
     public function handle(Request $request): JsonResponse
     {
         $data = $request->all();
-        Log::info('Bitrix24 deal webhook received:', $data);
+        Log::info('Получены данные по вебхуку сделки:', $data);
 
         $dealId = $data['data']['FIELDS']['ID'];
 
         if (!$this->incomingWebhookDealService->validateRequestData($data)) {
-            Log::error('Invalid request data received. Missing required keys.', [
+            Log::error('Некорректные данные запроса. Отсутствуют необходимые данные.', [
                 'received_data' => $data,
             ]);
             return response()->json([
@@ -46,14 +46,14 @@ class WebhookController extends Controller
                 $dealDataCopy[$key] = $value;
             }
         }
-        Log::info('Received data by deal id:', [
+        Log::info('Полученные данные по идентификатору сделки:', [
             'deal_id' => $dealId,
             'deal_data' => $dealDataCopy,
         ]);
 
         $isRequestFromWebhook = $this->incomingWebhookDealService->isRequestFromWebhook($data, $dealData);
         if (!$isRequestFromWebhook) {
-            Log::error('Bad request from deal webhook.', [
+            Log::error('Неверный запрос от вебхука сделки', [
                 'deal_id' => $dealId,
                 'request_data' => $data,
             ]);
@@ -63,14 +63,10 @@ class WebhookController extends Controller
             ], 403);
         }
 
-        Log::info('Creating or updating user for deal id:', [
+        Log::info('Создание или обновление данных по айди сделки:', [
             'deal_id' => $dealId,
         ]);
         $this->incomingWebhookDealService->createOrUpdateUser($dealId, $dealData);
-
-        Log::info('Successfully processed deal webhook for deal id:', [
-            'deal_id' => $dealId,
-        ]);
 
         return response()->json(['status' => 'success'], 200);
     }

@@ -28,7 +28,9 @@ class SettingsController extends Controller
             $settingsData = $this->settingsService->getSettingsData();
             return view('settings', $settingsData);
         } catch (Exception $e) {
-            // Обработка исключений или возврат ошибки пользователю
+            Log::error('Не удалось загрузить настройки: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
             return redirect()->back()->withErrors(['error' => 'Не удалось загрузить настройки.']);
         }
     }

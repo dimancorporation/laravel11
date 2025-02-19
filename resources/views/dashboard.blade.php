@@ -8,8 +8,21 @@
     <div class="py-4">
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 flex justify-center min-[950px]:flex-row min-[320px]:flex-col gap-20">
-                    {{ Auth::user()->message_from_b24 }}
+                <div class="flex min-[950px]:flex-row min-[320px]:flex-col min-[320px]:items-center">
+                    <div>
+                        @php
+                            $filePath = 'images/logo/logo.png';
+                        @endphp
+
+                        @if (file_exists(storage_path('app/public/' . $filePath)))
+                            <img src="{{ Storage::url($filePath) }}" alt="Логотип" style="max-width: 320px;">
+                        @else
+                            <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                        @endif
+                    </div>
+                    <div class="p-6 text-gray-900 flex justify-center min-[950px]:flex-row min-[320px]:flex-col gap-20 w-full text-center">
+                        {{ Auth::user()->message_from_b24 }}
+                    </div>
                 </div>
                 <div class="p-6 text-gray-900 flex justify-between min-[950px]:flex-row min-[320px]:flex-col gap-20">
                     <div class="min-[320px]:w-full min-[950px]:w-2/4 block rounded-lg bg-white text-center text-surface shadow-secondary-1 dark:bg-surface-dark dark:text-white">
@@ -91,13 +104,13 @@
                 <div class="min-[300px]:mx-6">
                     <div class="max-w-3xl mx-auto my-4 h-12 bg-gray-200 rounded-full dark:bg-gray-700 relative">
                         <div class="flex justify-center items-center h-12 font-medium  text-center p-0.5 leading-none rounded-full text-lg
-                        @if($progressBarData->width !== '0%') bg-blue-600 text-blue-100 @else w-full text-black @endif"
-                             @if($progressBarData->width !== '0%')
-                                 style="width: {{ $progressBarData->width }};
-                                 animation: {{ $progressBarData->animation }};"
+                        @if($progressBarData['width'] !== '0%') bg-blue-600 text-blue-100 @else w-full text-black @endif"
+                             @if($progressBarData['width'] !== '0%')
+                                 style="width: {{ $progressBarData['width'] }};
+                                 animation: {{ $progressBarData['animation'] }};"
                              @endif
                              >
-                            {{ $progressBarData->width }}
+                            {{ $progressBarData['width'] }}
                         </div>
                     </div>
                 </div>

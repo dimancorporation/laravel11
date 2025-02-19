@@ -9,7 +9,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-// контроллер для обработки исходящего вебхука по счетам
 class WebhookInvoiceController extends Controller
 {
     protected ServiceBuilder $serviceBuilder;

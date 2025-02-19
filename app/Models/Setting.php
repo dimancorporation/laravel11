@@ -12,4 +12,10 @@ class Setting extends Model
         'name',
         'value',
     ];
+
+    public static function getValueByCode(string $code)
+    {
+        $setting = self::where('code', $code)->first();
+        return $setting ? $setting->value : null;
+    }
 }

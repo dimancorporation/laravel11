@@ -3,14 +3,21 @@
 namespace App\Services;
 
 use App\Models\Invoice;
+use App\Models\Setting;
+use Illuminate\Support\Facades\Log;
 
 class InvoiceService
 {
     public function getUserInvoices($user)
     {
-        /* статус в б24 оплаченного счета 'DT31_2:P', но может и меняться, например: 'DT31_3:P' */
+        $successInvoiceStage = Setting::getValueByCode('SUCCESS_INVOICE_STAGE');
+        if ($successInvoiceStage === null) {
+            Log::warning('Не удалось получить значение SUCCESS_INVOICE_STAGE из таблицы настроек.');
+            return collect();
+        }
+
         return Invoice::where('contact_id', $user->contact_id)
-                      ->where('stage_id', 'like', '%:P')
+                      ->where('stage_id', '=', $successInvoiceStage)
                       ->orderBy('updated_at', 'desc')
                       ->get();
     }

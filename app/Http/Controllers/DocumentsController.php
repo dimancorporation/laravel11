@@ -11,6 +11,9 @@ class DocumentsController extends Controller
 
     public function index(Request $request): View
     {
+        /*
+         * получить список из таблицы b24_doc_fields
+         */
         $documentFields = [
             'passport_all_pages' => 'Паспорт (все страницы)',
             'pts' => 'ПТС',

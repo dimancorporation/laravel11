@@ -11,7 +11,6 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Response;
 
-// обрабатываем данные от онлайн кассы
 class WebhookPaymentController extends Controller
 {
     private string $paymentConfirmedStatus = 'CONFIRMED';
@@ -71,7 +70,9 @@ class WebhookPaymentController extends Controller
             'data' => $data,
         ]);
 
-        $this->paymentService->updateExistingPayment($payment, $data);
+        if ($data['Status'] === $this->paymentConfirmedStatus) {
+            $this->paymentService->updateExistingPayment($payment, $data);
+        }
 
         if ($payment->status === $this->paymentConfirmedStatus) {
             Log::info('Платеж подтвержден', [

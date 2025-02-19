@@ -21,13 +21,12 @@ class ProgressBarService
         13 => ['width' => '100%', 'animation' => 'progressAnimationStrike100 6s'],
     ];
 
-    public function getProgressBar(int $key): object
+    public function getProgressBar(int $key): array
     {
-
         $progressBarAnimation = $this->getProgressBarAnimation($key);
         $progressBarText = $this->getProgressBarWidth($key);
 
-        return (object)[
+        return [
             'animation' => $progressBarAnimation,
             'width' => $progressBarText,
         ];
