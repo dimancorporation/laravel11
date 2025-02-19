@@ -10,7 +10,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="min-[300px]:px-0 sm:p-6 text-gray-900">
                     @foreach ($documentFields as $field => $title)
-                        <x-document-row title="{{$title}}" :checked="$documents->$field" />
+                        <x-document-row title="{{$title}}" :checked="$documents[$field]" />
                     @endforeach
                 </div>
             </div>

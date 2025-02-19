@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\B24Documents;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class DocumentsController extends Controller
@@ -33,8 +34,18 @@ class DocumentsController extends Controller
             'dkp' => 'Скан ДКП (если клиент за последние 3 г. продавал движимое имущество)',
             'dkp_spouse' => 'Скан ДКП (если супруг(а) продавал(а) за последние 3 г. движимое имущество)'
         ];
+
         $user = $request->user();
         $documents = B24Documents::find($user->documents_id);
+
+        if (!$documents) {
+            Log::warning('Документы пользователя не найдены в таблице: ', [
+                'user_id' => $user->id,
+                'documents' => $documents
+            ]);
+            $documents = array_fill_keys(array_keys($documentFields), false);
+        }
+
         return view('documents', compact('user', 'documents', 'documentFields'));
     }
 }
