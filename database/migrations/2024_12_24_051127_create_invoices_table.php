@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->integer('b24_invoice_id');
-            $table->integer('b24_payment_type_id');
-            $table->string('b24_payment_type_name');
+            $table->integer('b24_payment_type_id')->nullable();
+            $table->string('b24_payment_type_name')->nullable();
             $table->timestamps();
             $table->string('title');
             $table->timestamp('created_time')->nullable();
