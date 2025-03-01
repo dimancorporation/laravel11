@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Exceptions\ValidationException;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PaymentService
 {
@@ -24,13 +24,12 @@ class PaymentService
             ->first();
     }
 
-    public function createPayment(Request $request): void
+    public function createPayment(Request $request): ?Payment
     {
         try {
             $user = $this->findUser($request);
 
-            // todo выглядит слишком громоздко, можно убрать в валидацию
-            $user->payments()->create([
+            return $user->payments()->create([
                 'b24_deal_id' => $user->id_b24,
                 'b24_contact_id' => $user->contact_id,
                 'b24_invoice_id' => null,
@@ -47,7 +46,8 @@ class PaymentService
                 'user_agent' => $request->input('Data.user_agent'),
             ]);
         } catch (ModelNotFoundException $e) {
-            dump($e->getMessage());
+            Log::error('Ошибка при создании платежа: ' . $e->getMessage());
+            return null;
         }
     }
 

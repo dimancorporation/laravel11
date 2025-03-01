@@ -36,6 +36,13 @@ class WebhookPaymentController extends Controller
         // Event?
         Log::info('Онлайн касса прислала данные о платеже:', $data);
 
+        if ($data['Status'] !== $this->paymentConfirmedStatus) {
+            Log::info('Статус платежа от онлайн кассы не CONFIRMED.', [
+                'payment_status' => $data['Status'],
+            ]);
+            return $this->sendOKResponse();
+        }
+
         $user = $this->paymentService->findUser($request);
         Log::info('Поиск пользователя завершен', [
             'user' => $user ? $user->id : 'не найден',
@@ -57,11 +64,24 @@ class WebhookPaymentController extends Controller
         }
 
         Log::info('Создание нового платежа');
-        $this->paymentService->createPayment($request);
+        $newPayment = $this->paymentService->createPayment($request);
+        Log::info('Платеж успешно создан', [
+            'payment_id' => $newPayment->id,
+            'payment_status' => $newPayment->status,
+            'payment_amount' => $newPayment->amount,
+            'payment_b24_deal_id' => $newPayment->b24_deal_id,
+            'payment_user_id' => $newPayment->user_id,
+        ]);
+        $this->processPaymentForUser($user, $newPayment, $data);
 
         return $this->sendOKResponse();
     }
-
+/*
+    тестовые данные карты
+    4300 0000 0000 0777
+    12/30
+    111
+ */
     private function processPaymentForUser($user, $payment, $data): void
     {
         Log::info('Обновление платежа', [
@@ -81,7 +101,7 @@ class WebhookPaymentController extends Controller
             ]);
 
             $additionalInfo = $this->paymentService->generateAdditionalInfo($payment);
-            Log::info('Создание счета на основе онлайн-платежа', [
+            Log::info('Создание счета в bitrix24 на основе онлайн-платежа', [
                 'user_id' => $user ? $user->id : 'не найден',
                 'payment_id' => $payment->id,
                 'additional_info' => $additionalInfo,
