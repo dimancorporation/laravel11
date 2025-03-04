@@ -16,24 +16,23 @@
 
         <!-- Get active css theme -->
         @php
-            $activeTheme = \App\Models\ThemeSetting::active();
-            $themeName = $activeTheme ? $activeTheme->theme_name : 'default';
-            $themePath = public_path('css/themes/' . $themeName . '.css');
-            $themeUrl = asset('css/themes/' . (file_exists($themePath) ? $themeName : 'default') . '.css');
+            $activeTheme = session('active_theme', 'blue');
+            $themePath = public_path('css/themes/' . $activeTheme . '.css');
+            $themeUrl = asset('css/themes/' . (file_exists($themePath) ? $activeTheme : 'blue') . '.css');
         @endphp
         <link href="{{ $themeUrl }}" rel="stylesheet">
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+    <body class="font-sans antialiased {{ $activeTheme }}-theme">
+        <div class="min-h-screen bg-gray-100 bg-transparent">
+            @include('layouts.navigation', ['theme' => $activeTheme])
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
+{{--                <header class="bg-white shadow">--}}
+{{--                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">--}}
+{{--                        {{ $header }}--}}
+{{--                    </div>--}}
+{{--                </header>--}}
             @endisset
 
             <!-- Page Content -->
