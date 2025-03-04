@@ -1,178 +1,75 @@
-* {
-    /*color: rebeccapurple !important;*/
-}
-
-.blue-theme {
-    /* Линейный градиент */
-
-    /*background-image: url('./../../images/blue-background.png');*/
-    background-image: url('./blue-bg/bg-main.png');
-    /*background-image: linear-gradient(to right, #044187, #2B65A7), url('./../../images/blue-background.png');*/
-
-    /* Управление наложением градиента и изображения */
-    /*background-blend-mode: overlay; !* Режим наложения (можно изменить на multiply, screen и т.д.) *!*/
-
-    /* Размер и позиция фонового изображения */
-    /*background-size: cover; !* Масштабирует изображение, чтобы оно покрывало весь блок *!*/
-    /*background-position: center; !* Центрирует изображение *!*/
-
-    /* Дополнительные стили */
-    /*width: 100%; !* Ширина блока *!*/
-    /*height: 100vh; !* Высота блока (на весь экран) *!*/
-    /*color: white; !* Цвет текста (для примера) *!*/
-    /*padding: 20px; !* Отступы внутри блока *!*/
-}
-.blue-theme {
-    background-image: url('./blue-bg/bg-main.png');
-    background-size: cover;
-    background-position: center;
-}
 .blue-theme {
     background-image: url('./blue-bg/bg-main.png'); /* Фон по умолчанию для десктопов */
     background-size: cover;
     background-position: center;
 }
 
-/* Для экранов от 320 до 640 пикселей */
 @media (max-width: 640px) {
     .blue-theme {
         background-image: url('./blue-bg/bg-320-640.png');
     }
 }
 
-/* Для экранов от 641 до 960 пикселей */
 @media (min-width: 641px) and (max-width: 960px) {
     .blue-theme {
         background-image: url('./blue-bg/bg-480-960.png');
     }
 }
 
-/* Для экранов от 961 до 1200 пикселей */
 @media (min-width: 961px) and (max-width: 1200px) {
     .blue-theme {
         background-image: url('./blue-bg/bg-640-1200.png');
     }
 }
 
-/* Для экранов от 1201 до 1920 пикселей */
 @media (min-width: 1201px) and (max-width: 1920px) {
     .blue-theme {
         background-image: url('./blue-bg/bg-1024-1920.png');
     }
 }
 
-
-.nav-link:hover {
-    color: #044187;
-}
-
-.message-from-b24 {
-    color: white;
-    /*font-weight: bold;*/
-}
-.title-info {
-    color: white;
-    text-transform: uppercase;
-}
-.case-stage-label {
-    color: white;
-    text-transform: uppercase;
-}
-.case-stage-value {
-    color: white;
-    text-transform: uppercase;
-}
-.court-link-label {
-    color: white;
-    text-transform: uppercase;
-}
-.court-link-value {
-    color: white;
-    text-transform: uppercase;
-}
-.court-link-value:hover {
-    color: white;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-}
-.remaining-amount-value:hover {
-    color: white;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-}
-.rounded-card {
-    border-width: 4px;
-    border-radius: 0.5rem;
-    border-style: solid;
-    border-color: #4b81bf;
-    background-color: #044187;
-}
-.contract-amount-label {
-    color: white;
-    text-transform: uppercase;
-}
-.contract-amount-value {
-    color: white;
-    text-transform: uppercase;
-}
-.paid-amount-label {
-    color: white;
-    text-transform: uppercase;
-}
-.paid-amount-value {
-    color: white;
-    text-transform: uppercase;
-}
-.remaining-amount-label {
-    color: white;
-    text-transform: uppercase;
-}
-.remaining-amount-value {
-    color: white;
-    text-transform: uppercase;
-}
+.nav-link:hover,
+.message-from-b24,
+.title-info,
+.case-stage-label,
+.case-stage-value,
+.court-link-label,
+.court-link-value,
+.contract-amount-label,
+.contract-amount-value,
+.paid-amount-label,
+.paid-amount-value,
+.remaining-amount-label,
+.remaining-amount-value,
 .progress-bar-title {
     color: white;
     text-transform: uppercase;
 }
 
+.court-link-value:hover,
+.remaining-amount-value:hover {
+    color: white;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
 
-.progress-container{
+.rounded-card {
+    border: 4px solid #4b81bf;
+    border-radius: 0.5rem;
+    background-color: #044187;
+}
+
+.progress-container {
     border: 3px solid #4b81bf;
 }
 
-/*.progress-bar-container {*/
-/*    width: 100%;*/
-/*    height: 20px;*/
-/*    !*background-color: #e0e0e0;*!*/
-/*    !*background-color: #4b81bf;*!*/
-/*    !*opacity: 50%;*!*/
-/*    border-radius: 10px;*/
-/*    overflow: hidden;*/
-/*    position: relative;*/
-/*    !*border: 3px solid #4b81bf;*!*/
-/*}*/
-
 .progress-bar {
     height: 100%;
-    background-color: #4caf50; /* Цвет прогресса */
-    /*border-radius: 10px;*/
+    /* Цвет прогресса */
     position: relative;
     transition: width 0.3s ease;
     border: 3px solid black;
-}
-
-.progress-text {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #000;
-    font-size: 12px;
-    font-weight: bold;
-}
-.progress-bar {
-    background: repeating-linear-gradient(
+    background: #4caf50 repeating-linear-gradient(
         45deg,
         #044187,
         #044187 80px,
@@ -180,7 +77,16 @@
         #4b81bf 160px
     );
     background-size: 200% 100%;
-    /*animation: move-stripes 60s linear infinite;*/
+}
+
+.progress-text {
+    position: absolute;
+    left: calc(100% - 40px); /* Отступ от края */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #000;
+    font-size: 12px;
+    font-weight: bold;
 }
 
 @keyframes move-stripes {
@@ -190,7 +96,4 @@
     to {
         background-position: 0 0;
     }
-}
-.progress-text {
-    left: calc(100% - 40px); /* Отступ от края */
 }
