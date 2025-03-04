@@ -27,6 +27,9 @@
         background-image: url('./yellow-bg/bg-1024-1920.png');
     }
 }
+a.nav-link {
+    color: black;
+}
 
 .nav-link:hover {
     color: #e0b507;
@@ -45,7 +48,7 @@
 .remaining-amount-label,
 .remaining-amount-value,
 .progress-bar-title {
-    color: white;
+    color: black;
     text-transform: uppercase;
 }
 
@@ -57,7 +60,7 @@
 }
 
 .rounded-card {
-    border: 4px solid #fff5cc;
+    border: 4px solid black;
     border-radius: 0.5rem;
     background-color: #e0b507;
 }
@@ -71,7 +74,7 @@
     /* Цвет прогресса */
     position: relative;
     transition: width 0.3s ease;
-    border: 3px solid black;
+    border: 3px solid #e0b507;
     background: #4caf50 repeating-linear-gradient(
         45deg,
         #e0b507,

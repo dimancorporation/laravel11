@@ -28,8 +28,13 @@
     }
 }
 
+a.nav-link {
+    color: #062a5c;
+}
+
 .nav-link:hover {
     color: #629998;
+    border-color: #629998;
 }
 
 .message-from-b24,
@@ -45,7 +50,7 @@
 .remaining-amount-label,
 .remaining-amount-value,
 .progress-bar-title {
-    color: white;
+    color: black;
     text-transform: uppercase;
 }
 
@@ -71,7 +76,7 @@
     /* Цвет прогресса */
     position: relative;
     transition: width 0.3s ease;
-    border: 3px solid black;
+    border: 3px solid #629998;
     background: #4caf50 repeating-linear-gradient(
         45deg,
         #629998,
