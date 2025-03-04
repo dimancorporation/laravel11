@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class DashboardService
 {
@@ -58,12 +59,18 @@ class DashboardService
                 'alreadyPaid' => $alreadyPaid,
             ]);
 
+            $activeTheme = Session::get('active_theme');
+            Log::info('Получена активная тема', [
+                'activeTheme' => $activeTheme,
+            ]);
+
             return [
                 'user' => $user,
                 'b24Status' => $b24Status,
                 'progressImages' => $progressImages,
                 'progressBarData' => $progressBarData,
                 'alreadyPaid' => $alreadyPaid,
+                'activeTheme' => $activeTheme,
             ];
         } catch (Exception $e) {
             Log::error('Ошибка при получении данных для пользовательской панели', [
