@@ -1,0 +1,102 @@
+.yellow-theme {
+    background-image: url('./yellow-bg/bg-main.png'); /* Фон по умолчанию для десктопов */
+    background-size: cover;
+    background-position: center;
+}
+
+@media (max-width: 640px) {
+    .yellow-theme {
+        background-image: url('./yellow-bg/bg-320-640.png');
+    }
+}
+
+@media (min-width: 641px) and (max-width: 960px) {
+    .yellow-theme {
+        background-image: url('./yellow-bg/bg-480-960.png');
+    }
+}
+
+@media (min-width: 961px) and (max-width: 1200px) {
+    .yellow-theme {
+        background-image: url('./yellow-bg/bg-640-1200.png');
+    }
+}
+
+@media (min-width: 1201px) and (max-width: 1920px) {
+    .yellow-theme {
+        background-image: url('./yellow-bg/bg-1024-1920.png');
+    }
+}
+
+.nav-link:hover {
+    color: #e0b507;
+}
+
+.message-from-b24,
+.title-info,
+.case-stage-label,
+.case-stage-value,
+.court-link-label,
+.court-link-value,
+.contract-amount-label,
+.contract-amount-value,
+.paid-amount-label,
+.paid-amount-value,
+.remaining-amount-label,
+.remaining-amount-value,
+.progress-bar-title {
+    color: white;
+    text-transform: uppercase;
+}
+
+.court-link-value:hover,
+.remaining-amount-value:hover {
+    color: white;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.rounded-card {
+    border: 4px solid #fff5cc;
+    border-radius: 0.5rem;
+    background-color: #e0b507;
+}
+
+.progress-container {
+    border: 3px solid #fff5cc;
+}
+
+.progress-bar {
+    height: 100%;
+    /* Цвет прогресса */
+    position: relative;
+    transition: width 0.3s ease;
+    border: 3px solid black;
+    background: #4caf50 repeating-linear-gradient(
+        45deg,
+        #e0b507,
+        #e0b507 80px,
+        #fff5cc 80px,
+        #fff5cc 160px
+    );
+    background-size: 200% 100%;
+}
+
+.progress-text {
+    position: absolute;
+    left: calc(100% - 40px); /* Отступ от края */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #000;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+@keyframes move-stripes {
+    from {
+        background-position: 200% 0;
+    }
+    to {
+        background-position: 0 0;
+    }
+}

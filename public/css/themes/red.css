@@ -1,0 +1,102 @@
+.red-theme {
+    background-image: url('./red-bg/bg-main.png'); /* Фон по умолчанию для десктопов */
+    background-size: cover;
+    background-position: center;
+}
+
+@media (max-width: 640px) {
+    .red-theme {
+        background-image: url('./red-bg/bg-320-640.png');
+    }
+}
+
+@media (min-width: 641px) and (max-width: 960px) {
+    .red-theme {
+        background-image: url('./red-bg/bg-480-960.png');
+    }
+}
+
+@media (min-width: 961px) and (max-width: 1200px) {
+    .red-theme {
+        background-image: url('./red-bg/bg-640-1200.png');
+    }
+}
+
+@media (min-width: 1201px) and (max-width: 1920px) {
+    .red-theme {
+        background-image: url('./red-bg/bg-1024-1920.png');
+    }
+}
+
+.nav-link:hover {
+    color: #a8241b;
+}
+
+.message-from-b24,
+.title-info,
+.case-stage-label,
+.case-stage-value,
+.court-link-label,
+.court-link-value,
+.contract-amount-label,
+.contract-amount-value,
+.paid-amount-label,
+.paid-amount-value,
+.remaining-amount-label,
+.remaining-amount-value,
+.progress-bar-title {
+    color: white;
+    text-transform: uppercase;
+}
+
+.court-link-value:hover,
+.remaining-amount-value:hover {
+    color: white;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.rounded-card {
+    border: 4px solid #ffc8c4;
+    border-radius: 0.5rem;
+    background-color: #a8241b;
+}
+
+.progress-container {
+    border: 3px solid #ffc8c4;
+}
+
+.progress-bar {
+    height: 100%;
+    /* Цвет прогресса */
+    position: relative;
+    transition: width 0.3s ease;
+    border: 3px solid black;
+    background: #4caf50 repeating-linear-gradient(
+        45deg,
+        #a8241b,
+        #a8241b 80px,
+        #ffc8c4 80px,
+        #ffc8c4 160px
+    );
+    background-size: 200% 100%;
+}
+
+.progress-text {
+    position: absolute;
+    left: calc(100% - 40px); /* Отступ от края */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #000;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+@keyframes move-stripes {
+    from {
+        background-position: 200% 0;
+    }
+    to {
+        background-position: 0 0;
+    }
+}

@@ -28,7 +28,10 @@
     }
 }
 
-.nav-link:hover,
+.nav-link:hover {
+    color: #044187;
+}
+
 .message-from-b24,
 .title-info,
 .case-stage-label,
