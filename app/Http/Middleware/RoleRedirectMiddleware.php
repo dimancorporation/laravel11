@@ -49,6 +49,7 @@ class RoleRedirectMiddleware
                 'documents',
                 'status-descriptions',
                 'offer-agreement',
+                'pay-invoice',
             ];
 
             if (!in_array($request->route()->getName(), $allowedRoutes)) {

@@ -48,7 +48,7 @@
                         <x-nav-link :href="route('offer-agreement')" :active="request()->routeIs('offer-agreement')" :theme="session('active_theme', 'blue')">
                             Договор оферты
                         </x-nav-link>
-                        <x-nav-link :href="route('payment')" :active="request()->routeIs('payment')" :theme="session('active_theme', 'blue')">
+                        <x-nav-link :href="route('pay-invoice')" :active="request()->routeIs('pay-invoice')" :theme="session('active_theme', 'blue')">
                             Оплата
                         </x-nav-link>
                     @endif
@@ -125,7 +125,7 @@
                 <x-responsive-nav-link :href="route('offer-agreement')" :active="request()->routeIs('offer-agreement')">
                     Договор оферты
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('payment')" :active="request()->routeIs('payment')">
+                <x-responsive-nav-link :href="route('pay-invoice')" :active="request()->routeIs('pay-invoice')">
                     Оплата
                 </x-responsive-nav-link>
             @endif

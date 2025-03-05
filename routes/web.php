@@ -9,6 +9,7 @@ use App\Http\Controllers\DebtorController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\LogoController;
 use App\Http\Controllers\OfferAgreement;
+use App\Http\Controllers\PayInvoiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
@@ -53,6 +54,8 @@ Route::middleware(['auth', 'verified', 'first.auth', 'web', 'roles'])
         Route::get('/documents', [DocumentsController::class, 'index'])->name('documents');
 
         Route::get('/payment', [PaymentController::class, 'index'])->name('payment');
+
+        Route::get('/pay-invoice', [PayInvoiceController::class, 'index'])->name('pay-invoice');
 
         Route::get('/offer-agreement', function () {
             return view('offer-agreement');
