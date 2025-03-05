@@ -49,7 +49,8 @@ a.nav-link {
 .paid-amount-value,
 .remaining-amount-label,
 .remaining-amount-value,
-.progress-bar-title {
+.progress-bar-title,
+.deal-status > span  {
     color: black;
     text-transform: uppercase;
 }
@@ -61,7 +62,8 @@ a.nav-link {
     text-underline-offset: 4px;
 }
 
-.rounded-card {
+.rounded-card,
+.deal-status {
     border: 4px solid #cce8e8;
     border-radius: 0.5rem;
     background-color: #629998;

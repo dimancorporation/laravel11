@@ -28,6 +28,9 @@ class SetActiveTheme
             Session::put('active_theme', $activeThemeName);
         }
 
+        // Делаем переменную доступной во всех Blade-шаблонах
+        //view()->share('activeTheme', $activeThemeName);
+
         return $next($request);
     }
 }

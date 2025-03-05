@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\ThemeSetting;
+use Illuminate\Support\Facades\Session;
 
 class ProgressStatusService
 {
@@ -13,7 +13,7 @@ class ProgressStatusService
 
     protected function getImages(int $key): array
     {
-        $activeTheme = ThemeSetting::active();
+        $activeTheme = Session::get('active_theme', 'blue');
         $tasks = [
             ['Запрос БКИ', 'status01', 2],
             ['Запрос ОКБ', 'status02', 2],
@@ -47,26 +47,25 @@ class ProgressStatusService
             $filename = array_shift($task);
             $thresholds = $task;
 
-            $themeName = $activeTheme->theme_name;
-            $notCompletedPath = "images/progress-statuses/$themeName/not_completed/$filename.png";
-            $inProgressPath = "images/progress-statuses/$themeName/in_progress/$filename.png";
-            $completedPath = "images/progress-statuses/$themeName/completed/$filename.png";
+            $notCompletedPath = "images/progress-statuses/$activeTheme/not_completed/$filename.png";
+            $inProgressPath = "images/progress-statuses/$activeTheme/in_progress/$filename.png";
+            $completedPath = "images/progress-statuses/$activeTheme/completed/$filename.png";
 
             if ($key < $thresholds[0] || $key == 0) {
                 if (!file_exists($notCompletedPath)) {
-                    $themeName = 'default';
+                    $activeTheme = 'blue';
                 }
-                $imagePaths[] = "images/progress-statuses/$themeName/not_completed/$filename.png";
+                $imagePaths[] = "images/progress-statuses/$activeTheme/not_completed/$filename.png";
             } elseif (($thresholds[1] ?? $thresholds[0]) >= $key) {
                 if (!file_exists($inProgressPath)) {
-                    $themeName = 'default';
+                    $activeTheme = 'blue';
                 }
-                $imagePaths[] = "images/progress-statuses/$themeName/in_progress/$filename.png";
+                $imagePaths[] = "images/progress-statuses/$activeTheme/in_progress/$filename.png";
             } else {
                 if (!file_exists($completedPath)) {
-                    $themeName = 'default';
+                    $activeTheme = 'blue';
                 }
-                $imagePaths[] = "images/progress-statuses/$themeName/completed/$filename.png";
+                $imagePaths[] = "images/progress-statuses/$activeTheme/completed/$filename.png";
             }
         }
 
