@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\B24Status;
 use Carbon\Carbon;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class B24StatusesSeeder extends Seeder

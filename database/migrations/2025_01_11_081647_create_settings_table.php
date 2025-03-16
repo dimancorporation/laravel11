@@ -76,6 +76,11 @@ return new class extends Migration
                 'name' => 'Код успешной оплаты битрикс24',
                 'value' => 'DT31_2:P'
             ],
+            [
+                'code' => 'DEBTOR_MESSAGE',
+                'name' => 'Текст для должников',
+                'value' => 'У вас задолжность по оплате'
+            ],
         ]);
     }
 

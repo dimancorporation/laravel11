@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\B24UserField;
 use Carbon\Carbon;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class B24UserFields extends Seeder

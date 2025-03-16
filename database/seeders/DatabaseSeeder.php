@@ -2,9 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\B24UserField;
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,14 +11,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            B24UserFields::class,
+            B24StatusesSeeder::class,
+            ThemeSettingsSeeder::class,
         ]);
-
-        $this->call(B24UserFields::class);
-        $this->call(B24StatusesSeeder::class);
     }
 }
