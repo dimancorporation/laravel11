@@ -20,7 +20,7 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/test', [BitrixController::class, 'getUserList'])->name('bitrix');
+//Route::get('/test', [BitrixController::class, 'getUserList'])->name('bitrix');
 
 // Секция для admin
 Route::middleware(['auth', 'roles', 'web'])->group(function () {
