@@ -41,7 +41,7 @@ class IncomingWebhookDealService
     /**
      * @throws RandomException
      */
-    private function generatePassword(int $length = 8): string
+    private function generatePassword(int $length = 6): string
     {
         $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $password = '';
