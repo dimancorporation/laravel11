@@ -31,7 +31,7 @@ return new class extends Migration
             ['site_field' => 'ndfl',                        'b24_field' => '2 НДФЛ ЗА ПОСЛЕДНИЕ 3 ГОДА',        'uf_crm_code' => 'UF_CRM_1708510936813'],
             ['site_field' => 'childrens_birth_certificate', 'b24_field' => 'СВИДЕТЕЛЬСТВО О РОЖДЕНИИ ДЕТЕЙ',    'uf_crm_code' => 'UF_CRM_1708510989101'],
             ['site_field' => 'extract_egrn',                'b24_field' => 'ВЫПИСКА ИЗ ЕГРН НЕДВИЖИМОСТИ',      'uf_crm_code' => 'UF_CRM_1708511092399'],
-            ['site_field' => 'scan_pts',                    'b24_field' => 'ПТС',                               'uf_crm_code' => 'UF_CRM_1708511164599'],
+            ['site_field' => 'pts',                         'b24_field' => 'ПТС',                               'uf_crm_code' => 'UF_CRM_1708511164599'],
             ['site_field' => 'sts',                         'b24_field' => 'СТС',                               'uf_crm_code' => 'UF_CRM_1708511175692'],
             ['site_field' => 'pts_spouse',                  'b24_field' => 'ПТС СУПРУГА',                       'uf_crm_code' => 'UF_CRM_1708511204032'],
             ['site_field' => 'sts_spouse',                  'b24_field' => 'СТС СУПРУГА',                       'uf_crm_code' => 'UF_CRM_1708511215650'],

@@ -123,7 +123,7 @@ class B24UserFields extends Seeder
                 'created_at'  => Carbon::now()
             ],
             [
-                'site_field'  => 'scan_pts',
+                'site_field'  => 'pts',
                 'b24_field'   => 'ПТС',
                 'uf_crm_code' => 'UF_CRM_1708511164599',
                 'created_at'  => Carbon::now()

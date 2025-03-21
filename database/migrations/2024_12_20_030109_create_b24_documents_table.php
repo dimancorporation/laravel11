@@ -23,7 +23,7 @@ return new class extends Migration
             $table->boolean('ndfl')->default(false);
             $table->boolean('childrens_birth_certificate')->default(false);
             $table->boolean('extract_egrn')->default(false);
-            $table->boolean('scan_pts')->default(false);
+            $table->boolean('pts')->default(false);
             $table->boolean('sts')->default(false);
             $table->boolean('pts_spouse')->default(false);
             $table->boolean('sts_spouse')->default(false);
