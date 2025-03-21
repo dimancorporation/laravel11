@@ -182,7 +182,11 @@ class IncomingWebhookDealService
         $cleaned = preg_replace('/\D+/', '', $phone);
 
         // Проверяем длину номера
-        if (strlen($cleaned) !== 11) {
+        if (strlen($cleaned) === 10) {
+            return '+7' . $cleaned;
+        }
+
+        if (strlen($cleaned) < 10 || strlen($cleaned) > 11) {
             $message = "Некорректный номер телефона: \"$phone\". Ожидается 11 цифр, получено " . strlen($cleaned) . ".";
             Log::warning($message);
             throw new Exception($message);
