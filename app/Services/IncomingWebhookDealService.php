@@ -164,9 +164,40 @@ class IncomingWebhookDealService
         return $this->getValueByType($contactData, 'EMAIL');
     }
 
+    /**
+     * @throws Exception
+     */
     private function getPhone(array $contactData): string
     {
-        return $this->getValueByType($contactData, 'PHONE');
+        return $this->formatPhone($this->getValueByType($contactData, 'PHONE'));
+    }
+
+    /**
+     * @throws Exception
+     */
+    // Функция для приведения номеров к единому формату
+    private function formatPhone($phone): string
+    {
+        // Убираем все нецифровые символы
+        $cleaned = preg_replace('/\D+/', '', $phone);
+
+        // Проверяем длину номера
+        if (strlen($cleaned) !== 11) {
+            $message = "Некорректный номер телефона: \"$phone\". Ожидается 11 цифр, получено " . strlen($cleaned) . ".";
+            Log::warning($message);
+            throw new Exception($message);
+        }
+
+        // Проверяем, начинается ли номер с 7 или 8, и приводим к формату +7XXXXXXXXXX
+        if (str_starts_with($cleaned, '8')) {
+            return '+7' . substr($cleaned, 1); // Заменяем 8 на +7
+        } elseif (str_starts_with($cleaned, '7')) {
+            return '+7' . substr($cleaned, 1); // Добавляем + к 7
+        } else {
+            $message = "Некорректный номер телефона: \"$phone\".";
+            Log::warning($message);
+            throw new Exception($message);
+        }
     }
 
     private function getContactFullName(array $contactData): string
@@ -182,6 +213,9 @@ class IncomingWebhookDealService
         );
     }
 
+    /**
+     * @throws Exception
+     */
     private function getCommonUserData(array $dealData): array
     {
         $contactData = $this->getContactData($dealData['contactId']);
