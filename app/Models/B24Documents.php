@@ -21,12 +21,13 @@ class B24Documents extends Model
         'ndfl',
         'childrens_birth_certificate',
         'extract_egrn',
-        'scan_pts',
         'sts',
         'pts_spouse',
         'sts_spouse',
         'dkp',
-        'dkp_spouse'
+        'dkp_spouse',
+        'other',
+        'passport_spouse',
     ];
 
     public function user(): BelongsTo

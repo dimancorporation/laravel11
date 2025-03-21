@@ -260,7 +260,7 @@ class IncomingWebhookDealService
             'ndfl' => $dealData['ndfl'],
             'childrens_birth_certificate' => $dealData['childrens_birth_certificate'],
             'extract_egrn' => $dealData['extract_egrn'],
-            'scan_pts' => $dealData['scan_pts'],
+            'pts' => $dealData['pts'],
             'sts' => $dealData['sts'],
             'pts_spouse' => $dealData['pts_spouse'],
             'sts_spouse' => $dealData['sts_spouse'],
