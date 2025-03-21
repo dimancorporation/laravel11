@@ -31,7 +31,7 @@ class DocumentsController extends Controller
             'pts_spouse' => 'ПТС СУПРУГА',
             'sts_spouse' => 'СТС СУПРУГА',
             'dkp' => 'ДКП',
-            'dkp_spouse' => 'ДКП СУПРУГА',
+            'dkp_spouse' => 'ДКП СУПРУГ',
             'other' => 'ДРУГОЕ',
         ];
 
