@@ -10,6 +10,9 @@
         <div>
             <div class="max-w-full mx-auto">
                 <div class="overflow-hidden">
+                    <div class="my-6 mx-6 text-center text-lg font-bold user-full-name">
+                        {{ Auth::user()->name }}
+                    </div>
                     <div class="flex min-[950px]:flex-row min-[320px]:flex-col min-[320px]:items-center">
                         <div class="my-6 mx-6">
                             @php

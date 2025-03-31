@@ -211,8 +211,8 @@ class IncomingWebhookDealService
         $contactLastName = $contactData['LAST_NAME'];
 
         return trim(
-            ($contactName ?? ' ') .
-            ($contactSecondName ?? ' ') .
+            ($contactName ?? ' ') . ' ' .
+            ($contactSecondName ?? ' ') . ' ' .
             ($contactLastName ?? '')
         );
     }
