@@ -36,7 +36,6 @@ a.nav-link {
 }
 
 .user-full-name,
-.message-from-b24,
 .title-info,
 .case-stage-label,
 .case-stage-value,
@@ -52,6 +51,10 @@ a.nav-link {
 .deal-status > span {
     color: black;
     text-transform: uppercase;
+}
+
+.message-from-b24 {
+    color: black;
 }
 
 .court-link-value:hover,

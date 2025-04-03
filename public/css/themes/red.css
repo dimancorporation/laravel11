@@ -33,7 +33,6 @@
 }
 
 .user-full-name,
-.message-from-b24,
 .title-info,
 .case-stage-label,
 .case-stage-value,
@@ -49,6 +48,10 @@
 .deal-status > span  {
     color: white;
     text-transform: uppercase;
+}
+
+.message-from-b24 {
+    color: white;
 }
 
 .court-link-value:hover,

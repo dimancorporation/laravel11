@@ -13,7 +13,7 @@
                     <div class="my-6 mx-6 text-center text-lg font-bold user-full-name">
                         {{ Auth::user()->name }}
                     </div>
-                    <div class="my-6 mx-6 text-center text-lg font-bold user-full-name">
+                    <div class="p-6 text-gray-900 flex justify-center min-[950px]:flex-row min-[320px]:flex-col gap-20 w-full text-center message-from-b24">
                         {{ Auth::user()->message_from_b24 }}
                     </div>
                     <div class="flex min-[950px]:flex-row min-[320px]:flex-col min-[320px]:items-center">
@@ -29,7 +29,7 @@
                             @endif
                         </div>
                         <div class="p-6 text-gray-900 flex justify-center min-[950px]:flex-row min-[320px]:flex-col gap-20 w-full text-center message-from-b24">
-                            
+
                         </div>
                     </div>
                     <div class="p-6 text-gray-900 flex justify-between min-[950px]:flex-row min-[320px]:flex-col gap-20">
