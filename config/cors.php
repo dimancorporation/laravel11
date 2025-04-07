@@ -20,10 +20,10 @@ return [
     //'allowed_methods' => ['POST'], // Разрешаем только POST-запросы
     'allowed_methods' => ['*'], // Разрешённые методы
 
-    'allowed_origins' => ['*'], // Разрешённые источники (временно разрешаем всё)
+//    'allowed_origins' => ['*'], // Разрешённые источники (временно разрешаем всё)
 
-    'allowed_origins_patterns' => [], // Шаблон для разрешений
-    /*
+//    'allowed_origins_patterns' => [], // Шаблон для разрешений
+
     //'allowed_origins' => ['*'], // Разрешённые источники (временно разрешаем всё)
     'allowed_origins' => [
         'https://bankrotof.bitrix24.ru', // Разрешенный домен Bitrix24
@@ -33,7 +33,7 @@ return [
     'allowed_origins_patterns' => [
         'https://.*\.tinkoff\.ru', // Регулярное выражение для tinkoff.ru и всех его поддоменов
     ],
-    */
+
     /*
     // Явно разрешенные домены (без поддоменов)
     'allowed_origins' => [
