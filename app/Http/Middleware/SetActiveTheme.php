@@ -18,7 +18,8 @@ class SetActiveTheme
             // Если нет, получаем из базы данных
             $activeTheme = ThemeSetting::where('is_active', true)->first();
             $activeThemeName = $activeTheme ? $activeTheme->theme_name : 'default';
-            Cache::put('active_theme', $activeThemeName, 3600); // Кэшируем на 1 час
+//            Cache::put('active_theme', $activeThemeName, 3600); // Кэшируем на 1 час
+            Cache::put('active_theme', $activeThemeName, 60); // Кэшируем на 1 минуту
         } else {
             $activeThemeName = $activeTheme;
         }
