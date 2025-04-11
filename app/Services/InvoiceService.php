@@ -58,7 +58,7 @@ class InvoiceService
             }
 
             // Получаем пользователя и его ID в Битрикс24
-            $user = User::find($invoice->contact_id);
+            $user = User::where('contact_id', $invoice->contact_id)->first();
             if (!$user) {
                 Log::error('Пользователь не найден в базе данных', [
                     'invoice_id' => $invoiceId,
@@ -74,7 +74,7 @@ class InvoiceService
 
             // Вычисляем общую сумму оплаченных счетов
             $alreadyPaid = $invoices->sum('opportunity');
-            Log::info('Update data prepared', [
+            Log::info('Данные для обновления подготовлены', [
                 'deal_id' => $user->id_b24,
                 'bxAlreadyPaidField' => $bxAlreadyPaidField,
                 'alreadyPaid' => $alreadyPaid
