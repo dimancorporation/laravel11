@@ -41,11 +41,32 @@ class InvoiceService
     public function updatePaidAmountInBitrix(int $invoiceId): void
     {
         try {
+            // Получаем код поля из сделок в Битрикс24
+            $bxAlreadyPaidField = Setting::getValueByCode('BITRIX_ALREADY_PAID');
+            if (empty($bxAlreadyPaidField)) {
+                Log::error('Настройка BITRIX_ALREADY_PAID не настроена в системе');
+                return;
+            }
+
             // Находим счет по его ID
-            $invoice = Invoice::findOrFail($invoiceId);
+            $invoice = Invoice::find($invoiceId);
+            if (!$invoice) {
+                Log::error('Счет не найден в базе данных', [
+                    'invoice_id' => $invoiceId
+                ]);
+                return;
+            }
 
             // Получаем пользователя и его ID в Битрикс24
-            $user = User::findOrFail($invoice->contact_id);
+            $user = User::find($invoice->contact_id);
+            if (!$user) {
+                Log::error('Пользователь не найден в базе данных', [
+                    'invoice_id' => $invoiceId,
+                    'contact_id' => $invoice->contact_id
+                ]);
+                return;
+            }
+
             $b24DealId = $user->id_b24;
 
             // Получаем все счета пользователя
@@ -53,9 +74,11 @@ class InvoiceService
 
             // Вычисляем общую сумму оплаченных счетов
             $alreadyPaid = $invoices->sum('opportunity');
-
-            // Получаем код поля из сделок в Битрикс24
-            $bxAlreadyPaidField = Setting::getValueByCode('BITRIX_ALREADY_PAID');
+            Log::info('Update data prepared', [
+                'deal_id' => $user->id_b24,
+                'bxAlreadyPaidField' => $bxAlreadyPaidField,
+                'alreadyPaid' => $alreadyPaid
+            ]);
 
             // Обновляем поле с суммой в сделке Битрикс24
             $response = $this->serviceBuilder->getCRMScope()->deal()->update(
@@ -64,7 +87,10 @@ class InvoiceService
             );
 
             if ($response->isSuccess()) {
-                Log::info('Успешное обновление суммы в Битрикс24 для сделки ID: ' . $b24DealId . ', сумма: ' . $alreadyPaid);
+                Log::info('Поле "Сумма оплаченных счетов в личном кабинете" в Битрикс24 успешно обновлено', [
+                    'deal_id' => $user->id_b24,
+                    'alreadyPaid' => $alreadyPaid
+                ]);
             } else {
                 Log::warning('Не удалось обновить сумму в Битрикс24 для сделки ID: ' . $b24DealId);
             }
