@@ -203,7 +203,7 @@ class IncomingWebhookInvoiceService
             try {
                 $invoiceQuery = Invoice::where('b24_invoice_id', $invoiceId);
                 $result = $invoiceQuery->update($commonFields);
-                $updatedId = $invoiceQuery->pluck('id'); // Получаем ID после обновления
+                $updatedId = $invoiceQuery->pluck('id')->first();; // Получаем ID после обновления
 //                $currentInvoiceId = Invoice::where('b24_invoice_id', $invoiceId)->value('id');
                 Log::info('Счет успешно обновлен.', ['invoice_id' => $updatedId, 'b24_invoice_id' => $invoiceId]);
 
