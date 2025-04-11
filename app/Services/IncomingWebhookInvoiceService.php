@@ -203,9 +203,11 @@ class IncomingWebhookInvoiceService
             try {
                 $invoiceQuery = Invoice::where('b24_invoice_id', $invoiceId);
                 $result = $invoiceQuery->update($commonFields);
-                Log::info('Счет успешно обновлен.', ['invoice_id' => $invoiceId]);
+                $updatedId = $invoiceQuery->pluck('id'); // Получаем ID после обновления
+//                $currentInvoiceId = Invoice::where('b24_invoice_id', $invoiceId)->value('id');
+                Log::info('Счет успешно обновлен.', ['invoice_id' => $updatedId, 'b24_invoice_id' => $invoiceId]);
 
-                $this->invoiceService->updatePaidAmountInBitrix($invoiceId);
+                $this->invoiceService->updatePaidAmountInBitrix($updatedId);
             } catch (Exception $e) {
                 Log::error('Ошибка при обновлении счета.', [
                     'error_message' => $e->getMessage(),
