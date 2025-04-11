@@ -103,6 +103,7 @@ class IncomingWebhookInvoiceService
      */
     public function createOrUpdateInvoice(int $invoiceId): bool
     {
+        $result = null;
         Log::info('Начинаем создание или обновление счета.', ['invoice_id' => $invoiceId]);
 
         $invoiceData = $this->getInvoiceData($invoiceId);
