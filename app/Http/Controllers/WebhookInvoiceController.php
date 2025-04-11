@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\IncomingWebhookInvoiceService;
+use App\Services\InvoiceService;
 use Bitrix24\SDK\Services\ServiceBuilder;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -13,11 +14,13 @@ class WebhookInvoiceController extends Controller
 {
     protected ServiceBuilder $serviceBuilder;
     protected IncomingWebhookInvoiceService $incomingWebhookInvoiceService;
+    protected InvoiceService $invoiceService;
 
-    public function __construct(ServiceBuilder $serviceBuilder, IncomingWebhookInvoiceService $incomingWebhookInvoiceService)
+    public function __construct(ServiceBuilder $serviceBuilder, IncomingWebhookInvoiceService $incomingWebhookInvoiceService, InvoiceService $invoiceService)
     {
         $this->serviceBuilder = $serviceBuilder;
         $this->incomingWebhookInvoiceService = $incomingWebhookInvoiceService;
+        $this->invoiceService = $invoiceService;
     }
 
     /**
@@ -50,6 +53,7 @@ class WebhookInvoiceController extends Controller
                 'invoice_id' => $invoiceId,
             ]);
             $this->incomingWebhookInvoiceService->deleteInvoice($invoiceId);
+            $this->invoiceService->updatePaidAmountInBitrix($invoiceId);
             return response()->json(['status' => 'success'], 200);
         }
 

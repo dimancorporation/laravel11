@@ -17,12 +17,14 @@ class IncomingWebhookInvoiceService
     protected ServiceBuilder $serviceBuilder;
     protected PaymentMethod $paymentMethod;
     protected SettingsService $settingsService;
+    protected InvoiceService $invoiceService;
 
-    public function __construct(ServiceBuilder $serviceBuilder, PaymentMethod $paymentMethod, SettingsService $settingsService)
+    public function __construct(ServiceBuilder $serviceBuilder, PaymentMethod $paymentMethod, SettingsService $settingsService, InvoiceService $invoiceService)
     {
         $this->serviceBuilder = $serviceBuilder;
         $this->paymentMethod = $paymentMethod;
         $this->settingsService = $settingsService;
+        $this->invoiceService = $invoiceService;
     }
 
     public function isRequestFromWebhook(array $data): bool
@@ -155,6 +157,7 @@ class IncomingWebhookInvoiceService
                 try {
                     $invoice = Invoice::create($fields);
                     Log::info('Счет успешно создан.', ['invoice' => $invoice]);
+                    $this->invoiceService->updatePaidAmountInBitrix($invoice->id);
 
                     if ($payment->exists()) {
                         $invoice->payment_id = $payment->first()->id;
@@ -172,6 +175,7 @@ class IncomingWebhookInvoiceService
 
                     // для payment обновляем b24_invoice_id
                     $result = $payment->update(['b24_invoice_id' => $invoice->id]);
+                    $this->invoiceService->updatePaidAmountInBitrix($invoice->id);
                 } catch (Exception $e) {
                     Log::error('Ошибка при создании счета или обновлении платежа.', [
                         'error_message' => $e->getMessage(),
@@ -182,8 +186,9 @@ class IncomingWebhookInvoiceService
             } else {
                 Log::info('Дополнительная информация о платеже не найдена, создаем счет без нее.');
                 try {
-                    $result = Invoice::create($fields);
+                    $invoice = Invoice::create($fields);
                     Log::info('Счет успешно создан без дополнительной информации о платеже.', ['fields' => $fields]);
+                    $this->invoiceService->updatePaidAmountInBitrix($invoice->id);
                 } catch (Exception $e) {
                     Log::error('Ошибка при создании счета без дополнительной информации о платеже.', [
                         'error_message' => $e->getMessage(),
@@ -195,8 +200,11 @@ class IncomingWebhookInvoiceService
         } else {
             Log::info('Счет существует, обновляем его.', ['invoice_id' => $invoiceId]);
             try {
+                $invoiceQuery = Invoice::where('b24_invoice_id', $invoiceId);
                 $result = $invoiceQuery->update($commonFields);
                 Log::info('Счет успешно обновлен.', ['invoice_id' => $invoiceId]);
+
+                $this->invoiceService->updatePaidAmountInBitrix($invoiceId);
             } catch (Exception $e) {
                 Log::error('Ошибка при обновлении счета.', [
                     'error_message' => $e->getMessage(),
