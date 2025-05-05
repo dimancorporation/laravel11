@@ -23,7 +23,7 @@
                             @endphp
 
                             @if (file_exists(storage_path('app/public/' . $filePath)))
-                                <img src="{{ Storage::url($filePath) }}" alt="Логотип" style="max-width: 320px;">
+                                <img src="{{ Storage::url($filePath) }}" alt="Логотип" style="max-width: 180px;">
                             @else
                                 <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
                             @endif
