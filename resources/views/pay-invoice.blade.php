@@ -37,7 +37,7 @@
                                 <div class="flex flex-col space-y-1 hidden">
                                     <label for="description">Описание заказа</label>
                                     <input id="description"
-                                           value="Оплата по договору"
+                                           value="Юридические услуги"
                                            disabled
                                            class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                            type="text" placeholder="Описание заказа" name="description">
