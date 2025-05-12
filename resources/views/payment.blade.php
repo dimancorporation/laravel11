@@ -275,7 +275,7 @@
                     // Создаем объект Receipt
                     paymentData.Receipt = {
                         'EmailCompany': emailCompany,
-                        'Taxation': 'patent',
+                        'Taxation': 'usn_income',
                         'FfdVersion': '1.05',
                         'Items': [
                             {
