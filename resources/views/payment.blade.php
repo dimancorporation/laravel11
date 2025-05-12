@@ -276,7 +276,7 @@
                     paymentData.Receipt = {
                         'EmailCompany': emailCompany,
                         'Taxation': 'patent',
-                        'FfdVersion': '1.2',
+                        'FfdVersion': '1.05',
                         'Items': [
                             {
                                 'Name': description.value || 'Оплата',
