@@ -283,8 +283,8 @@
                                 'Price': Math.round(amount.value * 100),
                                 'Quantity': 1.00,
                                 'Amount': Math.round(amount.value * 100),
-                                'PaymentMethod': 'full_prepayment',
-                                'PaymentObject': 'service',
+                                'PaymentMethod': 'prepayment',
+                                'PaymentObject': 'payment',
                                 'Tax': 'none',
                                 'MeasurementUnit': 'pc'
                             }
